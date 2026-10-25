@@ -42,7 +42,8 @@ def main() -> int:
             return 1
     s = settings()
     live = s.live
-    zetaris, nvidia, nightshift = Zetaris(s, live), Nvidia(s, live), Nightshift(s, live)
+    run_tag = f"{args.split}-{time.strftime('%Y%m%dT%H%M%S')}"
+    zetaris, nvidia, nightshift = Zetaris(s, live), Nvidia(s, live), Nightshift(s, live, run_tag=run_tag)
     gate = PrecedentGate(PrecedentIndex(), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live), zetaris)
     items = load_items(args.split, args.sample)
     systems = set(args.systems.split(","))

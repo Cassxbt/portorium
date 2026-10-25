@@ -37,14 +37,18 @@ class Answer:
 
 
 class Nightshift:
-    def __init__(self, settings: Settings, live: bool):
+    def __init__(self, settings: Settings, live: bool, run_tag: str = ""):
+        """run_tag marks every request of an evaluation run so no answer is reused from an earlier run's cache."""
         self.settings = settings
         self.live = live
+        self.run_tag = run_tag
         self.pacer = NVIDIA_KEY
         self.recorder = Recorder("nightshift")
         self._http = httpx.Client(timeout=320)
 
     def chat(self, messages: list[dict], model: str = ULTRA, thinking: bool = False, max_tokens: int = 1024) -> Answer:
+        if self.run_tag:
+            messages = messages[:-1] + [{**messages[-1], "content": f"{messages[-1]['content']}\n[run {self.run_tag}]"}]
         body: dict = {"model": model, "messages": messages, "max_tokens": max_tokens,
                       "chat_template_kwargs": {"enable_thinking": thinking}}
         if not self.live:
