@@ -6,3 +6,12 @@ __pycache__/
 *.egg-info/
 data/build/
 data/index/
+.env.*
+!.env.example
+*.pem
+*.key
+credentials/
+data/fulltext/
+data/memory/
+data/eval/results/*.checkpoint.jsonl
+*.bak
