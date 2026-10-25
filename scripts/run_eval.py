@@ -5,7 +5,9 @@ Usage:
   python scripts/run_eval.py test --final      # the frozen test set, once
 """
 import argparse
+import hashlib
 import json
+import subprocess
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -40,6 +42,9 @@ def main() -> int:
         if LOCK.exists():
             print(f"test already run: {LOCK.read_text()}")
             return 1
+        if not settings().live:
+            print("the frozen test run must be live, not sample mode")
+            return 1
     s = settings()
     live = s.live
     run_tag = f"{args.split}-{time.strftime('%Y%m%dT%H%M%S')}"
@@ -53,7 +58,9 @@ def main() -> int:
     checkpoint = Path(args.resume) if args.resume else RESULTS / f"{args.split}_{started}.checkpoint.jsonl"
     print(f"checkpoint: {checkpoint}", flush=True)
     if args.split == "test":
-        LOCK.write_text(f"started {started}")
+        digest = hashlib.sha256((DATA / "eval" / "test.jsonl").read_bytes()).hexdigest()
+        commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit}))
     predictions = run(gate, items, systems, checkpoint=checkpoint)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
     if gate_preds and "retrieval_ultra" in systems:

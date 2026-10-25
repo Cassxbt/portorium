@@ -29,6 +29,7 @@ SUBJECT_PREFIX = re.compile(r"^\s*(the\s+)?(tariff\s+)?classification(,| and| of
 class Item:
     ruling_number: str
     ruling_date: str
+    as_of: str
     answer: str
     query: str
     exclude: set[str]
@@ -42,7 +43,11 @@ class Prediction:
     detail: dict = field(default_factory=dict)
 
 
+SPLIT_START = {"dev": "2026-01-01", "test": "2026-06-01"}
+
+
 def load_items(split: str, sample: int | None = None, seed: int = 20261025) -> list[Item]:
+    """Items with precedents searched as of the split start, so dev and test see the same corpus rule."""
     items = []
     for line in (DATA / "eval" / f"{split}.jsonl").open():
         m = json.loads(line)
@@ -52,7 +57,7 @@ def load_items(split: str, sample: int | None = None, seed: int = 20261025) -> l
         text = json.loads(path.read_text()).get("text") or ""
         subject = strip_codes(extract_facts(SUBJECT_PREFIX.sub("", m["subject"])) or SUBJECT_PREFIX.sub("", m["subject"]), [m["answer"]])
         facts = strip_codes(extract_facts(text), [m["answer"]])[:1500]
-        items.append(Item(m["ruling_number"], m["ruling_date"], m["answer"], f"{subject}. {facts}",
+        items.append(Item(m["ruling_number"], m["ruling_date"], SPLIT_START[split], m["answer"], f"{subject}. {facts}",
                           {m["ruling_number"], *m["related"]}))
     if sample and sample < len(items):
         items = random.Random(seed).sample(items, sample)
@@ -76,7 +81,7 @@ def zero_shot(ns: Nightshift, item: Item, model: str) -> Prediction:
 
 
 def retrieval_pick(ns: Nightshift, gate: PrecedentGate, item: Item) -> tuple[Prediction, Prediction]:
-    precedents = gate.index.search(gate.nvidia, item.query, item.ruling_date, exclude=item.exclude)[: gate.top]
+    precedents = gate.index.search(gate.nvidia, item.query, item.as_of, exclude=item.exclude)[: gate.top]
     top1 = Prediction("retrieval_top1", item.ruling_number, precedents[0].codes[0] if precedents else None)
     facts = {p.ruling_number: f for p in precedents if gate.texts and (f := gate.texts.facts(p.ruling_number))}
     listing = "\n".join(f"{p.ruling_number}: {p.subject}. CODES: {', '.join(p.codes)}."
@@ -92,9 +97,10 @@ def retrieval_pick(ns: Nightshift, gate: PrecedentGate, item: Item) -> tuple[Pre
 
 
 def gate_predictions(gate: PrecedentGate, item: Item) -> tuple[Prediction, Prediction]:
-    verdict = gate.classify(item.query, item.ruling_date, exclude=item.exclude)
+    verdict = gate.classify(item.query, item.as_of, exclude=item.exclude)
     full = Prediction("precedent_gate", item.ruling_number, verdict.code if verdict.decision == CLASSIFIED else None,
-                      {"decision": verdict.decision, "reason": verdict.reason, "receipts": verdict.receipts})
+                      {"decision": verdict.decision, "reason": verdict.reason, "receipts": verdict.receipts,
+                       "question": verdict.question, "judged": [asdict(j) for j in verdict.precedents]})
     living_blind = _ignore_liveness(verdict)
     return full, Prediction("gate_without_liveness", item.ruling_number, living_blind, {})
 
@@ -123,7 +129,7 @@ class KeywordIndex:
         for w in set(re.findall(r"[a-z]{3,}", item.query.lower())):
             if w in self.postings:
                 scores[self.postings[w]] += self.idf[w]
-        scores[self.index.dates >= item.ruling_date] = -1
+        scores[self.index.dates >= item.as_of] = -1
         scores[np.isin(self.numbers, list(item.exclude))] = -1
         best = int(np.argmax(scores))
         code = self.index.meta[best]["codes"][0] if scores[best] > 0 else None

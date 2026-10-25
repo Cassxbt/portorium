@@ -9,6 +9,7 @@ import argparse
 import datetime
 import json
 import sys
+from pathlib import Path
 
 from . import audit
 from .config import DATA, settings
@@ -16,10 +17,11 @@ from .gate import CLASSIFIED, REVIEW, PrecedentGate, Verdict
 from .index import PrecedentIndex
 from .liveness import Liveness
 from .memory import BrokerMemory
-from .nightshift import Nightshift
-from .nvidia import Nvidia
+from .nightshift import Nightshift, NightshiftError
+from .nvidia import Nvidia, NvidiaError
+from .recorder import MissingRecording
 from .rulings import RulingTexts
-from .zetaris import Zetaris
+from .zetaris import Zetaris, ZetarisError
 
 MEMORY = DATA / "memory"
 
@@ -52,7 +54,7 @@ def show(v: Verdict) -> None:
 
 def classify(args) -> int:
     gate, zetaris = build_gate()
-    memory = BrokerMemory(MEMORY / f"{args.importer}.json")
+    memory = BrokerMemory(MEMORY / f"{Path(args.importer).name}.json")
     answers: list[tuple[str, str]] = []
     while True:
         v = gate.classify(args.product, args.as_of, answers=answers, memory=memory)
@@ -71,14 +73,18 @@ def classify(args) -> int:
 
 
 def confirm(args) -> int:
-    memory = BrokerMemory(MEMORY / f"{args.importer}.json")
-    memory_id = memory.remember(args.product, args.code.replace(".", ""), broker=args.broker, note=args.note)
+    code = args.code.replace(".", "")
+    if not (code.isdigit() and len(code) == 10):
+        print("code must be 10 digits, e.g. 6110.20.2079")
+        return 1
+    memory = BrokerMemory(MEMORY / f"{Path(args.importer).name}.json")
+    memory_id = memory.remember(args.product, code, broker=args.broker, note=args.note)
     print(f"remembered {memory_id}: {fmt(args.code.replace('.', ''))} signed off by {args.broker}")
     return 0
 
 
 def forget(args) -> int:
-    BrokerMemory(MEMORY / f"{args.importer}.json").forget_all(reason="broker requested wipe")
+    BrokerMemory(MEMORY / f"{Path(args.importer).name}.json").forget_all(reason="broker requested wipe")
     print(f"memory for {args.importer} wiped (ledger keeps the deletions)")
     return 0
 
@@ -112,7 +118,11 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--importer", default="demo")
     sub.add_parser("rescreen")
     args = ap.parse_args(argv)
-    return {"classify": classify, "confirm": confirm, "forget": forget, "rescreen": rescreen}[args.command](args)
+    try:
+        return {"classify": classify, "confirm": confirm, "forget": forget, "rescreen": rescreen}[args.command](args)
+    except (MissingRecording, NightshiftError, NvidiaError, ZetarisError) as e:
+        print(f"portorium: {e}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
