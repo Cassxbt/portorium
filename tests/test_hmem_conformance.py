@@ -70,3 +70,16 @@ def test_db(c):
     assert len(h.store.all()) == n, "dreaming materialized before approval"
     created = h.dreaming.approve(props[0]["id"])
     if created: assert created.layer == "long_term" and created.derived_from
+
+
+def test_the_vectors_catch_a_broken_port(monkeypatch):
+    """The suite must be able to fail: a wrong feedback delta has to break a vector."""
+    import portorium.engines.hmem as engine
+    monkeypatch.setitem(engine.FEEDBACK, "helpful", 0.06)
+    failures = 0
+    for c in S["feedback-deltas"]:
+        h = HMEM(clock=lambda: T0)
+        m = h.add(content="feedback target record", confidence=c["start"], source="conformance")
+        h.feedback(m.id, c["kind"])
+        failures += abs(h.store.get(m.id).confidence - c["expectConfidence"]) > 1e-9
+    assert failures > 0
