@@ -51,6 +51,5 @@ That makes the classification auditable instead of being a model's confident gue
   - A table registered before its file exists gets zero columns.
   - Neither is documented next to `CREATE LIGHTNING FILESTORE TABLE`.
 - **Single-suffix lines:** USITC lists an 8-digit line with one statistical suffix only at 10 digits. Our first `parent_survives` assumed every 8-digit line has its own row, and Zetaris reported 38,073 invalid rows instead of 14,209. That was our error, caught because the counts were impossible. A worked example in the getting-started repo would save others the same mistake.
-- **Rule editing:** `UPDATE DQ ... SET EXPRESSION =` was rejected by the parser in our build. `REMOVE DQ` then `REGISTER DQ` worked.
 - **API sessions:** each REST call runs in its own session, so a `CREATE TEMPORARY VIEW` is gone by the next call (relevant to the `sourceTable` write route).
 - **Wish:** a rule type with a parameter (here, the snapshot release name) instead of a literal in the expression.
