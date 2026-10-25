@@ -8,6 +8,7 @@ import argparse
 import json
 import time
 from dataclasses import asdict
+from pathlib import Path
 
 from portorium.config import DATA, settings
 from portorium.eval import load_items, run, score, threshold_baseline
@@ -30,6 +31,7 @@ def main() -> int:
     ap.add_argument("--sample", type=int)
     ap.add_argument("--systems", default=ALL)
     ap.add_argument("--final", action="store_true")
+    ap.add_argument("--resume", help="checkpoint file to continue")
     args = ap.parse_args()
     if args.split == "test":
         if not args.final:
@@ -46,9 +48,12 @@ def main() -> int:
     systems = set(args.systems.split(","))
     print(f"{args.split}: {len(items)} items, systems {sorted(systems)}", flush=True)
     started = time.strftime("%Y%m%dT%H%M%S")
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    checkpoint = Path(args.resume) if args.resume else RESULTS / f"{args.split}_{started}.checkpoint.jsonl"
+    print(f"checkpoint: {checkpoint}", flush=True)
     if args.split == "test":
         LOCK.write_text(f"started {started}")
-    predictions = run(gate, items, systems)
+    predictions = run(gate, items, systems, checkpoint=checkpoint)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
     if gate_preds and "retrieval_ultra" in systems:
         coverage = sum(bool(p.code) for p in gate_preds) / len(gate_preds)

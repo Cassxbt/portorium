@@ -86,10 +86,12 @@ class Nightshift:
                 last = f"{type(e).__name__}: {e}"
                 continue
             if r.status_code == 200:
+                self.pacer.succeeded()
                 return r.json()
             last = f"HTTP {r.status_code}: {r.text[:300]}"
             if r.status_code not in RETRYABLE:
                 break
+            self.pacer.rejected()
         raise NightshiftError(last)
 
 

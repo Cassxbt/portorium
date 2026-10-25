@@ -8,7 +8,9 @@ import json
 import math
 import random
 import re
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import asdict
+from pathlib import Path
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -128,7 +130,9 @@ class KeywordIndex:
         return Prediction("keyword_top1", item.ruling_number, code)
 
 
-def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int = 2) -> list[Prediction]:
+def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int = 2,
+        checkpoint: Path | None = None) -> list[Prediction]:
+    """Predictions for every item; with a checkpoint file, finished items are kept and skipped on restart."""
     ns = gate.nightshift
     keyword = KeywordIndex(gate.index) if "keyword_top1" in systems else None
 
@@ -150,11 +154,21 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
         return out
 
     predictions = []
+    if checkpoint and checkpoint.exists():
+        predictions = [Prediction(**json.loads(line)) for line in checkpoint.open()]
+    done_items = {p.ruling_number for p in predictions}
+    todo = [i for i in items if i.ruling_number not in done_items]
+    print(f"{len(items) - len(todo)} items already done, {len(todo)} to run", flush=True)
     with ThreadPoolExecutor(workers) as pool:
-        for done, preds in enumerate(pool.map(one, items), 1):
+        futures = [pool.submit(one, item) for item in todo]
+        for done, future in enumerate(as_completed(futures), 1):
+            preds = future.result()
             predictions.extend(preds)
-            if done % 25 == 0:
-                print(f"{done}/{len(items)}", flush=True)
+            if checkpoint:
+                with checkpoint.open("a") as f:
+                    f.writelines(json.dumps(asdict(p)) + "\n" for p in preds)
+            if done % 10 == 0:
+                print(f"{done}/{len(todo)}", flush=True)
     return predictions
 
 

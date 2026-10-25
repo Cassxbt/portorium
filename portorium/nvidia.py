@@ -61,6 +61,7 @@ class Nvidia:
                 last = f"{type(e).__name__}: {e}"
                 continue
             if r.status_code == 200:
+                self.pacer.succeeded()
                 data = r.json()
                 # Embedding batches for the index are large and cached separately; record only small calls.
                 if len(body.get("input", [])) <= 8:
@@ -69,4 +70,5 @@ class Nvidia:
             last = f"HTTP {r.status_code}: {r.text[:300]}"
             if r.status_code not in RETRYABLE:
                 break
+            self.pacer.rejected()
         raise NvidiaError(last)
