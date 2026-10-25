@@ -39,10 +39,10 @@ def show(v: Verdict) -> None:
     print(f"\n{v.decision}  [{v.reason}]  {fmt(v.code) if v.code else ''}")
     for j in v.precedents:
         flag = f" {j.failed_rule}" if j.failed_rule else ""
-        print(f"  {j.ruling_number:9s} {j.ruling_date}  {j.match:7s}  {fmt(j.code) if j.code else '-':13s} "
+        print(f"  {j.ruling_number:11s} {j.ruling_date or 'broker':10s}  {j.match:7s}  {fmt(j.code) if j.code else '-':13s} "
               f"{(j.status or ''):7s}{flag}  {j.fact[:70]}")
-    for m in v.memory:
-        print(f"  memory {m['memory_id']}: {fmt(m['code'])} from broker {m['broker']} (relevance {m['relevance']})")
+        if j.successors:
+            print(f"      now split into: {', '.join(fmt(c) for c in j.successors[:6])}")
     for r in v.receipts:
         print(f"  receipt {r.get('receipt_id')}  routed_model={r.get('routed_model')}  from_cache={r.get('from_cache')}")
 

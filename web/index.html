@@ -185,15 +185,16 @@ function render(v) {
   $("signoff").classList.remove("hide");
   $("signcode").value = v.code ? fmt(v.code) : "";
   const rows = (v.precedents || []).map((p, i) => `<tr style="animation-delay:${i * 70}ms">
-      <td class="m">${esc(p.ruling_number)}<br><span class="fact">${esc(p.ruling_date)}</span></td>
+      <td class="m">${esc(p.kind === "memory" ? "BROKER " + p.ruling_number.slice(4) : p.ruling_number)}<br><span class="fact">${esc(p.ruling_date || "signed off")}</span></td>
       <td class="${p.match}">${p.match}</td>
       <td class="m">${p.code ? fmt(p.code) : "–"}</td>
-      <td>${p.status ? `<span class="pill ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${p.pre_hs2022 ? `<div class="fact">pre-HS 2022</div>` : ""}</td>
+      <td>${p.status ? `<span class="pill ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${p.pre_hs2022 ? `<div class="fact">pre-HS 2022</div>` : ""}${(p.successors || []).length ? `<div class="fact mono">now: ${p.successors.slice(0, 4).map(fmt).join(", ")}</div>` : ""}</td>
       <td>${esc(p.subject)}<div class="fact">${esc(p.fact)}</div></td></tr>`).join("");
   $("precedents").className = "";
   $("precedents").innerHTML = `<table><tr><th>Ruling</th><th>Match</th><th>Code</th><th>Zetaris</th><th>Product</th></tr>${rows}</table>`;
-  $("memory").textContent = (v.memory || []).length
-    ? v.memory.map((m) => `${m.memory_id} → ${fmt(m.code)} (${m.broker}, relevance ${m.relevance})`).join("\n")
+  const recalled = (v.precedents || []).filter((p) => p.kind === "memory");
+  $("memory").textContent = recalled.length
+    ? recalled.map((m) => `${m.ruling_number.slice(4)} → ${fmt(m.codes[0])} judged ${m.match}`).join("\n")
     : "no broker decision recalled";
 }
 

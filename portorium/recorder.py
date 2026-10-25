@@ -39,9 +39,10 @@ class Recorder:
         return response
 
     def record(self, request: dict, response: dict) -> None:
+        """Append the live response; on replay the latest line for a request wins."""
         key = self.key(request)
         cache = self._load()
-        if key in cache:
+        if cache.get(key) == response:
             return
         cache[key] = response
         self.path.parent.mkdir(parents=True, exist_ok=True)

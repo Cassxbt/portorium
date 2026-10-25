@@ -9,7 +9,9 @@ import re
 _SALUTATION = re.compile(r"Dear [^:]{1,80}:")
 _ANALYSIS = re.compile(
     r"\b(GRI\b|General Rules? of Interpretation|The applicable (sub)?heading|HTSUS|Harmonized Tariff|"
-    r"is provided for in|are provided for in|classification of the|Explanatory Notes?|In your letter dated)",
+    r"provided for in|classification of the|Explanatory Notes?|In your letter|you requested|"
+    r"classifiab|classified (under|in|as)|essential character|(sub)?headings?\b|chapters?\b|Section [IVX]+|"
+    r"\bNote \d|TARIFF NO|clerical error|corrected ruling|prima facie|imparts?\b|Genera?l? Rules?\b|ssential character)",
     re.IGNORECASE,
 )
 _PATTERNS = [

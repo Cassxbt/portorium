@@ -20,7 +20,7 @@ from .leakage import extract_facts, strip_codes
 from .liveness import LIVING, Liveness
 from .nightshift import LIGHTNING, ULTRA, Nightshift
 
-SUBJECT_PREFIX = re.compile(r"^\s*(the\s+)?tariff classification of\s+(an?\s+|the\s+)?", re.I)
+SUBJECT_PREFIX = re.compile(r"^\s*(the\s+)?(tariff\s+)?classification(,| and| of)?[^.]*?\b(of|on)\s+(an?\s+|the\s+)?", re.I)
 
 
 @dataclass
@@ -48,7 +48,7 @@ def load_items(split: str, sample: int | None = None, seed: int = 20261025) -> l
         if not path.exists():
             continue
         text = json.loads(path.read_text()).get("text") or ""
-        subject = strip_codes(SUBJECT_PREFIX.sub("", m["subject"]), [m["answer"]])
+        subject = strip_codes(extract_facts(SUBJECT_PREFIX.sub("", m["subject"])) or SUBJECT_PREFIX.sub("", m["subject"]), [m["answer"]])
         facts = strip_codes(extract_facts(text), [m["answer"]])[:1500]
         items.append(Item(m["ruling_number"], m["ruling_date"], m["answer"], f"{subject}. {facts}",
                           {m["ruling_number"], *m["related"]}))
@@ -76,13 +76,16 @@ def zero_shot(ns: Nightshift, item: Item, model: str) -> Prediction:
 def retrieval_pick(ns: Nightshift, gate: PrecedentGate, item: Item) -> tuple[Prediction, Prediction]:
     precedents = gate.index.search(gate.nvidia, item.query, item.ruling_date, exclude=item.exclude)[: gate.top]
     top1 = Prediction("retrieval_top1", item.ruling_number, precedents[0].codes[0] if precedents else None)
-    listing = "\n".join(f"{p.ruling_number}: {p.subject}. CODES: {', '.join(p.codes)}" for p in precedents)
+    facts = {p.ruling_number: f for p in precedents if gate.texts and (f := gate.texts.facts(p.ruling_number))}
+    listing = "\n".join(f"{p.ruling_number}: {p.subject}. CODES: {', '.join(p.codes)}."
+                        + (f" FACTS: {facts[p.ruling_number]}" if p.ruling_number in facts else "") for p in precedents)
     data, answer = ns.chat_json([{"role": "system", "content": PICK},
                                  {"role": "user", "content": f"PRODUCT: {item.query}\nPRIOR RULINGS:\n{listing}"}],
                                 {"code": None, "confidence": None})
     code = re.sub(r"\D", "", str(data["code"]))[:10] or None
     pick = Prediction("retrieval_ultra", item.ruling_number, code,
-                      {"confidence": float(data.get("confidence") or 0), "routed_model": answer.routed_model})
+                      {"confidence": float(data.get("confidence") or 0), "routed_model": answer.routed_model,
+                       "top_score": precedents[0].score if precedents else 0.0})
     return top1, pick
 
 
@@ -129,36 +132,30 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
     ns = gate.nightshift
     keyword = KeywordIndex(gate.index) if "keyword_top1" in systems else None
 
+    steps = [("keyword_top1", lambda item: [keyword.top1(item)]),
+             ("ultra_zero_shot", lambda item: [zero_shot(ns, item, ULTRA)]),
+             ("lightning_zero_shot", lambda item: [zero_shot(ns, item, LIGHTNING)]),
+             ("retrieval_ultra", lambda item: list(retrieval_pick(ns, gate, item))),
+             ("precedent_gate", lambda item: list(gate_predictions(gate, item)))]
+
     def one(item: Item) -> list[Prediction]:
         out = []
-        if "keyword_top1" in systems:
-            out.append(keyword.top1(item))
-        if "ultra_zero_shot" in systems:
-            out.append(zero_shot(ns, item, ULTRA))
-        if "lightning_zero_shot" in systems:
-            out.append(zero_shot(ns, item, LIGHTNING))
-        if "retrieval_ultra" in systems:
-            out.extend(retrieval_pick(ns, gate, item))
-        if "precedent_gate" in systems:
-            out.extend(gate_predictions(gate, item))
+        for name, step in steps:
+            if name not in systems:
+                continue
+            try:
+                out.extend(step(item))
+            except Exception as e:
+                out.append(Prediction("error", item.ruling_number, None, {"system": name, "error": f"{type(e).__name__}: {e}"[:300]}))
         return out
 
     predictions = []
     with ThreadPoolExecutor(workers) as pool:
-        for done, preds in enumerate(pool.map(_safe(one), items), 1):
+        for done, preds in enumerate(pool.map(one, items), 1):
             predictions.extend(preds)
             if done % 25 == 0:
                 print(f"{done}/{len(items)}", flush=True)
     return predictions
-
-
-def _safe(fn):
-    def wrapped(item):
-        try:
-            return fn(item)
-        except Exception as e:
-            return [Prediction("error", item.ruling_number, None, {"error": f"{type(e).__name__}: {e}"[:300]})]
-    return wrapped
 
 
 def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
@@ -191,7 +188,8 @@ def score(predictions: list[Prediction], items: list[Item], liveness: Liveness) 
 
 def threshold_baseline(predictions: list[Prediction], coverage: float) -> list[Prediction]:
     """Retrieval + Ultra, abstaining below the confidence that yields the gate's coverage."""
-    picks = sorted((p for p in predictions if p.system == "retrieval_ultra"), key=lambda p: -p.detail.get("confidence", 0))
+    picks = sorted((p for p in predictions if p.system == "retrieval_ultra"),
+                   key=lambda p: (-p.detail.get("confidence", 0), -p.detail.get("top_score", 0.0)))
     keep = round(coverage * len(picks))
     return [Prediction("confidence_threshold", p.ruling_number, p.code if i < keep else None, p.detail)
             for i, p in enumerate(picks)]
