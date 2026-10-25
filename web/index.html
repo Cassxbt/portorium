@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portorium · Broker Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f3eee3;
+    --paper-deep: #e9e1d1;
+    --ink: #1b1a17;
+    --ink-soft: #5b564c;
+    --rule: #d6ccb9;
+    --green: #1f6b4a;
+    --amber: #a8681a;
+    --red: #b3261e;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Source Sans 3", "Helvetica Neue", sans-serif;
+    --mono: "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--ink); background: var(--paper); font: 17px/1.5 var(--body);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  header {
+    display: flex; align-items: baseline; gap: 28px; padding: 26px 48px 18px; border-bottom: 2px solid var(--ink);
+  }
+  .mark { font: 700 34px/1 var(--display); letter-spacing: .01em; }
+  .mark small { display: block; font: 500 13px var(--body); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); margin-top: 6px; }
+  .motto { font: italic 500 19px var(--display); color: var(--ink-soft); }
+  nav { margin-left: auto; display: flex; gap: 6px; }
+  nav button {
+    font: 600 14px var(--body); letter-spacing: .12em; text-transform: uppercase; background: none; border: 1px solid transparent;
+    padding: 8px 14px; cursor: pointer; color: var(--ink-soft);
+  }
+  nav button.on { color: var(--ink); border-color: var(--ink); }
+  .status { font: 13px var(--mono); color: var(--ink-soft); padding: 10px 48px; border-bottom: 1px solid var(--rule); display: flex; gap: 26px; flex-wrap: wrap; }
+  .status b { color: var(--ink); font-weight: 600; }
+  main { padding: 34px 48px 60px; }
+  .grid { display: grid; grid-template-columns: minmax(340px, 5fr) 7fr; gap: 44px; align-items: start; }
+  h2 { font: 700 15px var(--body); letter-spacing: .2em; text-transform: uppercase; margin: 0 0 12px; color: var(--ink-soft); }
+  textarea, input[type=text] {
+    width: 100%; font: 17px/1.45 var(--body); color: var(--ink); background: rgba(255,255,255,.55);
+    border: 1px solid var(--ink); padding: 14px 16px; resize: vertical;
+  }
+  textarea { min-height: 140px; }
+  .row { display: flex; gap: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  button.act {
+    font: 600 15px var(--body); letter-spacing: .1em; text-transform: uppercase; padding: 12px 22px; cursor: pointer;
+    background: var(--ink); color: var(--paper); border: 1px solid var(--ink);
+  }
+  button.ghost { background: transparent; color: var(--ink); }
+  button:disabled { opacity: .45; cursor: progress; }
+  .samples { font-size: 14px; color: var(--ink-soft); margin-top: 14px; }
+  .samples a { color: var(--ink); cursor: pointer; text-decoration: underline dotted; margin-right: 12px; }
+  .verdict { position: relative; margin-top: 30px; padding: 26px 26px 22px; border: 1px solid var(--rule); background: rgba(255,255,255,.4); min-height: 190px; }
+  .stamp {
+    display: inline-block; font: 700 40px/1 var(--display); letter-spacing: .08em; padding: 10px 18px 8px;
+    border: 4px double currentColor; transform: rotate(-4deg); opacity: 0; mix-blend-mode: multiply;
+  }
+  .stamp.in { animation: stamp .42s cubic-bezier(.2,1.6,.4,1) forwards; }
+  @keyframes stamp { 0% { opacity: 0; transform: rotate(-4deg) scale(1.8); } 100% { opacity: .92; transform: rotate(-4deg) scale(1); } }
+  .CLASSIFIED { color: var(--green); } .REVIEW { color: var(--amber); } .REFUSE { color: var(--red); }
+  .reason { font: 600 15px var(--mono); margin-top: 18px; letter-spacing: .04em; }
+  .code { font: 600 34px var(--mono); margin-top: 6px; letter-spacing: .02em; }
+  .question { margin-top: 18px; padding: 14px 16px; border-left: 4px solid var(--amber); background: rgba(168,104,26,.08); font-size: 17px; }
+  .receipt { font: 13px/1.6 var(--mono); color: var(--ink-soft); margin-top: 16px; word-break: break-all; }
+  .empty { color: var(--ink-soft); font-style: italic; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; font: 600 12px var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); padding: 8px 10px; border-bottom: 2px solid var(--ink); }
+  td { padding: 11px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td.m { font-family: var(--mono); font-size: 14px; white-space: nowrap; }
+  tr { opacity: 0; animation: rise .35s ease forwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .pill { font: 600 12px var(--mono); padding: 2px 8px; border: 1px solid currentColor; letter-spacing: .04em; }
+  .living { color: var(--green); } .split { color: var(--amber); } .removed { color: var(--red); }
+  .full { font-weight: 700; } .partial { color: var(--amber); } .none { color: var(--ink-soft); }
+  .fact { color: var(--ink-soft); font-size: 14px; }
+  .panel { margin-top: 36px; border-top: 2px solid var(--ink); padding-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+  .panel p { margin: 0 0 10px; font-size: 15px; }
+  .mono { font-family: var(--mono); font-size: 14px; }
+  #evalView table td.n { font-family: var(--mono); text-align: right; }
+  #evalView tr.gate td { background: rgba(31,107,74,.08); font-weight: 600; }
+  .note { color: var(--ink-soft); font-size: 14px; margin-top: 14px; max-width: 920px; }
+  .hide { display: none; }
+  .err { color: var(--red); font: 14px var(--mono); margin-top: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="mark">Portorium<small>Broker Console</small></div>
+  <div class="motto">No code without a living precedent.</div>
+  <nav><button class="on" data-view="console">Console</button><button data-view="evalView">Evaluation</button></nav>
+</header>
+<div class="status" id="status">connecting…</div>
+
+<main>
+  <section id="console">
+    <div class="grid">
+      <div>
+        <h2>Product</h2>
+        <textarea id="product" placeholder="Describe the product as the importer would: material, construction, use, who it is for."></textarea>
+        <div class="row">
+          <button class="act" id="go">Classify</button>
+          <input type="text" id="importer" value="demo" style="width:150px" title="Importer (memory namespace)">
+        </div>
+        <div class="samples">Try:
+          <a data-s="Women's pullover sweater, knitted, 60% cotton 40% acrylic, long sleeves, rib-knit cuffs and waistband">knit sweater</a>
+          <a data-s="Yoga mat of polyurethane foam, 6 mm thick, 183 x 61 cm, for floor exercise">yoga mat</a>
+          <a data-s="Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights">party speaker</a>
+        </div>
+        <div class="verdict" id="verdict"><div class="empty">The verdict appears here, stamped, with the precedents that support or block it.</div></div>
+        <div id="ask" class="hide">
+          <div class="question" id="qtext"></div>
+          <div class="row"><input type="text" id="answer" placeholder="Importer's answer"><button class="act" id="reply">Answer & re-run</button></div>
+        </div>
+        <div id="signoff" class="hide">
+          <div class="row">
+            <input type="text" id="broker" value="broker-1" style="width:150px" title="Broker">
+            <input type="text" id="signcode" placeholder="10-digit code to sign off" style="width:230px">
+            <button class="act ghost" id="sign">Broker sign-off</button>
+          </div>
+        </div>
+        <div class="err" id="err"></div>
+      </div>
+      <div>
+        <h2>Precedents · CBP rulings issued before today</h2>
+        <div id="precedents" class="empty">Nemotron retrieves the closest CBP rulings; Zetaris decides whether each code is still alive in the tariff schedule.</div>
+        <div class="panel">
+          <div>
+            <h2>Schedule watch · Zetaris</h2>
+            <p class="mono" id="release">–</p>
+            <button class="act ghost" id="rescreen">Check revision</button>
+          </div>
+          <div>
+            <h2>Broker memory · Meterless H-MEM</h2>
+            <p id="memory" class="mono">–</p>
+            <button class="act ghost" id="wipe">Wipe memory</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="evalView" class="hide">
+    <h2 id="evalTitle">Evaluation</h2>
+    <div id="evalTable" class="empty">No evaluation yet.</div>
+    <p class="note">Rulings issued after the Nemotron 3.5 training cutoff. Every system sees the same product description with all tariff numbers, chapter references and ruling numbers removed. Precedents are searched as of each ruling's date. Coverage is the share of items a system answers; accuracy is measured on the items it answers.</p>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (c) => c && c.length === 10 ? `${c.slice(0,4)}.${c.slice(4,6)}.${c.slice(6)}` : (c || "–");
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+let answers = [];
+
+async function api(path, body) {
+  const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
+  return data;
+}
+
+async function status() {
+  try {
+    const s = await api("/api/status");
+    const d = s.dq.code_in_schedule || {};
+    $("status").innerHTML = `<span>mode <b>${s.live ? "LIVE" : "SAMPLE"}</b></span><span>precedents <b>${s.precedents.toLocaleString()}</b></span>` +
+      `<span>Zetaris code_in_schedule <b>${Number(d.valid_record).toLocaleString()}</b> living · <b>${Number(d.invalid_record).toLocaleString()}</b> not in HTS 2026 Rev 21</span>`;
+  } catch (e) { $("status").textContent = `status unavailable: ${e.message}`; }
+}
+
+function render(v) {
+  const code = v.code ? `<div class="code">${fmt(v.code)}</div>` : "";
+  const r = (v.receipts || [])[0] || {};
+  $("verdict").innerHTML = `<span class="stamp ${v.decision}">${v.decision}</span>${code}<div class="reason">${v.reason}</div>` +
+    `<div class="receipt">Nightshift receipt ${esc(r.receipt_id)} · routed_model ${esc(r.routed_model)} · from_cache ${esc(r.from_cache)}</div>`;
+  requestAnimationFrame(() => $("verdict").querySelector(".stamp").classList.add("in"));
+  $("ask").classList.toggle("hide", !(v.decision === "REVIEW" && v.question));
+  $("qtext").textContent = v.question || "";
+  $("signoff").classList.remove("hide");
+  $("signcode").value = v.code ? fmt(v.code) : "";
+  const rows = (v.precedents || []).map((p, i) => `<tr style="animation-delay:${i * 70}ms">
+      <td class="m">${esc(p.ruling_number)}<br><span class="fact">${esc(p.ruling_date)}</span></td>
+      <td class="${p.match}">${p.match}</td>
+      <td class="m">${p.code ? fmt(p.code) : "–"}</td>
+      <td>${p.status ? `<span class="pill ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${p.pre_hs2022 ? `<div class="fact">pre-HS 2022</div>` : ""}</td>
+      <td>${esc(p.subject)}<div class="fact">${esc(p.fact)}</div></td></tr>`).join("");
+  $("precedents").className = "";
+  $("precedents").innerHTML = `<table><tr><th>Ruling</th><th>Match</th><th>Code</th><th>Zetaris</th><th>Product</th></tr>${rows}</table>`;
+  $("memory").textContent = (v.memory || []).length
+    ? v.memory.map((m) => `${m.memory_id} → ${fmt(m.code)} (${m.broker}, relevance ${m.relevance})`).join("\n")
+    : "no broker decision recalled";
+}
+
+async function classify() {
+  $("err").textContent = ""; $("go").disabled = $("reply").disabled = true;
+  $("verdict").innerHTML = `<div class="empty">Searching precedents, checking liveness in Zetaris, asking Nemotron Ultra…</div>`;
+  try {
+    render(await api("/api/classify", {product: $("product").value, importer: $("importer").value, answers}));
+  } catch (e) { $("err").textContent = e.message; }
+  $("go").disabled = $("reply").disabled = false;
+}
+
+$("go").onclick = () => { answers = []; classify(); };
+$("reply").onclick = () => { if ($("answer").value.trim()) { answers.push([$("qtext").textContent, $("answer").value.trim()]); $("answer").value = ""; classify(); } };
+$("sign").onclick = async () => {
+  try {
+    const r = await api("/api/confirm", {product: $("product").value, code: $("signcode").value, broker: $("broker").value, importer: $("importer").value});
+    $("memory").textContent = `${r.memory_id} stored: ${fmt(r.code)} signed off by ${$("broker").value}`;
+  } catch (e) { $("err").textContent = e.message; }
+};
+$("wipe").onclick = async () => { await api("/api/forget", {importer: $("importer").value}); $("memory").textContent = "memory wiped (ledger keeps the deletions)"; };
+$("rescreen").onclick = async () => {
+  try {
+    const r = await api("/api/rescreen");
+    $("release").textContent = `live release ${r.release?.name} · release_is_snapshot ${r.rule.valid_record} valid / ${r.rule.invalid_record} invalid · ${r.changed ? "CHANGED: re-screen catalogue" : "unchanged"}`;
+  } catch (e) { $("release").textContent = e.message; }
+};
+document.querySelectorAll(".samples a").forEach((a) => a.onclick = () => { $("product").value = a.dataset.s; });
+document.querySelectorAll("nav button").forEach((b) => b.onclick = async () => {
+  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x === b));
+  ["console", "evalView"].forEach((id) => $(id).classList.toggle("hide", id !== b.dataset.view));
+  if (b.dataset.view === "evalView") {
+    try {
+      const e = await api("/api/eval");
+      $("evalTitle").textContent = `Evaluation · ${e.split} · ${e.items} rulings`;
+      const pct = (x) => (100 * x).toFixed(1) + "%";
+      $("evalTable").className = "";
+      $("evalTable").innerHTML = `<table><tr><th>System</th><th>Coverage</th><th>Accuracy @10 (answered)</th><th>95% CI</th><th>@6</th><th>Stale-code rate</th></tr>` +
+        e.table.map((r) => `<tr class="${r.system === "precedent_gate" ? "gate" : ""}"><td>${r.system}</td><td class="n">${pct(r.coverage)}</td><td class="n">${pct(r.acc10_covered)}</td><td class="n">${pct(r.acc10_ci95[0])}–${pct(r.acc10_ci95[1])}</td><td class="n">${pct(r.acc6_covered)}</td><td class="n">${pct(r.stale_code_rate)}</td></tr>`).join("") + `</table>`;
+    } catch (err) { $("evalTable").textContent = err.message; }
+  }
+});
+status();
+</script>
+</body>
+</html>
