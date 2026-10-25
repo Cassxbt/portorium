@@ -16,6 +16,7 @@ from portorium.index import PrecedentIndex
 from portorium.liveness import Liveness
 from portorium.nightshift import Nightshift
 from portorium.nvidia import Nvidia
+from portorium.rulings import RulingTexts
 from portorium.zetaris import Zetaris
 
 ALL = "keyword_top1,ultra_zero_shot,lightning_zero_shot,retrieval_ultra,precedent_gate"
@@ -40,7 +41,7 @@ def main() -> int:
     s = settings()
     live = s.live
     zetaris, nvidia, nightshift = Zetaris(s, live), Nvidia(s, live), Nightshift(s, live, per_minute=35)
-    gate = PrecedentGate(PrecedentIndex(), nvidia, nightshift, Liveness.from_zetaris(zetaris))
+    gate = PrecedentGate(PrecedentIndex(), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live))
     items = load_items(args.split, args.sample)
     systems = set(args.systems.split(","))
     print(f"{args.split}: {len(items)} items, systems {sorted(systems)}", flush=True)

@@ -73,21 +73,6 @@ class Nightshift:
                 answer = self.chat(repair, model=model, max_tokens=max_tokens)
         raise NightshiftError(f"no valid JSON from {model}: {answer.content[:200]}")
 
-
-def _parse(content: str, required: dict[str, tuple | None]) -> dict | None:
-    text = content.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-    start, end = text.find("{"), text.rfind("}")
-    if start < 0 or end < start:
-        return None
-    try:
-        data = json.loads(text[start:end + 1])
-    except json.JSONDecodeError:
-        return None
-    for key, allowed in required.items():
-        if key not in data or (allowed is not None and data[key] not in allowed):
-            return None
-    return data
-
     def _post(self, body: dict) -> dict:
         headers = {"Authorization": f"Bearer {self.settings.nightshift_token}",
                    "meterless-app": APP, "meterless-scope": "user"}
@@ -106,3 +91,18 @@ def _parse(content: str, required: dict[str, tuple | None]) -> dict | None:
             if r.status_code not in RETRYABLE:
                 break
         raise NightshiftError(last)
+
+
+def _parse(content: str, required: dict[str, tuple | None]) -> dict | None:
+    text = content.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    start, end = text.find("{"), text.rfind("}")
+    if start < 0 or end < start:
+        return None
+    try:
+        data = json.loads(text[start:end + 1])
+    except json.JSONDecodeError:
+        return None
+    for key, allowed in required.items():
+        if key not in data or (allowed is not None and data[key] not in allowed):
+            return None
+    return data

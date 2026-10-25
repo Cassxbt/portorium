@@ -14,6 +14,7 @@ from .index import Precedent, PrecedentIndex
 from .liveness import LIVING, SPLIT, Liveness
 from .nightshift import ULTRA, Answer, Nightshift
 from .nvidia import Nvidia
+from .rulings import RulingTexts
 
 CLASSIFIED, REVIEW, REFUSE = "CLASSIFIED", "REVIEW", "REFUSE"
 MATCHES = ("full", "partial", "none")
@@ -25,6 +26,7 @@ For each precedent decide whether it describes the same product for tariff purpo
             form, function and use, and gender or age where garments depend on it
   "partial" similar, but one tariff-relevant fact differs or is unknown from the product description
   "none"    a different product
+A precedent without FACTS can be at most "partial".
 If a precedent cites several codes, give the code that applies to this product, else "none".
 Decide only from the facts given. Do not use your own knowledge of tariff numbers.
 If precedents with "full" or "partial" disagree, write the single question to the importer whose answer
@@ -64,16 +66,17 @@ class Verdict:
 
 class PrecedentGate:
     def __init__(self, index: PrecedentIndex, nvidia: Nvidia, nightshift: Nightshift, liveness: Liveness,
-                 model: str = ULTRA, top: int = 6):
+                 texts: RulingTexts | None = None, model: str = ULTRA, top: int = 6):
         self.index, self.nvidia, self.nightshift, self.liveness = index, nvidia, nightshift, liveness
-        self.model, self.top = model, top
+        self.texts, self.model, self.top = texts, model, top
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
-                 exclude: set[str] = frozenset(), facts: dict[str, str] | None = None) -> Verdict:
+                 exclude: set[str] = frozenset()) -> Verdict:
         precedents = self.index.search(self.nvidia, product, as_of, exclude=exclude)[: self.top]
         if not precedents:
             return Verdict(REFUSE, "NO_PRECEDENT_FOUND", None, [], dq=self.liveness.counts)
-        judged, question, answer = self._judge(product, precedents, answers, facts or {})
+        facts = {p.ruling_number: f for p in precedents if self.texts and (f := self.texts.facts(p.ruling_number))}
+        judged, question, answer = self._judge(product, precedents, answers, facts)
         return self._decide(judged, question, answer)
 
     def _judge(self, product: str, precedents: list[Precedent], answers,
@@ -91,6 +94,8 @@ class PrecedentGate:
         for p in precedents:
             row = by_number.get(p.ruling_number, {})
             match = row.get("match") if row.get("match") in MATCHES else "none"
+            if match == "full" and p.ruling_number not in facts:
+                match = "partial"
             code = str(row.get("code") or "").replace(".", "")
             code = code if code in p.codes else (p.codes[0] if match != "none" and len(p.codes) == 1 else None)
             judged.append(JudgedPrecedent(
