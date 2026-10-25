@@ -1,0 +1,1 @@
+The Wafer Stage is a machine orapparatus that positions a silicon wafer during metrology and exposure (printing circuit patterns onto thewafer). It is comprised of a large rectangular box-like structure containing a magnetic levitation base tosuspend and propel two integral wafer tables (aka chucks or wafer chucks) without physical contact.

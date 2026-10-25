@@ -1,0 +1,1 @@
+The wireless remotecontroller is used to remotely control some applications that are viewed on the SteamVR headset throughradio frequency (RF). Moreover, the GripVR controller is equipped with 6 buttons, including AB / XY,trigger, grip, system, joystick press + 1 joystick, and a thumb rest.

@@ -1,0 +1,1 @@
+The device consists of four female SMA connection ports, two on each side of ametal housing. The coupler is a passive Radio Frequency (RF) device that is designed to split or combine RFinput signals presented at a 90 degree difference in phase.

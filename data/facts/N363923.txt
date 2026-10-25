@@ -1,0 +1,1 @@
+The subject device consists of a microphone, internal audio processing circuitry, as well as ahaptic vibration motor enclosed within a plastic housing and attached to a wristband. The microphone isdesigned to detect ambient sound within the area. The sound is then converted, via the internal circuitry, intoa physical vibration felt by the user.

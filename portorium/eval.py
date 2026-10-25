@@ -20,6 +20,7 @@ from .gate import CLASSIFIED, PrecedentGate, Verdict
 from .index import PrecedentIndex
 from .leakage import extract_facts, strip_codes
 from .liveness import LIVING, Liveness
+from .rulings import stored_facts
 from .nightshift import LIGHTNING, ULTRA, Nightshift
 
 SUBJECT_PREFIX = re.compile(r"^\s*(the\s+)?(tariff\s+)?classification(,| and| of)?[^.]*?\b(of|on)\s+(an?\s+|the\s+)?", re.I)
@@ -51,12 +52,11 @@ def load_items(split: str, sample: int | None = None, seed: int = 20261025) -> l
     items = []
     for line in (DATA / "eval" / f"{split}.jsonl").open():
         m = json.loads(line)
-        path = DATA / "fulltext" / f"{m['ruling_number']}.json"
-        if not path.exists():
+        description = stored_facts(m["ruling_number"])
+        if description is None:
             continue
-        text = json.loads(path.read_text()).get("text") or ""
         subject = strip_codes(extract_facts(SUBJECT_PREFIX.sub("", m["subject"])) or SUBJECT_PREFIX.sub("", m["subject"]), [m["answer"]])
-        facts = strip_codes(extract_facts(text), [m["answer"]])[:1500]
+        facts = strip_codes(description, [m["answer"]])[:1500]
         items.append(Item(m["ruling_number"], m["ruling_date"], SPLIT_START[split], m["answer"], f"{subject}. {facts}",
                           {m["ruling_number"], *m["related"]}))
     if sample and sample < len(items):
