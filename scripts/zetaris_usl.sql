@@ -82,7 +82,7 @@ FROM portorium_files.ruling_code
 ;;
 REGISTER DQ code_in_schedule TABLE lightning.metastore.portorium.portorium.ruling_code AS hts10 IN (SELECT hts10 FROM lightning.metastore.portorium.portorium.hts_line)
 ;;
-REGISTER DQ parent_survives TABLE lightning.metastore.portorium.portorium.ruling_code AS substr(hts10, 1, 8) IN (SELECT code FROM lightning.metastore.portorium.portorium.hts_code)
+REGISTER DQ parent_survives TABLE lightning.metastore.portorium.portorium.ruling_code AS substr(hts10, 1, 8) IN (SELECT substr(code, 1, 8) FROM lightning.metastore.portorium.portorium.hts_code)
 ;;
 REGISTER DQ code_is_numeric TABLE lightning.metastore.portorium.portorium.ruling_code AS hts10 RLIKE '^[0-9]{10}$'
 ;;

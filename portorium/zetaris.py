@@ -28,7 +28,8 @@ class Zetaris:
 
     def query(self, sql: str, limit: int = 1000) -> list[dict]:
         """Run one statement (no trailing semicolon) and return rows as dicts of strings."""
-        request = {"sql": " ".join(sql.split()), "limit": limit}
+        # Keep line breaks: COMPILE USL needs each CREATE TABLE to start on a new line.
+        request = {"sql": "\n".join(line.strip() for line in sql.strip().splitlines()), "limit": limit}
         if not self.live:
             data = self.recorder.replay(request)
         else:
