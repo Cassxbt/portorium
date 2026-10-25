@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, field
 
 from .index import Precedent, PrecedentIndex
 from .liveness import LIVING, SPLIT, Liveness
+from .memory import BrokerMemory
 from .nightshift import ULTRA, Answer, Nightshift
 from .nvidia import Nvidia
 from .rulings import RulingTexts
@@ -59,6 +60,7 @@ class Verdict:
     question: str = ""
     receipts: list[dict] = field(default_factory=list)
     dq: dict = field(default_factory=dict)
+    memory: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -71,13 +73,14 @@ class PrecedentGate:
         self.texts, self.model, self.top = texts, model, top
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
-                 exclude: set[str] = frozenset()) -> Verdict:
+                 exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
         precedents = self.index.search(self.nvidia, product, as_of, exclude=exclude)[: self.top]
         if not precedents:
             return Verdict(REFUSE, "NO_PRECEDENT_FOUND", None, [], dq=self.liveness.counts)
         facts = {p.ruling_number: f for p in precedents if self.texts and (f := self.texts.facts(p.ruling_number))}
         judged, question, answer = self._judge(product, precedents, answers, facts)
-        return self._decide(judged, question, answer)
+        verdict = self._decide(judged, question, answer)
+        return apply_memory(verdict, product, memory, self.liveness) if memory else verdict
 
     def _judge(self, product: str, precedents: list[Precedent], answers,
                facts) -> tuple[list[JudgedPrecedent], str, Answer]:
@@ -127,6 +130,27 @@ class PrecedentGate:
         if full:
             return verdict(REFUSE, "STALE_PRECEDENT")
         return verdict(REFUSE, "NO_LIVING_PRECEDENT")
+
+
+def apply_memory(v: Verdict, product: str, memory: BrokerMemory, liveness: Liveness) -> Verdict:
+    """Broker memory (Meterless H-MEM) can settle a REVIEW or challenge a CLASSIFIED verdict.
+
+    It only ever chooses among codes that living precedents already support, so it cannot
+    introduce a code without a precedent.
+    """
+    recalls = [r for r in memory.recall(product) if liveness.status(r.code) == LIVING]
+    v.memory = [{"code": r.code, "memory_id": r.memory_id, "relevance": r.relevance, "broker": r.broker} for r in recalls]
+    if not recalls:
+        return v
+    remembered = {r.code for r in recalls}
+    if v.decision == CLASSIFIED and remembered - {v.code}:
+        v.decision, v.reason, v.code = REVIEW, "MEMORY_CONFLICT", None
+    elif v.decision == REVIEW and len(remembered) == 1:
+        candidates = {j.code for j in v.precedents if j.code and j.match in ("full", "partial") and j.status == LIVING}
+        code = next(iter(remembered))
+        if code in candidates:
+            v.decision, v.reason, v.code = CLASSIFIED, "BROKER_MEMORY", code
+    return v
 
 
 def verdict_json(v: Verdict) -> str:
