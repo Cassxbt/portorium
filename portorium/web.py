@@ -41,7 +41,7 @@ def _services() -> tuple[PrecedentGate, Zetaris]:
             zetaris = Zetaris(s, s.live)
             _state["zetaris"] = zetaris
             _state["gate"] = PrecedentGate(PrecedentIndex(), Nvidia(s, s.live), Nightshift(s, s.live),
-                                           Liveness.from_zetaris(zetaris), RulingTexts(s.live))
+                                           Liveness.from_zetaris(zetaris), RulingTexts(s.live), zetaris)
             _state["live"] = s.live
         return _state["gate"], _state["zetaris"]
 

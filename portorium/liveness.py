@@ -12,8 +12,9 @@ from dataclasses import dataclass, field
 
 from .zetaris import USL, Zetaris
 
-LIVING, SPLIT, REMOVED = "living", "split", "removed"
+LIVING, SPLIT, REMOVED, REVOKED = "living", "split", "removed", "revoked"
 RULES = ("code_in_schedule", "parent_survives")
+FAILED_RULE = {LIVING: None, SPLIT: "code_in_schedule", REMOVED: "parent_survives", REVOKED: "ruling_revoked"}
 
 
 class LivenessMismatch(RuntimeError):
@@ -46,8 +47,31 @@ class Liveness:
         return SPLIT if hts10[:8] in self.prefixes else REMOVED
 
     def rule_failed(self, hts10: str) -> str | None:
-        return {LIVING: None, SPLIT: "code_in_schedule", REMOVED: "parent_survives"}[self.status(hts10)]
+        return FAILED_RULE[self.status(hts10)]
 
     def successors(self, hts10: str) -> list[str]:
         """Current 10-digit lines under a split code's 8-digit line."""
-        return sorted(c for c in self.schedule if c[:8] == hts10[:8])
+        return sorted(c for c in self.schedule if c[:8] == hts10[:8] and c != hts10)
+
+
+def precedent_rows(zetaris: Zetaris, ruling_numbers: list[str]) -> dict[str, dict]:
+    """Per decision, from Zetaris: each precedent's date, revocation flag and the liveness of its codes.
+
+    The CASE mirrors the registered rules (code_in_schedule, parent_survives), which Liveness
+    cross-checks against the rules' own invalid records at load.
+    """
+    if not ruling_numbers:
+        return {}
+    ids = ", ".join("'" + n.replace("'", "") + "'" for n in ruling_numbers)
+    rows = zetaris.query(f"""SELECT r.ruling_number, r.ruling_date, r.revoked, c.hts10,
+        CASE WHEN h.hts10 IS NOT NULL THEN '{LIVING}'
+             WHEN substr(c.hts10, 1, 8) IN (SELECT substr(code, 1, 8) FROM {USL}.hts_code) THEN '{SPLIT}'
+             ELSE '{REMOVED}' END AS status
+        FROM {USL}.ruling r JOIN {USL}.ruling_code c ON c.ruling_number = r.ruling_number
+        LEFT JOIN {USL}.hts_line h ON h.hts10 = c.hts10
+        WHERE r.ruling_number IN ({ids})""", limit=1000)
+    out: dict[str, dict] = {}
+    for r in rows:
+        entry = out.setdefault(r["ruling_number"], {"date": r["ruling_date"], "revoked": r["revoked"] == "true", "codes": {}})
+        entry["codes"][r["hts10"]] = r["status"]
+    return out

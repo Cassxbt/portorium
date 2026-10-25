@@ -28,7 +28,7 @@ def build_gate() -> tuple[PrecedentGate, Zetaris]:
     s = settings()
     zetaris = Zetaris(s, s.live)
     gate = PrecedentGate(PrecedentIndex(), Nvidia(s, s.live), Nightshift(s, s.live),
-                         Liveness.from_zetaris(zetaris), RulingTexts(s.live))
+                         Liveness.from_zetaris(zetaris), RulingTexts(s.live), zetaris)
     return gate, zetaris
 
 

@@ -3,7 +3,7 @@
 Numbered checks, decided in code. The model only judges whether a precedent describes the same
 product; it never chooses a code from memory.
   1 retrieve   Nemotron Embed + Rerank over CBP rulings issued before `as_of`
-  2 living     Zetaris: code_in_schedule / parent_survives against HTS 2026 Rev 21
+  2 living     Zetaris, per decision: ruling not revoked; code_in_schedule / parent_survives (HTS 2026 Rev 21)
   3 same       Nemotron Ultra via Nightshift: full | partial | none, on product facts only
   4 decide     CLASSIFIED only when every living full-match precedent agrees at 10 digits
 
@@ -15,11 +15,12 @@ import re
 from dataclasses import asdict, dataclass, field
 
 from .index import Precedent, PrecedentIndex
-from .liveness import LIVING, SPLIT, Liveness
+from .liveness import FAILED_RULE, LIVING, REVOKED, SPLIT, Liveness, precedent_rows
 from .memory import BrokerMemory
 from .nightshift import ULTRA, Answer, Nightshift
 from .nvidia import Nvidia
 from .rulings import RulingTexts
+from .zetaris import Zetaris
 
 CLASSIFIED, REVIEW, REFUSE = "CLASSIFIED", "REVIEW", "REFUSE"
 MATCHES = ("full", "partial", "none")
@@ -84,9 +85,9 @@ def _key(value) -> str:
 
 class PrecedentGate:
     def __init__(self, index: PrecedentIndex, nvidia: Nvidia, nightshift: Nightshift, liveness: Liveness,
-                 texts: RulingTexts | None = None, model: str = ULTRA, top: int = 6):
+                 texts: RulingTexts | None = None, zetaris: Zetaris | None = None, model: str = ULTRA, top: int = 6):
         self.index, self.nvidia, self.nightshift, self.liveness = index, nvidia, nightshift, liveness
-        self.texts, self.model, self.top = texts, model, top
+        self.texts, self.zetaris, self.model, self.top = texts, zetaris, model, top
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
                  exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
@@ -99,11 +100,13 @@ class PrecedentGate:
                 facts[entry.ruling_number] = recall.content
         if not precedents:
             return Verdict(REFUSE, "NO_PRECEDENT_FOUND", None, [], dq=self.liveness.counts)
-        judged, question, answer = self.judge(product, precedents, answers, facts)
+        rows = precedent_rows(self.zetaris, [p.ruling_number for p in precedents if not p.ruling_number.startswith("MEM:")]) \
+            if self.zetaris else {}
+        judged, question, answer = self.judge(product, precedents, answers, facts, rows)
         return self.decide(judged, question, answer)
 
-    def judge(self, product: str, precedents: list[Precedent], answers,
-              facts: dict[str, str]) -> tuple[list[JudgedPrecedent], str, Answer]:
+    def judge(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str],
+              rows: dict[str, dict] | None = None) -> tuple[list[JudgedPrecedent], str, Answer]:
         lines = [f"PRODUCT: {product}"]
         lines += [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
         for p in precedents:
@@ -114,9 +117,10 @@ class PrecedentGate:
                          f"CODES: {codes}.{detail}")
         messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": "\n".join(lines)}]
         data, answer = self.nightshift.chat_json(messages, {"precedents": None, "question": None}, model=self.model)
-        rows = [row for row in data["precedents"] if isinstance(row, dict)]
-        return [self._judged(p, self._row_for(p, rows), p.ruling_number in facts) for p in precedents], \
-            str(data.get("question") or ""), answer
+        judged_rows = [row for row in data["precedents"] if isinstance(row, dict)]
+        zetaris_rows = rows or {}
+        return [self._judged(p, self._row_for(p, judged_rows), p.ruling_number in facts, zetaris_rows.get(p.ruling_number))
+                for p in precedents], str(data.get("question") or ""), answer
 
     @staticmethod
     def _row_for(p: Precedent, rows: list[dict]) -> dict:
@@ -128,7 +132,7 @@ class PrecedentGate:
                 return row
         return {}
 
-    def _judged(self, p: Precedent, row: dict, has_facts: bool) -> JudgedPrecedent:
+    def _judged(self, p: Precedent, row: dict, has_facts: bool, zetaris_row: dict | None = None) -> JudgedPrecedent:
         match = row.get("match") if row.get("match") in MATCHES else "none"
         if match == "full" and not has_facts:
             match = "partial"
@@ -140,13 +144,18 @@ class PrecedentGate:
             else:
                 unresolved = match != "none"
                 code = None
-        status = self.liveness.status(code) if code else None
+        status = failed = None
+        if code:
+            status = self.liveness.status(code)
+            if zetaris_row is not None:
+                status = REVOKED if zetaris_row["revoked"] else zetaris_row["codes"].get(code, status)
+            failed = FAILED_RULE[status]
         kind = MEMORY if p.ruling_number.startswith("MEM:") else RULING
         return JudgedPrecedent(
             p.ruling_number, p.ruling_date, p.subject, p.codes, match, code,
-            str(row.get("fact") or ("not judged" if not row else "")), status,
-            self.liveness.rule_failed(code) if code else None, bool(p.ruling_date) and p.ruling_date < HS2022,
-            kind, unresolved, self.liveness.successors(code) if status == SPLIT else [])
+            str(row.get("fact") or ("not judged" if not row else "")), status, failed,
+            bool(p.ruling_date) and p.ruling_date < HS2022, kind, unresolved,
+            self.liveness.successors(code) if status == SPLIT else [])
 
     def decide(self, judged: list[JudgedPrecedent], question: str, answer: Answer) -> Verdict:
         receipt = {"routed_model": answer.routed_model, "receipt_id": answer.receipt.get("receipt_id"),

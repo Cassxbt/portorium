@@ -103,3 +103,21 @@ def test_full_without_facts_is_downgraded_to_partial():
     p = Precedent("N111111", "2024-01-01", "sweater", ["6110202079"], [])
     j = judge([{"ruling": "N111111", "match": "full", "code": "6110202079", "fact": "x"}], [p], facts={})[0]
     assert j.match == "partial"
+
+
+def test_a_revoked_ruling_reported_by_zetaris_cannot_classify():
+    p = Precedent("N222222", "2024-01-01", "sweater", ["6110202079"], [])
+    rows = {"N222222": {"date": "2024-01-01", "revoked": True, "codes": {"6110202079": LIVING}}}
+    gate = PrecedentGate(None, None, FakeNightshift([{"ruling": "N222222", "match": "full", "code": "6110202079"}]), LIVE)
+    j = gate.judge("product", [p], [], {"N222222": "facts"}, rows)[0][0]
+    assert (j.status, j.failed_rule) == ("revoked", "ruling_revoked")
+    assert decide(j).decision == REFUSE
+
+
+def test_zetaris_status_per_decision_overrides_the_startup_snapshot():
+    p = Precedent("N333333", "2024-01-01", "sweater", ["6110202079"], [])
+    rows = {"N333333": {"date": "2024-01-01", "revoked": False, "codes": {"6110202079": SPLIT}}}
+    gate = PrecedentGate(None, None, FakeNightshift([{"ruling": "N333333", "match": "full", "code": "6110202079"}]), LIVE)
+    j = gate.judge("product", [p], [], {"N333333": "facts"}, rows)[0][0]
+    assert (j.status, j.failed_rule) == (SPLIT, "code_in_schedule")
+    assert j.successors == ["6110202075"]

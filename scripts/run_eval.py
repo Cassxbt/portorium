@@ -41,7 +41,7 @@ def main() -> int:
     s = settings()
     live = s.live
     zetaris, nvidia, nightshift = Zetaris(s, live), Nvidia(s, live), Nightshift(s, live)
-    gate = PrecedentGate(PrecedentIndex(), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live))
+    gate = PrecedentGate(PrecedentIndex(), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live), zetaris)
     items = load_items(args.split, args.sample)
     systems = set(args.systems.split(","))
     print(f"{args.split}: {len(items)} items, systems {sorted(systems)}", flush=True)
