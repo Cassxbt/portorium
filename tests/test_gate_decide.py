@@ -121,3 +121,13 @@ def test_zetaris_status_per_decision_overrides_the_startup_snapshot():
     j = gate.judge("product", [p], [], {"N333333": "facts"}, rows)[0][0]
     assert (j.status, j.failed_rule) == (SPLIT, "code_in_schedule")
     assert j.successors == ["6110202075"]
+
+
+def test_old_precedent_rule_needs_a_recent_or_a_second_agreeing_precedent():
+    old = JudgedPrecedent("N1", "2015-01-01", "s", ["6110202079"], "full", "6110202079", "f", LIVING, pre_hs2022=True)
+    recent = JudgedPrecedent("N2", "2023-01-01", "s", ["6110202079"], "full", "6110202079", "f", LIVING)
+    gate = PrecedentGate(None, None, None, LIVE, old_precedent_rule=True)
+    receipt = Answer("{}", {})
+    assert gate.decide([old], "", receipt).reason == "OLD_PRECEDENT_ONLY"
+    assert gate.decide([old, recent], "", receipt).decision == CLASSIFIED
+    assert gate.decide([old, JudgedPrecedent(**{**vars(old), "ruling_number": "N3"})], "", receipt).decision == CLASSIFIED

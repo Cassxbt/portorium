@@ -86,9 +86,12 @@ def _key(value) -> str:
 
 class PrecedentGate:
     def __init__(self, index: PrecedentIndex, nvidia: Nvidia, nightshift: Nightshift, liveness: Liveness,
-                 texts: RulingTexts | None = None, zetaris: Zetaris | None = None, model: str = ULTRA, top: int = 6):
+                 texts: RulingTexts | None = None, zetaris: Zetaris | None = None, model: str = ULTRA, top: int = 6,
+                 old_precedent_rule: bool = False):
+        """old_precedent_rule: a lone precedent from before HS 2022 cannot classify on its own."""
         self.index, self.nvidia, self.nightshift, self.liveness = index, nvidia, nightshift, liveness
         self.texts, self.zetaris, self.model, self.top = texts, zetaris, model, top
+        self.old_precedent_rule = old_precedent_rule
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
                  exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
@@ -186,6 +189,8 @@ class PrecedentGate:
             code = codes.pop()
             if broker_codes - {code}:
                 return verdict(REVIEW, "MEMORY_CONFLICT", ask=question)
+            if self.old_precedent_rule and len(living_full) < 2 and all(j.pre_hs2022 for j in living_full):
+                return verdict(REVIEW, "OLD_PRECEDENT_ONLY", ask=question)
             return verdict(CLASSIFIED, "LIVING_PRECEDENT_AGREES", code)
         if len(broker_codes) == 1 and next(iter(broker_codes)) in candidates:
             return verdict(CLASSIFIED, "BROKER_MEMORY", next(iter(broker_codes)))
