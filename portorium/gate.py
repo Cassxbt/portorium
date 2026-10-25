@@ -70,6 +70,7 @@ class Verdict:
     question: str = ""
     receipts: list[dict] = field(default_factory=list)
     dq: dict = field(default_factory=dict)
+    remembered: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -98,17 +99,22 @@ class PrecedentGate:
                 entry = Precedent(f"MEM:{recall.memory_id}", "", f"broker {recall.broker}", [recall.code], [])
                 precedents.append(entry)
                 facts[entry.ruling_number] = recall.content
+        remembered = memory.recall_answers(product) if memory else []
         if not precedents:
             return Verdict(REFUSE, "NO_PRECEDENT_FOUND", None, [], dq=self.liveness.counts)
         rows = precedent_rows(self.zetaris, [p.ruling_number for p in precedents if not p.ruling_number.startswith("MEM:")]) \
             if self.zetaris else {}
-        judged, question, answer = self.judge(product, precedents, answers, facts, rows)
-        return self.decide(judged, question, answer)
+        judged, question, answer = self.judge(product, precedents, answers, facts, rows, remembered)
+        verdict = self.decide(judged, question, answer)
+        verdict.remembered = [{"question": q, "answer": a, "memory_id": m} for q, a, m in remembered]
+        return verdict
 
     def judge(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str],
-              rows: dict[str, dict] | None = None) -> tuple[list[JudgedPrecedent], str, Answer]:
+              rows: dict[str, dict] | None = None, remembered=()) -> tuple[list[JudgedPrecedent], str, Answer]:
         lines = [f"PRODUCT: {product}"]
         lines += [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
+        lines += [f"IMPORTER ANSWERED EARLIER for a similar product (memory {m}; use only if it applies): {q} -> {a}"
+                  for q, a, m in remembered]
         for p in precedents:
             codes = ", ".join(f"{c[:4]}.{c[4:6]}.{c[6:]}" for c in p.codes)
             label = "BROKER" if p.ruling_number.startswith("MEM:") else "PRECEDENT"

@@ -44,6 +44,8 @@ def show(v: Verdict) -> None:
               f"{(j.status or ''):7s}{flag}  {j.fact[:70]}")
         if j.successors:
             print(f"      now split into: {', '.join(fmt(c) for c in j.successors[:6])}")
+    for m in v.remembered:
+        print(f"  remembered {m['memory_id']}: {m['question']} -> {m['answer']}")
     for r in v.receipts:
         print(f"  receipt {r.get('receipt_id')}  routed_model={r.get('routed_model')}  from_cache={r.get('from_cache')}")
 
@@ -65,6 +67,7 @@ def classify(args) -> int:
         if not reply:
             return 2
         answers.append((v.question, reply))
+        memory.remember_answer(args.product, v.question, reply)
 
 
 def confirm(args) -> int:

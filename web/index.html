@@ -137,7 +137,7 @@
           </div>
           <div>
             <h2>Broker memory · Meterless H-MEM</h2>
-            <p id="memory" class="mono">–</p>
+            <p id="memory" class="mono" style="white-space:pre-wrap">–</p>
             <button class="act ghost" id="wipe">Wipe memory</button>
           </div>
         </div>
@@ -192,10 +192,10 @@ function render(v) {
       <td>${esc(p.subject)}<div class="fact">${esc(p.fact)}</div></td></tr>`).join("");
   $("precedents").className = "";
   $("precedents").innerHTML = `<table><tr><th>Ruling</th><th>Match</th><th>Code</th><th>Zetaris</th><th>Product</th></tr>${rows}</table>`;
-  const recalled = (v.precedents || []).filter((p) => p.kind === "memory");
-  $("memory").textContent = recalled.length
-    ? recalled.map((m) => `${m.ruling_number.slice(4)} → ${fmt(m.codes[0])} judged ${m.match}`).join("\n")
-    : "no broker decision recalled";
+  const recalled = (v.precedents || []).filter((p) => p.kind === "memory")
+    .map((m) => `${m.ruling_number.slice(4)} → ${fmt(m.codes[0])} judged ${m.match}`);
+  const answered = (v.remembered || []).map((m) => `${m.memory_id}: ${m.question} → ${m.answer}`);
+  $("memory").textContent = [...recalled, ...answered].join("\n") || "nothing recalled";
 }
 
 async function classify() {

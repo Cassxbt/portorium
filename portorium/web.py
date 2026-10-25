@@ -74,7 +74,10 @@ def classify(req: ClassifyRequest) -> dict:
     gate, zetaris = _services()
     as_of = req.as_of or datetime.date.today().isoformat()
     try:
-        verdict = gate.classify(req.product, as_of, answers=req.answers, memory=_memory(req.importer))
+        memory = _memory(req.importer)
+        if req.answers:
+            memory.remember_answer(req.product, *req.answers[-1])
+        verdict = gate.classify(req.product, as_of, answers=req.answers, memory=memory)
         audit.record(zetaris, verdict, req.product, req.importer)
     except MissingRecording as e:
         raise HTTPException(409, f"Sample mode has no recording for this input. {e}") from e

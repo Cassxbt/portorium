@@ -39,12 +39,36 @@ class BrokerMemory:
         self._save()
         return memory.id
 
+    def remember_answer(self, product: str, question: str, answer: str) -> str:
+        """An importer's answer to the gate's question, a product fact reused for similar products."""
+        content = f"Importer answered for {product}: {question} -> {answer}"
+        memory = self.engine.add(content=content, source="importer", type="factual", layer="long_term",
+                                 confidence=0.8, tags=["answer", f"q:{question}", f"a:{answer}"],
+                                 provenance={"origin": "user_answer", "label": "importer answer to gate question"})
+        self._save()
+        return memory.id
+
+    def recall_answers(self, product: str) -> list[tuple[str, str, str]]:
+        """(question, answer, memory id) for remembered answers about similar products."""
+        result = self.engine.query(product, threshold=THRESHOLD)
+        self._save()
+        out = []
+        for hit in result["memories"]:
+            m = hit["memory"]
+            if "answer" in m.tags:
+                q = next((t[2:] for t in m.tags if t.startswith("q:")), "")
+                a = next((t[2:] for t in m.tags if t.startswith("a:")), "")
+                out.append((q, a, m.id))
+        return out
+
     def recall(self, product: str) -> list[Recall]:
         result = self.engine.query(product, threshold=THRESHOLD)
         self._save()
         recalls = []
         for hit in result["memories"]:
             m = hit["memory"]
+            if "answer" in m.tags:
+                continue
             code = next((t[4:] for t in m.tags if t.startswith("hts:")), None)
             broker = next((t[7:] for t in m.tags if t.startswith("broker:")), "")
             if code:
