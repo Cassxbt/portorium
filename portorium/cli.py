@@ -10,6 +10,7 @@ import datetime
 import json
 import sys
 
+from . import audit
 from .config import DATA, settings
 from .gate import CLASSIFIED, REVIEW, PrecedentGate, Verdict
 from .index import PrecedentIndex
@@ -48,11 +49,12 @@ def show(v: Verdict) -> None:
 
 
 def classify(args) -> int:
-    gate, _ = build_gate()
+    gate, zetaris = build_gate()
     memory = BrokerMemory(MEMORY / f"{args.importer}.json")
     answers: list[tuple[str, str]] = []
     while True:
         v = gate.classify(args.product, args.as_of, answers=answers, memory=memory)
+        audit.record(zetaris, v, args.product, args.importer)
         if args.json:
             print(json.dumps(v.to_dict(), indent=1))
             return 0
@@ -79,16 +81,14 @@ def forget(args) -> int:
 
 
 def rescreen(args) -> int:
-    """Zetaris checks the live USITC revision against the snapshot the verdicts were made on."""
+    """Zetaris re-checks the live USITC release and every past CLASSIFIED verdict."""
     s = settings()
-    z = Zetaris(s, s.live)
-    result = z.run_dq("release_is_snapshot", "hts_release")
-    release = z.query("SELECT name, description FROM lightning.metastore.portorium.portorium.hts_release")
-    changed = result["invalid_record"] != "0"
-    print(f"live HTS release: {release[0]['name'] if release else 'unknown'}; "
-          f"rule release_is_snapshot: {result['valid_record']} valid / {result['invalid_record']} invalid")
-    print("schedule changed: re-screen the catalogue" if changed else "schedule unchanged: verdicts stand")
-    return 3 if changed else 0
+    r = audit.rescreen(Zetaris(s, s.live))
+    print(f"live HTS release {r['release']} ({'CHANGED' if r['release_changed'] else 'unchanged'}); "
+          f"{r['verdicts_checked']} verdicts checked, {len(r['stale_verdicts'])} classified with a code no longer in the schedule")
+    for v in r["stale_verdicts"]:
+        print(f"  {v['verdict_id']}  {fmt(v['code'])}  {v['recorded_at']}  {v['product'][:60]}")
+    return 3 if r["release_changed"] or r["stale_verdicts"] else 0
 
 
 def main(argv: list[str] | None = None) -> int:

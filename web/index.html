@@ -132,7 +132,7 @@
         <div class="panel">
           <div>
             <h2>Schedule watch · Zetaris</h2>
-            <p class="mono" id="release">–</p>
+            <p class="mono" id="release" style="white-space:pre-wrap">–</p>
             <button class="act ghost" id="rescreen">Check revision</button>
           </div>
           <div>
@@ -219,7 +219,9 @@ $("wipe").onclick = async () => { await api("/api/forget", {importer: $("importe
 $("rescreen").onclick = async () => {
   try {
     const r = await api("/api/rescreen");
-    $("release").textContent = `live release ${r.release?.name} · release_is_snapshot ${r.rule.valid_record} valid / ${r.rule.invalid_record} invalid · ${r.changed ? "CHANGED: re-screen catalogue" : "unchanged"}`;
+    const stale = r.stale_verdicts.map((v) => `\n  ${fmt(v.code)} · ${v.recorded_at} · ${v.product.slice(0, 48)}`).join("");
+    $("release").textContent = `live release ${r.release} · ${r.release_changed ? "CHANGED" : "unchanged"}\n` +
+      `classified_code_living: ${r.verdicts_checked} verdicts checked, ${r.stale_verdicts.length} no longer valid${stale}`;
   } catch (e) { $("release").textContent = e.message; }
 };
 document.querySelectorAll(".samples a").forEach((a) => a.onclick = () => { $("product").value = a.dataset.s; });

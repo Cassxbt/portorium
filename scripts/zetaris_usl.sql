@@ -95,3 +95,31 @@ REGISTER DQ rate_resolved TABLE lightning.metastore.portorium.portorium.hts_line
 REGISTER DQ release_is_snapshot TABLE lightning.metastore.portorium.portorium.hts_release AS name = '2026HTSRev21'
 ;;
 LIST DQ USL lightning.metastore.portorium.portorium
+;;
+-- Verdict audit: every live verdict is written back to Zetaris, and a DQ rule re-checks past
+-- CLASSIFIED verdicts against the current schedule. Create the folder first with a header part:
+--   customer-data/shared/portorium/verdict_log/part-00000.csv
+CREATE LIGHTNING FILESTORE TABLE verdict_log FROM portorium_files FORMAT CSV OPTIONS (path "file:///home/zetaris/customer-data/shared/portorium/verdict_log", header "true", inferSchema "false")
+;;
+COMPILE USL IF NOT EXISTS audit DEPLOY NAMESPACE lightning.metastore.portorium DDL
+CREATE TABLE verdict_log (
+  verdict_id varchar(40) NOT NULL PRIMARY KEY,
+  recorded_at varchar(30),
+  importer varchar(80),
+  product varchar(2000),
+  decision varchar(12),
+  reason varchar(40),
+  code varchar(10),
+  hts_release varchar(40),
+  routed_model varchar(80),
+  receipt_id varchar(80)
+)
+;;
+ACTIVATE USL TABLE lightning.metastore.portorium.audit.verdict_log AS
+SELECT COALESCE(verdict_id, '') AS verdict_id, recorded_at, importer, product, decision, reason, code, hts_release,
+       routed_model, receipt_id
+FROM portorium_files.verdict_log
+;;
+REGISTER DQ classified_code_living TABLE lightning.metastore.portorium.audit.verdict_log AS decision <> 'CLASSIFIED' OR code IN (SELECT hts10 FROM lightning.metastore.portorium.portorium.hts_line)
+;;
+REGISTER DQ classified_has_receipt TABLE lightning.metastore.portorium.audit.verdict_log AS decision <> 'CLASSIFIED' OR length(trim(receipt_id)) > 0

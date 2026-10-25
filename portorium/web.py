@@ -16,6 +16,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
+from . import audit
 from .config import DATA, ROOT, settings
 from .gate import PrecedentGate
 from .index import PrecedentIndex
@@ -25,7 +26,7 @@ from .nightshift import Nightshift, NightshiftError
 from .nvidia import Nvidia, NvidiaError
 from .recorder import MissingRecording
 from .rulings import RulingTexts
-from .zetaris import USL, Zetaris, ZetarisError
+from .zetaris import Zetaris, ZetarisError
 
 STATIC = ROOT / "web"
 app = FastAPI(title="Portorium")
@@ -70,10 +71,11 @@ class ForgetRequest(BaseModel):
 
 @app.post("/api/classify")
 def classify(req: ClassifyRequest) -> dict:
-    gate, _ = _services()
+    gate, zetaris = _services()
     as_of = req.as_of or datetime.date.today().isoformat()
     try:
         verdict = gate.classify(req.product, as_of, answers=req.answers, memory=_memory(req.importer))
+        audit.record(zetaris, verdict, req.product, req.importer)
     except MissingRecording as e:
         raise HTTPException(409, f"Sample mode has no recording for this input. {e}") from e
     except (NightshiftError, NvidiaError, ZetarisError) as e:
@@ -99,9 +101,7 @@ def forget(req: ForgetRequest) -> dict:
 @app.get("/api/rescreen")
 def rescreen() -> dict:
     _, zetaris = _services()
-    result = zetaris.run_dq("release_is_snapshot", "hts_release")
-    release = zetaris.query(f"SELECT name, description FROM {USL}.hts_release")
-    return {"release": release[0] if release else None, "rule": result, "changed": result["invalid_record"] != "0"}
+    return audit.rescreen(zetaris)
 
 
 @app.get("/api/eval")
