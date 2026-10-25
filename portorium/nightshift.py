@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import httpx
 
 from .config import Settings
-from .pacing import BACKOFF_SECONDS, Pacer
+from .pacing import BACKOFF_SECONDS, NVIDIA_KEY
 from .recorder import Recorder
 
 APP = "portorium"
@@ -37,10 +37,10 @@ class Answer:
 
 
 class Nightshift:
-    def __init__(self, settings: Settings, live: bool, per_minute: int = 30):
+    def __init__(self, settings: Settings, live: bool):
         self.settings = settings
         self.live = live
-        self.pacer = Pacer(per_minute)
+        self.pacer = NVIDIA_KEY
         self.recorder = Recorder("nightshift")
         self._http = httpx.Client(timeout=320)
 

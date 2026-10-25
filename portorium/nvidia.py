@@ -9,7 +9,7 @@ import httpx
 import numpy as np
 
 from .config import Settings
-from .pacing import BACKOFF_SECONDS, Pacer
+from .pacing import BACKOFF_SECONDS, NVIDIA_KEY
 from .recorder import Recorder
 
 EMBED_MODEL = "nvidia/nemotron-3.5-embed-1b"
@@ -24,10 +24,10 @@ class NvidiaError(RuntimeError):
 
 
 class Nvidia:
-    def __init__(self, settings: Settings, live: bool, per_minute: int = 35):
+    def __init__(self, settings: Settings, live: bool):
         self.settings = settings
         self.live = live
-        self.pacer = Pacer(per_minute)
+        self.pacer = NVIDIA_KEY
         self.recorder = Recorder("nvidia")
         self._http = httpx.Client(timeout=120)
 

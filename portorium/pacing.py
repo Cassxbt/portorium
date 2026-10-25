@@ -20,3 +20,8 @@ class Pacer:
 
 # Backoff for transient failures; the NVIDIA free-tier cap resets each minute, so the tail reaches past 60 s.
 BACKOFF_SECONDS = (2, 5, 15, 30, 65)
+
+
+# Nightshift's NVIDIA lanes and the direct embed/rerank calls spend the same NVIDIA key, whose
+# per-minute cap applies to their sum, so every caller shares one pacer.
+NVIDIA_KEY = Pacer(per_minute=36)
