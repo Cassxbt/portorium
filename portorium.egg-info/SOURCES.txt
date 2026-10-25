@@ -1,7 +1,0 @@
-pyproject.toml
-portorium/__init__.py
-portorium.egg-info/PKG-INFO
-portorium.egg-info/SOURCES.txt
-portorium.egg-info/dependency_links.txt
-portorium.egg-info/requires.txt
-portorium.egg-info/top_level.txt
