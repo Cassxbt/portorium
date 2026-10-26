@@ -1,7 +1,7 @@
 """Evaluation: the Precedent Gate against baselines on CBP rulings issued after the model cutoff.
 
 Every system sees the same input: the ruling's product description with every code-like string and
-the answer's own digits removed (leakage.py). Precedent search is "as of" the ruling date and excludes
+the answer's own digits removed (leakage.py). Precedent search is "as of" the split start and excludes
 the ruling itself and any ruling it relates to.
 """
 import json
@@ -9,12 +9,14 @@ import math
 import random
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import nullcontext
 from dataclasses import asdict
 from pathlib import Path
 from dataclasses import dataclass, field
 
 import numpy as np
 
+from . import trace
 from .config import DATA
 from .gate import CLASSIFIED, PrecedentGate, Verdict
 from .index import PrecedentIndex
@@ -137,7 +139,7 @@ class KeywordIndex:
 
 
 def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int = 2,
-        checkpoint: Path | None = None) -> list[Prediction]:
+        checkpoint: Path | None = None, tracer: trace.Trace | None = None) -> list[Prediction]:
     """Predictions for every item; with a checkpoint file, finished items are kept and skipped on restart."""
     ns = gate.nightshift
     keyword = KeywordIndex(gate.index) if "keyword_top1" in systems else None
@@ -150,13 +152,17 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
 
     def one(item: Item, names: set[str]) -> list[Prediction]:
         out = []
-        for name, step in steps:
-            if name not in names:
-                continue
-            try:
-                out.extend(step(item))
-            except Exception as e:
-                out.append(Prediction("error", item.ruling_number, None, {"system": name, "error": f"{type(e).__name__}: {e}"[:300]}))
+        with tracer.bind(item.ruling_number) if tracer else nullcontext():
+            for name, step in steps:
+                if name not in names:
+                    continue
+                with trace.role(name):
+                    try:
+                        out.extend(step(item))
+                    except Exception as e:
+                        error = f"{type(e).__name__}: {e}"[:300]
+                        trace.event("error", item.ruling_number, f"{error}; retried when the run resumes", status="error")
+                        out.append(Prediction("error", item.ruling_number, None, {"system": name, "error": error}))
         return out
 
     predictions = []

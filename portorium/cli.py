@@ -11,8 +11,8 @@ import json
 import sys
 from pathlib import Path
 
-from . import audit
-from .config import DATA, settings
+from . import audit, trace
+from .config import DATA, ROOT, settings
 from .gate import CLASSIFIED, REVIEW, PrecedentGate, Verdict
 from .index import PrecedentIndex
 from .liveness import Liveness
@@ -29,8 +29,9 @@ MEMORY = DATA / "memory"
 def build_gate() -> tuple[PrecedentGate, Zetaris]:
     s = settings()
     zetaris = Zetaris(s, s.live)
-    gate = PrecedentGate(PrecedentIndex(), Nvidia(s, s.live), Nightshift(s, s.live),
-                         Liveness.from_zetaris(zetaris), RulingTexts(s.live), zetaris)
+    with trace.role("Auditor"):
+        liveness = Liveness.from_zetaris(zetaris)
+    gate = PrecedentGate(PrecedentIndex(), Nvidia(s, s.live), Nightshift(s, s.live), liveness, RulingTexts(s.live), zetaris)
     return gate, zetaris
 
 
@@ -58,7 +59,8 @@ def classify(args) -> int:
     answers: list[tuple[str, str]] = []
     while True:
         v = gate.classify(args.product, args.as_of, answers=answers, memory=memory)
-        audit.record(zetaris, v, args.product, args.importer)
+        with trace.role("Ledger"):
+            audit.record(zetaris, v, args.product, args.importer)
         if args.json:
             print(json.dumps(v.to_dict(), indent=1))
             return 0
@@ -69,7 +71,9 @@ def classify(args) -> int:
         if not reply:
             return 2
         answers.append((v.question, reply))
-        memory.remember_answer(args.product, v.question, reply)
+        with trace.role("Importer"):
+            trace.event("answer", v.question, reply, target_agent="Adjudicator", retry_count=len(answers), status="feedback")
+            memory.remember_answer(args.product, v.question, reply)
 
 
 def confirm(args) -> int:
@@ -78,13 +82,16 @@ def confirm(args) -> int:
         print("code must be 10 digits, e.g. 6110.20.2079")
         return 1
     memory = BrokerMemory(MEMORY / f"{Path(args.importer).name}.json")
-    memory_id = memory.remember(args.product, code, broker=args.broker, note=args.note)
+    with trace.role("Broker"):
+        trace.event("sign_off", args.product, f"HTS {code} signed off by {args.broker}", target_agent="Memory")
+        memory_id = memory.remember(args.product, code, broker=args.broker, note=args.note)
     print(f"remembered {memory_id}: {fmt(args.code.replace('.', ''))} signed off by {args.broker}")
     return 0
 
 
 def forget(args) -> int:
-    BrokerMemory(MEMORY / f"{Path(args.importer).name}.json").forget_all(reason="broker requested wipe")
+    with trace.role("Broker"):
+        BrokerMemory(MEMORY / f"{Path(args.importer).name}.json").forget_all(reason="broker requested wipe")
     print(f"memory for {args.importer} wiped (ledger keeps the deletions)")
     return 0
 
@@ -92,7 +99,8 @@ def forget(args) -> int:
 def rescreen(args) -> int:
     """Zetaris re-checks the live USITC release and every past CLASSIFIED verdict."""
     s = settings()
-    r = audit.rescreen(Zetaris(s, s.live))
+    with trace.role("Auditor"):
+        r = audit.rescreen(Zetaris(s, s.live))
     print(f"live HTS release {r['release']} ({'CHANGED' if r['release_changed'] else 'unchanged'}); "
           f"{r['verdicts_checked']} verdicts checked, {len(r['stale_verdicts'])} classified with a code no longer in the schedule")
     for v in r["stale_verdicts"]:
@@ -118,11 +126,16 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--importer", default="demo")
     sub.add_parser("rescreen")
     args = ap.parse_args(argv)
+    run = trace.Trace(echo=sys.stderr if getattr(args, "json", False) else sys.stdout)
     try:
-        return {"classify": classify, "confirm": confirm, "forget": forget, "rescreen": rescreen}[args.command](args)
+        with run.bind(getattr(args, "product", None)):
+            return {"classify": classify, "confirm": confirm, "forget": forget, "rescreen": rescreen}[args.command](args)
     except (MissingRecording, NightshiftError, NvidiaError, ZetarisError) as e:
         print(f"portorium: {e}", file=sys.stderr)
         return 1
+    finally:
+        if run.path.exists():
+            print(f"trace: {run.path.relative_to(ROOT)}", file=sys.stderr)
 
 
 if __name__ == "__main__":

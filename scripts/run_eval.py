@@ -20,6 +20,7 @@ from portorium.liveness import Liveness
 from portorium.nightshift import Nightshift
 from portorium.nvidia import Nvidia
 from portorium.rulings import RulingTexts
+from portorium.trace import Trace
 from portorium.zetaris import Zetaris
 
 ALL = "keyword_top1,ultra_zero_shot,lightning_zero_shot,retrieval_ultra,precedent_gate"
@@ -61,7 +62,9 @@ def main() -> int:
         digest = hashlib.sha256((DATA / "eval" / "test.jsonl").read_bytes()).hexdigest()
         commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit}))
-    predictions = run(gate, items, systems, checkpoint=checkpoint)
+    tracer = Trace(run_id=run_tag, echo=None)
+    print(f"trace: {tracer.path}", flush=True)
+    predictions = run(gate, items, systems, checkpoint=checkpoint, tracer=tracer)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
     if gate_preds and "retrieval_ultra" in systems:
         coverage = sum(bool(p.code) for p in gate_preds) / len(gate_preds)

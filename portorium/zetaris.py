@@ -10,6 +10,7 @@ import uuid
 
 import httpx
 
+from . import trace
 from .config import Settings
 from .recorder import Recorder
 
@@ -37,13 +38,20 @@ class Zetaris:
         """Run one statement (no trailing semicolon) and return rows as dicts of strings."""
         # Keep line breaks: COMPILE USL needs each CREATE TABLE to start on a new line.
         request = {"sql": "\n".join(line.strip() for line in sql.strip().splitlines()), "limit": limit}
-        if not self.live:
-            data = self.recorder.replay(request)
-        else:
-            data = self._run(request)
-            self.recorder.record(request, data)
+        try:
+            if not self.live:
+                data = self.recorder.replay(request)
+            else:
+                data = self._run(request)
+                self.recorder.record(request, data)
+        except ZetarisError as e:
+            trace.event("sql", request["sql"], str(e), status="error")
+            raise
         headers = data.get("headers") or []
-        return [dict(zip(headers, row)) for row in data.get("data") or []]
+        rows = [dict(zip(headers, row)) for row in data.get("data") or []]
+        shown = f": {rows[0]}" if len(rows) == 1 else ""
+        trace.event("sql", request["sql"], f"{len(rows)} row(s){shown}", source="live" if self.live else "recording")
+        return rows
 
     def run_dq(self, rule: str, table: str) -> dict:
         rows = self.query(f"RUN DQ {rule} TABLE {USL}.{table}")

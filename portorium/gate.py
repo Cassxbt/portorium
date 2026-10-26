@@ -14,11 +14,12 @@ Anything the gate cannot resolve goes to REVIEW.
 import re
 from dataclasses import asdict, dataclass, field
 
+from . import trace
 from .index import Precedent, PrecedentIndex
 from .liveness import FAILED_RULE, LIVING, REVOKED, SPLIT, Liveness, precedent_rows
 from .memory import BrokerMemory
 from .nightshift import ULTRA, Answer, Nightshift
-from .nvidia import Nvidia
+from .nvidia import EMBED_MODEL, RERANK_MODEL, Nvidia
 from .rulings import RulingTexts
 from .zetaris import Zetaris
 
@@ -95,21 +96,53 @@ class PrecedentGate:
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
                  exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
-        precedents = self.index.search(self.nvidia, product, as_of, exclude=exclude)[: self.top]
-        facts = {p.ruling_number: f for p in precedents if self.texts and (f := self.texts.facts(p.ruling_number))}
-        for recall in memory.recall(product) if memory else []:
-            if self.liveness.status(recall.code) == LIVING:
-                entry = Precedent(f"MEM:{recall.memory_id}", "", f"broker {recall.broker}", [recall.code], [])
-                precedents.append(entry)
-                facts[entry.ruling_number] = recall.content
-        remembered = memory.recall_answers(product) if memory else []
+        with trace.role("Retriever"):
+            precedents = self.index.search(self.nvidia, product, as_of, exclude=exclude)[: self.top]
+            facts = {p.ruling_number: f for p in precedents if self.texts and (f := self.texts.facts(p.ruling_number))}
+            trace.event("retrieve", product, f"{len(precedents)} rulings issued before {as_of}, {len(facts)} with product facts: "
+                        + ", ".join(p.ruling_number for p in precedents),
+                        target_agent="Adjudicator", model=f"{EMBED_MODEL} + {RERANK_MODEL}")
+        remembered = []
+        if memory:
+            with trace.role("Memory"):
+                stale = []
+                for recall in memory.recall(product):
+                    if self.liveness.status(recall.code) != LIVING:
+                        stale.append(recall.memory_id)
+                        continue
+                    entry = Precedent(f"MEM:{recall.memory_id}", "", f"broker {recall.broker}", [recall.code], [])
+                    precedents.append(entry)
+                    facts[entry.ruling_number] = recall.content
+                remembered = memory.recall_answers(product)
+                broker = [p.ruling_number for p in precedents if p.ruling_number.startswith("MEM:")]
+                trace.event("recall", product, f"{len(broker)} broker decision(s) passed on, {len(stale)} dropped as no longer "
+                            f"living, {len(remembered)} earlier importer answer(s)", target_agent="Adjudicator")
         if not precedents:
+            with trace.role("Gate"):
+                trace.event("decide", product, "REFUSE NO_PRECEDENT_FOUND", status="refused", rule="NO_PRECEDENT_FOUND")
             return Verdict(REFUSE, "NO_PRECEDENT_FOUND", None, [], dq=self.liveness.counts)
-        rows = precedent_rows(self.zetaris, [p.ruling_number for p in precedents if not p.ruling_number.startswith("MEM:")]) \
-            if self.zetaris else {}
-        judged, question, answer = self.judge(product, precedents, answers, facts, rows, remembered)
-        verdict = self.decide(judged, question, answer)
-        verdict.remembered = [{"question": q, "answer": a, "memory_id": m} for q, a, m in remembered]
+        rows = {}
+        if self.zetaris:
+            with trace.role("Auditor"):
+                rows = precedent_rows(self.zetaris, [p.ruling_number for p in precedents if not p.ruling_number.startswith("MEM:")])
+                trace.event("check_liveness", ", ".join(rows), "; ".join(
+                    f"{n}{' REVOKED' if r['revoked'] else ''} " + ", ".join(f"{c} {st}" for c, st in r["codes"].items())
+                    for n, r in rows.items()), target_agent="Adjudicator")
+        with trace.role("Adjudicator"):
+            judged, question, answer = self.judge(product, precedents, answers, facts, rows, remembered)
+            trace.event("judge", f"{product} vs {len(precedents)} precedents, {len(answers)} importer answer(s)",
+                        "; ".join(f"{j.ruling_number} {j.match} {j.code or '-'}" for j in judged)
+                        + (f"; question: {question}" if question else ""),
+                        target_agent="Gate", model=answer.routed_model or self.model, receipt_id=answer.receipt.get("receipt_id"))
+        with trace.role("Gate"):
+            verdict = self.decide(judged, question, answer)
+            verdict.remembered = [{"question": q, "answer": a, "memory_id": m} for q, a, m in remembered]
+            trace.event("decide", "; ".join(f"{j.ruling_number} {j.match} {j.code or '-'} {j.status or ''} {j.failed_rule or ''}".strip()
+                                            for j in judged),
+                        f"{verdict.decision} {verdict.reason} {verdict.code or ''}".strip(),
+                        target_agent="Importer" if verdict.question else ("Broker" if verdict.decision == REVIEW else None),
+                        status={CLASSIFIED: "success", REVIEW: "needs_review", REFUSE: "refused"}[verdict.decision],
+                        rule=verdict.reason)
         return verdict
 
     def judge(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str],

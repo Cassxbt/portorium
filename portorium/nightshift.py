@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 import httpx
 
+from . import trace
 from .config import Settings
 from .pacing import BACKOFF_SECONDS, NVIDIA_KEY
 from .recorder import Recorder
@@ -52,12 +53,17 @@ class Nightshift:
         body: dict = {"model": model, "messages": messages, "max_tokens": max_tokens,
                       "chat_template_kwargs": {"enable_thinking": thinking}}
         if not self.live:
-            data = self.recorder.replay(body)
+            data, retries, source = self.recorder.replay(body), 0, "recording"
         else:
-            data = self._post(body)
+            data, retries = self._post(body)
+            source = "live"
             self.recorder.record(body, data)
         choice = (data.get("choices") or [{}])[0].get("message") or {}
-        return Answer(content=choice.get("content") or "", receipt=data.get("meterless") or {})
+        answer = Answer(content=choice.get("content") or "", receipt=data.get("meterless") or {})
+        trace.event("chat", messages[-1]["content"], answer.content, model=answer.routed_model or model,
+                    retry_count=retries, requested_model=model, receipt_id=answer.receipt.get("receipt_id"),
+                    cache=(answer.receipt.get("cache") or {}).get("status"), source=source)
+        return answer
 
     def chat_json(self, messages: list[dict], required: dict[str, tuple | None], model: str = ULTRA,
                   max_tokens: int = 1024) -> tuple[dict, Answer]:
@@ -72,6 +78,8 @@ class Nightshift:
             if parsed is not None:
                 return parsed, answer
             if attempt == 0:
+                trace.event("repair", answer.content, "reply was not the required JSON; asked again",
+                            model=answer.routed_model or model, retry_count=1, status="retry")
                 repair = messages + [{"role": "assistant", "content": answer.content},
                                      {"role": "user", "content": "That was not valid. Reply with only the JSON object."}]
                 answer = self.chat(repair, model=model, max_tokens=max_tokens)
@@ -81,7 +89,7 @@ class Nightshift:
         headers = {"Authorization": f"Bearer {self.settings.nightshift_token}",
                    "meterless-app": APP, "meterless-scope": "user"}
         last = ""
-        for wait in (0, *BACKOFF_SECONDS):
+        for attempt, wait in enumerate((0, *BACKOFF_SECONDS)):
             time.sleep(wait)
             self.pacer.wait()
             try:
@@ -91,11 +99,12 @@ class Nightshift:
                 continue
             if r.status_code == 200:
                 self.pacer.succeeded()
-                return r.json()
+                return r.json(), attempt
             last = f"HTTP {r.status_code}: {r.text[:300]}"
             if r.status_code not in RETRYABLE:
                 break
             self.pacer.rejected()
+        trace.event("chat", body["messages"][-1]["content"], last, model=body["model"], retry_count=attempt, status="error")
         raise NightshiftError(last)
 
 
