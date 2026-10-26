@@ -75,3 +75,24 @@ def precedent_rows(zetaris: Zetaris, ruling_numbers: list[str]) -> dict[str, dic
         entry = out.setdefault(r["ruling_number"], {"date": r["ruling_date"], "revoked": r["revoked"] == "true", "codes": {}})
         entry["codes"][r["hts10"]] = r["status"]
     return out
+
+
+def schedule_text(zetaris: Zetaris, code: str) -> list[dict]:
+    """A 10-digit line of the schedule with every level above it, and the other lines at each level.
+
+    The meaning of a line depends on its ancestors and, for "Other", on its siblings, so a code can
+    survive a revision while what it covers moves. Rows come back in schedule order.
+    """
+    h = "portorium_files.hts_line"
+    rows = zetaris.query(f"""WITH t AS (SELECT CAST(row_idx AS INT) AS r, CAST(indent AS INT) AS d FROM {h}
+            WHERE code_digits = '{code.replace("'", "")}'),
+        anc AS (SELECT CAST(x.indent AS INT) AS lvl, max(CAST(x.row_idx AS INT)) AS r FROM {h} x CROSS JOIN t
+            WHERE CAST(x.row_idx AS INT) <= t.r AND CAST(x.indent AS INT) <= t.d GROUP BY CAST(x.indent AS INT)),
+        bounds AS (SELECT a.lvl, a.r AS own, p.r AS pr, min(CAST(x.row_idx AS INT)) AS nb FROM anc a JOIN anc p ON p.lvl = a.lvl - 1
+            LEFT JOIN {h} x ON CAST(x.row_idx AS INT) > p.r AND CAST(x.indent AS INT) < a.lvl GROUP BY a.lvl, a.r, p.r)
+        SELECT 'path' AS kind, anc.lvl AS lvl, anc.r AS r, x.htsno, x.description FROM anc JOIN {h} x ON CAST(x.row_idx AS INT) = anc.r
+        UNION ALL
+        SELECT 'alternative' AS kind, b.lvl AS lvl, CAST(x.row_idx AS INT) AS r, x.htsno, x.description FROM bounds b JOIN {h} x
+            ON CAST(x.row_idx AS INT) > b.pr AND CAST(x.row_idx AS INT) < coalesce(b.nb, 100000000)
+            AND CAST(x.indent AS INT) = b.lvl AND CAST(x.row_idx AS INT) <> b.own""", limit=2000)
+    return sorted(({**r, "lvl": int(r["lvl"]), "r": int(r["r"])} for r in rows), key=lambda r: (r["lvl"], r["r"]))

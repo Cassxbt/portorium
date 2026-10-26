@@ -25,7 +25,13 @@ class FakeTexts:
 
 
 class FakeNightshift:
+    def __init__(self, fits=True):
+        self.fits = fits
+
     def chat_json(self, messages, required, model):
+        if "fits" in required:
+            return ({"fits": self.fits, "line": "" if self.fits else "6110.20.20", "reason": "r", "question": "" if self.fits else "Is it knitted?"},
+                    Answer("{}", {"routed_model": model, "receipt_id": "rcpt_2"}))
         rows = [{"ruling": "N111111", "match": "full", "code": "6110202079", "fact": "knitted"}]
         return {"precedents": rows, "question": ""}, Answer("{}", {"routed_model": model, "receipt_id": "rcpt_1"})
 
@@ -33,6 +39,9 @@ class FakeNightshift:
 class FakeZetaris:
     def query(self, sql, limit=1000):
         trace.event("sql", sql, "1 row(s)")
+        if "portorium_files.hts_line" in sql:
+            return [{"kind": "path", "lvl": "0", "r": "1", "htsno": "6110", "description": "Sweaters, pullovers"},
+                    {"kind": "path", "lvl": "1", "r": "2", "htsno": "6110.20.20.79", "description": "Other"}]
         return [{"ruling_number": "N111111", "ruling_date": "2024-01-01", "revoked": "false",
                  "hts10": "6110202079", "status": LIVING}]
 
@@ -52,10 +61,12 @@ def test_a_classification_traces_each_role_handing_off_to_the_next(tmp_path):
     handoffs = [(l["agent_name"], l["action"], l["target_agent"]) for l in lines if l["action"] != "hmem.query"]
     assert handoffs == [("Retriever", "retrieve", "Adjudicator"), ("Memory", "recall", "Adjudicator"),
                         ("Auditor", "sql", None), ("Auditor", "check_liveness", "Adjudicator"),
-                        ("Adjudicator", "judge", "Gate"), ("Gate", "decide", None)]
+                        ("Adjudicator", "judge", "Gate"), ("Gate", "decide", None),
+                        ("Auditor", "sql", None), ("Auditor", "schedule_text", "Critic"), ("Critic", "critique", "Gate")]
     assert [l["agent_name"] for l in lines if l["action"] == "hmem.query"] == ["Memory", "Memory"]
-    decide = lines[-1]
+    decide = next(l for l in lines if l["action"] == "decide")
     assert (decide["status"], decide["detail"]["rule"]) == ("success", verdict.reason)
+    assert verdict.critique["fits"] is True
     assert next(l for l in lines if l["action"] == "judge")["model"] == "nvidia/nemotron-3-ultra-550b-a55b"
 
 
@@ -80,3 +91,11 @@ def test_events_outside_a_run_are_not_written(tmp_path):
     run = trace.Trace(directory=tmp_path, echo=None)
     trace.event("retrieve", "q", "a")
     assert not run.path.exists()
+
+
+def test_a_code_whose_schedule_text_does_not_fit_goes_to_review(tmp_path):
+    gate = PrecedentGate(FakeIndex(), None, FakeNightshift(fits=False), LIVE, FakeTexts(), FakeZetaris())
+    with trace.Trace(directory=tmp_path, echo=None).bind():
+        verdict = gate.classify(PRODUCT, "2026-01-01")
+    assert (verdict.decision, verdict.reason, verdict.code) == ("REVIEW", "SCHEDULE_TEXT_DISAGREES", None)
+    assert verdict.question == "Is it knitted?" and verdict.critique["code"] == "6110202079"

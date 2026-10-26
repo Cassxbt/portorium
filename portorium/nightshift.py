@@ -83,6 +83,8 @@ class Nightshift:
                 repair = messages + [{"role": "assistant", "content": answer.content},
                                      {"role": "user", "content": "That was not valid. Reply with only the JSON object."}]
                 answer = self.chat(repair, model=model, max_tokens=max_tokens)
+        trace.event("chat", messages[-1]["content"], f"no valid JSON after one repair: {answer.content[:200]}",
+                    model=answer.routed_model or model, retry_count=1, status="error")
         raise NightshiftError(f"no valid JSON from {model}: {answer.content[:200]}")
 
     def _post(self, body: dict) -> dict:

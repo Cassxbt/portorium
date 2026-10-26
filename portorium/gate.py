@@ -6,6 +6,8 @@ product; it never chooses a code from memory.
   2 living     Zetaris, per decision: ruling not revoked; code_in_schedule / parent_survives (HTS 2026 Rev 21)
   3 same       Nemotron Ultra via Nightshift: full | partial | none, on product facts only
   4 decide     CLASSIFIED only when every living full-match precedent agrees at 10 digits
+  5 critique   Nemotron Ultra checks that code's Rev 21 text, every level and its alternatives, from Zetaris;
+               a code can survive a revision while what it covers moves
 
 Broker decisions recalled from memory (Meterless H-MEM) are judged in the same call as the
 rulings, so a remembered decision counts only for a product the model finds to be the same.
@@ -16,10 +18,10 @@ from dataclasses import asdict, dataclass, field
 
 from . import trace
 from .index import Precedent, PrecedentIndex
-from .liveness import FAILED_RULE, LIVING, REVOKED, SPLIT, Liveness, precedent_rows
+from .liveness import FAILED_RULE, LIVING, REVOKED, SPLIT, Liveness, precedent_rows, schedule_text
 from .memory import BrokerMemory
 from .nightshift import ULTRA, Answer, Nightshift
-from .nvidia import EMBED_MODEL, RERANK_MODEL, Nvidia
+from .nvidia import Nvidia
 from .rulings import RulingTexts
 from .zetaris import Zetaris
 
@@ -50,6 +52,18 @@ Reply with only a JSON object:
 "fact": "<for full, the shared identity; otherwise the decisive difference or unknown, short>"}], "question": "<question or empty>"}"""
 
 
+CRITIC = """You check a proposed US tariff classification against the words of the schedule, HTS 2026 Revision 21.
+You get the importer's product, any answers the importer gave, and the proposed 10-digit line with every level
+above it. Under each level you also get the alternatives: the other lines at that level. A line reading "Other"
+covers only goods that none of its alternatives at that level cover.
+Decide whether the product falls within every level of the proposed path rather than within an alternative.
+Judge only from the product facts and the schedule text given. If placing the product needs a fact that is not
+stated, and an alternative would apply depending on it, the product does not fit: ask for that fact.
+Reply with only a JSON object:
+{"fits": true or false, "line": "<the first level that does not fit, or empty>", "reason": "<short>",
+"question": "<when a missing fact decides it, the one question to the importer; otherwise empty>"}"""
+
+
 @dataclass
 class JudgedPrecedent:
     ruling_number: str
@@ -77,6 +91,7 @@ class Verdict:
     receipts: list[dict] = field(default_factory=list)
     dq: dict = field(default_factory=dict)
     remembered: list[dict] = field(default_factory=list)
+    critique: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -93,11 +108,12 @@ def _key(value) -> str:
 class PrecedentGate:
     def __init__(self, index: PrecedentIndex, nvidia: Nvidia, nightshift: Nightshift, liveness: Liveness,
                  texts: RulingTexts | None = None, zetaris: Zetaris | None = None, model: str = ULTRA, top: int = 6,
-                 old_precedent_rule: bool = False):
-        """old_precedent_rule: a lone precedent from before HS 2022 cannot classify on its own."""
+                 old_precedent_rule: bool = False, critic: bool = True):
+        """old_precedent_rule: a lone precedent from before HS 2022 cannot classify on its own.
+        critic: a classification must also fit the code's current schedule text (needs Zetaris)."""
         self.index, self.nvidia, self.nightshift, self.liveness = index, nvidia, nightshift, liveness
         self.texts, self.zetaris, self.model, self.top = texts, zetaris, model, top
-        self.old_precedent_rule = old_precedent_rule
+        self.old_precedent_rule, self.critic = old_precedent_rule, critic
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
                  exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
@@ -105,8 +121,7 @@ class PrecedentGate:
             precedents = self.index.search(self.nvidia, product, as_of, exclude=exclude)[: self.top]
             facts = {p.ruling_number: f for p in precedents if self.texts and (f := self.texts.facts(p.ruling_number))}
             trace.event("retrieve", product, f"{len(precedents)} rulings issued before {as_of}, {len(facts)} with product facts: "
-                        + ", ".join(p.ruling_number for p in precedents),
-                        target_agent="Adjudicator", model=f"{EMBED_MODEL} + {RERANK_MODEL}")
+                        + ", ".join(p.ruling_number for p in precedents), target_agent="Adjudicator")
         remembered = []
         if memory:
             with trace.role("Memory"):
@@ -148,31 +163,71 @@ class PrecedentGate:
                         target_agent="Importer" if verdict.question else ("Broker" if verdict.decision == REVIEW else None),
                         status={CLASSIFIED: "success", REVIEW: "needs_review", REFUSE: "refused"}[verdict.decision],
                         rule=verdict.reason)
+        if verdict.decision == CLASSIFIED and self.critic and self.zetaris:
+            verdict = self.critique(product, answers, verdict)
         return verdict
+
+    def critique(self, product: str, answers, verdict: Verdict) -> Verdict:
+        """Check a classification against its code's Rev 21 text; a mismatch becomes REVIEW."""
+        code = verdict.code
+        with trace.role("Auditor"):
+            rows = schedule_text(self.zetaris, code)
+            path = [r for r in rows if r["kind"] == "path"]
+            trace.event("schedule_text", code, " > ".join(r["description"] for r in path),
+                        target_agent="Critic", alternatives=sum(r["kind"] == "alternative" for r in rows))
+        lines = [f"PRODUCT: {product}"] + [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
+        lines.append(f"PROPOSED: {code[:4]}.{code[4:6]}.{code[6:8]}.{code[8:]}")
+        for r in path:
+            lines.append(f"LEVEL {r['lvl']}: {r['htsno'] or ''} {r['description']}".replace("  ", " "))
+            alternatives = [a for a in rows if a["kind"] == "alternative" and a["lvl"] == r["lvl"]][:14]
+            lines += [f"  alternative: {a['htsno'] or ''} {a['description'][:160]}".replace("  ", " ", 1) for a in alternatives]
+        with trace.role("Critic"):
+            messages = [{"role": "system", "content": CRITIC}, {"role": "user", "content": "\n".join(lines)}]
+            data, answer = self.nightshift.chat_json(messages, {"fits": (True, False), "reason": None, "question": None},
+                                                     model=self.model)
+            fits = data["fits"] is True
+            trace.event("critique", f"{code} for {product}", ("fits" if fits else f"does not fit at {data.get('line') or '?'}")
+                        + f": {data.get('reason') or ''}", target_agent="Gate", model=answer.routed_model or self.model,
+                        status="success" if fits else "needs_revision", receipt_id=answer.receipt.get("receipt_id"))
+        critique = {"code": code, "fits": fits, "line": str(data.get("line") or ""), "reason": str(data.get("reason") or ""),
+                    "receipt_id": answer.receipt.get("receipt_id"), "routed_model": answer.routed_model}
+        if fits:
+            verdict.critique = critique
+            return verdict
+        with trace.role("Gate"):
+            revised = Verdict(REVIEW, "SCHEDULE_TEXT_DISAGREES", None, verdict.precedents, str(data.get("question") or ""),
+                              verdict.receipts, verdict.dq, verdict.remembered, critique)
+            trace.event("decide", f"{code} does not fit its Rev 21 text", "REVIEW SCHEDULE_TEXT_DISAGREES",
+                        target_agent="Importer" if revised.question else "Broker", status="needs_review", rule=revised.reason)
+        return revised
 
     def judge(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str],
               rows: dict[str, dict] | None = None, remembered=()) -> tuple[list[JudgedPrecedent], str, Answer]:
         lines = [f"PRODUCT: {product}"]
         lines += [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
-        lines += [f"IMPORTER ANSWERED EARLIER for a similar product (memory {m}; use only if it applies): {q} -> {a}"
-                  for q, a, m in remembered]
+        lines += [f"IMPORTER ANSWERED EARLIER for a similar product (use only if it applies): {q} -> {a}"
+                  for q, a, _ in remembered]
+        # Memory ids grow with every write, so broker entries get per-request labels: the prompt for a
+        # given product and memory content stays the same after a wipe.
+        brokers = [p.ruling_number for p in precedents if p.ruling_number.startswith("MEM:")]
+        names = {number: f"BROKER-{i}" for i, number in enumerate(brokers, 1)}
         for p in precedents:
             codes = ", ".join(f"{c[:4]}.{c[4:6]}.{c[6:]}" for c in p.codes)
-            label = "BROKER" if p.ruling_number.startswith("MEM:") else "PRECEDENT"
             detail = f" FACTS: {facts[p.ruling_number]}" if p.ruling_number in facts else ""
-            lines.append(f"{label} {p.ruling_number} ({p.ruling_date or 'broker sign-off'}): {p.subject}. "
-                         f"CODES: {codes}.{detail}")
+            entry = f"BROKER {names[p.ruling_number]}" if p.ruling_number in names else f"PRECEDENT {p.ruling_number}"
+            lines.append(f"{entry} ({p.ruling_date or 'broker sign-off'}): {p.subject}. CODES: {codes}.{detail}")
         messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": "\n".join(lines)}]
         data, answer = self.nightshift.chat_json(messages, {"precedents": None, "question": None}, model=self.model)
         judged_rows = [row for row in data["precedents"] if isinstance(row, dict)]
         zetaris_rows = rows or {}
-        return [self._judged(p, self._row_for(p, judged_rows), p.ruling_number in facts, zetaris_rows.get(p.ruling_number))
+        return [self._judged(p, self._row_for(names.get(p.ruling_number, p.ruling_number), judged_rows),
+                             p.ruling_number in facts, zetaris_rows.get(p.ruling_number))
                 for p in precedents], str(data.get("question") or ""), answer
 
     @staticmethod
-    def _row_for(p: Precedent, rows: list[dict]) -> dict:
+    def _row_for(name: str, rows: list[dict]) -> dict:
         """The model may write "NY N351214" for N351214 or "HQ 086616" for 086616."""
-        target = _key(p.ruling_number)
+        target = _key(name)
         for row in rows:
             key = _key(row.get("ruling"))
             if key and (key == target or key.endswith(target)):
