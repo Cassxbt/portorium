@@ -1,0 +1,826 @@
+{
+ "N359056": {
+  "code": "4911913000",
+  "fits": false,
+  "line": "4911.91.30.00",
+  "reason": "The product consists of digitally printed photographs permanently mounted in wooden picture frames ready for display. Heading 4911 covers 'Other printed matter, including printed pictures and photographs' on paper or paperboard. Once a photograph is permanently mounted in a wooden frame, the article is a framed picture (a wood article), not printed matter of Chapter 49. The proposed line 4911.91.30.00 applies only to unframed lithographs on paper/paperboard over 0.51 mm thick.",
+  "receipt_id": "rcpt_req_9yxlg4t0",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358275": {
+  "code": "6702903500",
+  "fits": true,
+  "line": "",
+  "reason": "The product consists of artificial flower petals made of polyester fabric. Polyester is a man-made (synthetic) fiber. Heading 6702 covers artificial flowers, foliage, fruit and parts thereof, regardless of material. Subheading 6702.90 applies because the product is not of plastics (6702.10). Within 6702.90, the product is not of feathers (6702.90.10). It is made of man-made fibers, so it falls under 6702.90.35 rather than the residual 6702.90.65. All levels of the proposed path are satisfied.",
+  "receipt_id": "rcpt_req_910k6pxl",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361425": {
+  "code": "8526925000",
+  "fits": false,
+  "line": "8526.92",
+  "reason": "VR controllers are input peripherals for interactive applications, not radio remote control apparatus as defined in HTS 8526.92 (which covers apparatus for remotely controlling the operation of machinery, vehicles, or appliances). They function as human interface devices (HID) transmitting user input data to a host system, not as remote control apparatus.",
+  "receipt_id": "rcpt_req_k0t6d2ln",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361321": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a costume, which is a festive/entertainment article. It is not a Christmas article (9505.10), magic trick/practical joke article (9505.90.20), or confetti/party favor/noisemaker (9505.90.40). The raw, unfinished edges do not affect classification at this level. It falls under the residual 9505.90.60.",
+  "receipt_id": "rcpt_req_6m5usmeg",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360050": {
+  "code": "6306229030",
+  "fits": true,
+  "line": "",
+  "reason": "The sun shelter is a portable pop-up tent with fiberglass frame, synthetic fabric walls/roof/floor, and accessories (stakes, sandbags). It falls under heading 6306 as a 'tent (including temporary canopies and similar articles)'. It is made of synthetic fibers (polyester, polyethylene), so subheading 6306.22 applies. It is not a backpacking tent (6306.22.10) nor a screen house (6306.22.90.10), so the residual 'Other' (6306.22.90.30) is correct.",
+  "receipt_id": "rcpt_req_k59ou5ut",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357470": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The adult Samurai Warrior costume (item 5020-043) consists of a pullover tunic, chest armor, rope waist tie, foam helmet with removable accessory, wrist cuffs, and belt with tabard. This is a festive/entertainment costume for occasions such as Halloween, masquerade, or theatrical use. It falls under 9505 (festive, carnival or other entertainment articles) and is not a Christmas article (9505.10), magic trick/practical joke article (9505.90.20), or confetti/party favor/noisemaker (9505.90.40). It therefore classifies under the residual 9505.90.60.00.",
+  "receipt_id": "rcpt_req_6hjqizik",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359637": {
+  "code": "8703240190",
+  "fits": true,
+  "line": "",
+  "reason": "The 2003 Ferrari 575 Maranello is a motor car principally designed for the transport of persons with a 5.7L (5,700 cc) spark-ignition internal combustion piston engine, placing it in heading 8703, subheading 8703.24.01 (cylinder capacity exceeding 3,000 cc). It is not an ambulance, hearse, prison van, or motor home, so it falls under the 'Other' category at the statistical level. Having been previously registered and titled in the U.S. (2004-2010), it qualifies as 'Used' under 8703.24.01.90.",
+  "receipt_id": "rcpt_req_p79x5vm3",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359248": {
+  "code": "8421210000",
+  "fits": true,
+  "line": "",
+  "reason": "The robotic pool skimmer is a self-contained, solar/battery-powered machine designed to automatically filter and purify pool water by removing floating debris (leaves, insects, dust) via a roller brush and filter basket. It operates by moving across the water surface, actively drawing in water and debris, filtering it, and returning clean water\u2014constituting filtering machinery for water. The additional chlorine tablet dispenser is an ancillary water-treatment feature that does not alter the primary filtering function. At 12.6 lbs and 21x16x8 inches, it is a portable apparatus, not a fixed installation. It fits squarely within 8421.21.00.00 (Filtering or purifying machinery and apparatus for water) and not the beverage, oil/fuel, or residual 'other' alternatives.",
+  "receipt_id": "rcpt_req_4belrxda",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357946": {
+  "code": "8421210000",
+  "fits": true,
+  "line": "",
+  "reason": "The FlavaFil Filter's water filtration cartridge contains electro-adsorptive media that purifies water by reducing lead, chlorine, and microplastics, making its essential character a water filtering apparatus. The additional flavor infusion components (FlavaChamber, Flavor Bullets, Venturi design) do not alter the primary water purification function. The cartridge performs the sole water-purifying function and is reusable for ~30 days, consistent with 8421.21 classification for water filtering machinery and apparatus.",
+  "receipt_id": "rcpt_req_7trszs7d",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361290": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a costume, which is a festive/entertainment article. It is not a Christmas article (9505.10), magic trick/practical joke article (9505.90.20), or confetti/party favor/noisemaker (9505.90.40). The raw, unfinished edges do not affect classification at this level. It falls under the residual 9505.90.60.",
+  "receipt_id": "rcpt_req_z0r6lo7b",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357464": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is an adult-size 'Playful Pirate' costume consisting of a long-sleeved pullover dress, foam corset, and hat. This is a festive/entertainment costume (e.g., for Halloween, masquerade, or theatrical use). It is not a Christmas article (9505.10), a magic trick or practical joke article (9505.90.20), nor confetti, paper spirals, streamers, party favors, or noisemakers (9505.90.40). Therefore, it falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_3780dtsp",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359058": {
+  "code": "2933394100",
+  "fits": true,
+  "line": "",
+  "reason": "Etripamil's chemical structure contains a piperidine ring (a saturated, unfused pyridine ring), placing it under heading 2933, subheading for compounds containing an unfused pyridine ring. It is not among the named compounds in the level 2 specific subheadings (2933.31\u20132933.37) nor in the specific named-compound subheading 2933.39.08. As a therapeutic agent for PSVT, it is a drug but not an antidepressant, tranquilizer, or psychotherapeutic agent, so it falls under the 'Drugs' category at level 4 and the residual 'Other' line 2933.39.41.00 at level 5.",
+  "receipt_id": "rcpt_req_nvt6wdwd",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359641": {
+  "code": "7607201000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a 5-layer composite with a 0.08 mm aluminum foil layer (\u2264 0.2 mm) backed by PET film via adhesive, plus a topcoat and protective film on the foil face. This meets heading 7607 (aluminum foil \u2264 0.2 mm, backed with plastics). It is 'backed' \u2192 subheading 7607.20. The exposed surface carries a topcoat providing decorative metallic reflectivity and light diffusion, i.e., a fancy effect/pattern \u2192 7607.20.10.00 (covered or decorated with a character, design, fancy effect or pattern) rather than 7607.20.50.00 (other). Prior ruling N352361 confirms the same composite structure in roll stock classifies under 7607.20.1000.",
+  "receipt_id": "rcpt_req_wnxpvydx",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N352351": {
+  "code": "3913905000",
+  "fits": false,
+  "line": "3913.90",
+  "reason": "The product is a composite of polybutylene succinate (PBS), a synthetic polymer, blended with corn starch and additives. Heading 3913 covers natural polymers and modified natural polymers only. PBS is not a natural polymer nor a modified natural polymer; it is a synthetic polyester. Therefore the product does not fall in heading 3913 at all. It is more likely classifiable in heading 3907 (polyesters) as a mixture/preparation containing PBS, or in heading 3901/3902 if considered a polymer blend, but not in 3913.",
+  "receipt_id": "rcpt_req_tqqri3f0",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360468": {
+  "code": "9506991500",
+  "fits": false,
+  "line": "9506.99.15.00",
+  "reason": "The product is a ball, but 9506.99.15.00 explicitly covers 'Baseball articles and equipment, except balls'. Balls (other than golf and table-tennis) are classified under heading 9506.69.",
+  "receipt_id": "rcpt_req_5i8dr6gn",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357282": {
+  "code": "3305900000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a hair treatment preparation packaged for retail sale. It is not a shampoo (3305.10), a preparation for permanent waving or straightening (3305.20), or a hair lacquer (3305.30). It therefore falls under the residual subheading 3305.90.00 for other preparations for use on the hair.",
+  "receipt_id": "rcpt_req_3bxf3sx7",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360189": {
+  "code": "3923210085",
+  "fits": false,
+  "line": "3923.21.00.85",
+  "reason": "The proposed statistical line 3923.21.00.85 covers polyethylene retail carrier bags (PRCBs) with handles (including drawstrings). The product is a supplementary packaging bag with an integral extruded closure but no handles or drawstrings, so it does not meet the definition of a PRCB.",
+  "receipt_id": "rcpt_req_bh6uj7wt",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360602": {
+  "code": "8481309000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a coolant check valve that operates by pressure differential to allow one-way flow and prevent reverse flow, which is the essential function of a check (nonreturn) valve under heading 8481.30. It is made of a polypropylene composite reinforced with glass fibers, so it is not of copper (8481.30.10) nor of iron or steel (8481.30.20). Therefore, it falls under the residual subheading 8481.30.90.00.",
+  "receipt_id": "rcpt_req_yfaa206j",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357315": {
+  "code": "9403992080",
+  "fits": false,
+  "line": "9403.99.20",
+  "reason": "The components are made of MDF (wood), but the proposed subheading 9403.99.20 covers parts of furniture of cane, osier, bamboo, or similar materials. Wooden furniture parts fall under heading 9403.91 (Parts of furniture: Of wood) rather than 9403.99.",
+  "receipt_id": "rcpt_req_t6stuq53",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360900": {
+  "code": "9405994090",
+  "fits": false,
+  "line": "LEVEL 3",
+  "reason": "The lampshade is made of pleated silk (textile material) on a steel wire frame. At LEVEL 3, the alternatives are 9405.99.20.00 'Of brass' and 9405.99.40 'Other'. The subheading 9405.99.40 is a residual category. However, the statistical suffixes provided at LEVEL 4 (9405.99.40.10, .20, .90) cover only lampposts/bases of cast iron, aluminum, and 'Other' (which in context refers to other metal lamppost parts). They do not provide a reporting provision for parts of textile materials or wire frames. Since the product is not of brass, glass, or plastics, and the residual subheading's statistical breakouts are limited to metal lamppost components, the classification path ends at LEVEL 3 without a fitting 10-digit line.",
+  "receipt_id": "rcpt_req_frphjfry",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360635": {
+  "code": "8543400040",
+  "fits": true,
+  "line": "",
+  "reason": "The device is an electronic vaporizer comprising a lithium-ion battery, ceramic heating element, microprocessor control circuit, mouthpiece, and LED indicator \u2014 all within a reusable enclosure. It is designed to heat a liquid-filled glass ampoule (added after importation) to produce an inhalable vapor. This matches the HTSUS description of 'Electronic cigarettes and similar personal electric vaporizing devices' under 8543.40.00. Because the device is imported without any liquid or substance (nicotine-containing or otherwise), it cannot be classified under the 'With substances containing nicotine' breakout (8543.40.00.30). The 'Other' breakout (8543.40.00.40) covers vaporizing devices imported without substances, which fits this product.",
+  "receipt_id": "rcpt_req_ukkepa66",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357461": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a child's 'Ninja Girl' costume consisting of a hooded tunic, leggings, belt, arm sleeves, leg ties, and face mask. This is a festive/entertainment costume (e.g., for Halloween, dress-up, or theatrical use). It is not a Christmas article (9505.10), a magic trick or practical joke article (9505.90.20), nor confetti, paper spirals, streamers, party favors, or noisemakers (9505.90.40). Therefore, it falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_9t9j20sm",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360742": {
+  "code": "6104432010",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a women's dress, knitted (95% polyester/5% spandex), of synthetic fibers (polyester is a synthetic fiber), not containing 23% or more wool, and sized for women. It meets every level of the proposed classification.",
+  "receipt_id": "rcpt_req_tukqsmir",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360638": {
+  "code": "9503000073",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a decorative craft activity kit containing a plastic trinket box, plastic embellishments (charms, beads, gems), adhesives, and tools for children to decorate the box. This constitutes a toy set under heading 9503. The statistical breakouts at the 10-digit level are based on the intended age of the child. The proposed code 9503.00.00.73 corresponds to items labeled or determined by the importer as intended for use by persons 3 to 12 years of age. Since the product is a craft kit with small parts (beads, gems) and adhesives, it is not suitable for children under 3, making the 3-12 age range the appropriate classification.",
+  "receipt_id": "rcpt_req_h356uvbc",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357425": {
+  "code": "8544429090",
+  "fits": false,
+  "line": "8544.30.00.00",
+  "reason": "Both cables are described as 'specifically designed for use with the Zulu aviation headset' and meant to connect the headset/earcups to the control box in an aircraft. This makes them wiring sets of a kind used in aircraft, which fall under heading 8544.30.00.00 (Ignition wiring sets and other wiring sets of a kind used in vehicles, aircraft or ships) rather than 8544.42.",
+  "receipt_id": "rcpt_req_w0ry05og",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357482": {
+  "code": "6104432020",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a women's dress, knitted (95% polyester/5% spandex), of synthetic fibers (polyester is a synthetic fiber), not containing 23% or more wool, and sized for women. It meets every level of the proposed classification.",
+  "receipt_id": "rcpt_req_1ekk7nt2",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358456": {
+  "code": "3305100000",
+  "fits": true,
+  "line": "",
+  "reason": "The products are liquid shampoos packaged for retail sale. Although they are formulated for dogs, they are still shampoos\u2014preparations whose primary function is to cleanse hair (or coat)\u2014and heading 3305 covers \"Preparations for use on the hair\" without limiting it to human hair. Therefore they fall under subheading 3305.10.00.00 rather than the alternatives for permanent waving, hair lacquers, or other hair preparations.",
+  "receipt_id": "rcpt_req_g2ihik2h",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359482": {
+  "code": "8526925000",
+  "fits": true,
+  "line": "",
+  "reason": "The remote controls (key fobs) are radio remote control apparatus as defined in heading 8526.92: they use radio frequency to remotely control a vehicle security system (locking, unlocking, arming, disarming, etc.). They are not radar apparatus (8526.10) nor radio navigational aid apparatus (8526.91). At the subheading level, they are not designed for video game consoles (8526.92.10), so they fall under the residual 'Other' (8526.92.50). The set is imported as a whole, but the classification of the remote controls drives the proposed line; the other components do not alter the classification of the radio remote control apparatus.",
+  "receipt_id": "rcpt_req_2vwy9llx",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359864": {
+  "code": "3502110000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a spray-dried, enzymatically hydrolyzed egg white protein powder with >80% protein, no added substances, commercially known as egg albumen, and imported in bulk. This matches heading 3502 (albumins), subheading 3502.11 (egg albumin, dried), per CBP ruling N252564 which classified a materially identical product under 3502.11.0000.",
+  "receipt_id": "rcpt_req_pbn3fgud",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357069": {
+  "code": "8543708500",
+  "fits": true,
+  "line": "",
+  "reason": "The Lenire device is a non-invasive bimodal neuromodulation device that delivers electrical pulses to the tongue (via the Tongue Tip) to stimulate the trigeminal nerve for tinnitus treatment. This constitutes electrical nerve stimulation, which is the specific function covered by HTS 8543.70.85.00. It is not a particle accelerator (8543.10), signal generator (8543.20), electroplating/electrolysis apparatus (8543.30), electronic cigarette (8543.40), physical vapor deposition apparatus (8543.70.20), aircraft synchro/transducer/flight recorder/defroster (8543.70.40), telegraphic/telephonic connection article (8543.70.60), electric luminescent lamp (8543.70.71), microwave amplifier (8543.70.80), or any of the other specifically enumerated alternatives at the 8543.70.85\u2013.98 level.",
+  "receipt_id": "rcpt_req_5d25z12s",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N356971": {
+  "code": "2309909500",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a palm fatty acid distillate prill (NUTRACOR 80P) used as a rumen bypass fat supplement in animal feed. It is not dog or cat food (2309.10), not a mixed feed or mixed feed ingredient (2309.90.10), does not contain milk or milk derivatives, does not contain egg (2309.90.60), and is not a vitamin B12-based preparation (2309.90.70). It therefore falls under the residual subheading 2309.90.95.00 for other preparations of a kind used in animal feeding.",
+  "receipt_id": "rcpt_req_yzo6nw8l",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358644": {
+  "code": "8413309030",
+  "fits": false,
+  "line": "8413.30",
+  "reason": "A fuel injector is not a pump; it is a precision nozzle/valve that meters and atomizes fuel delivered by a separate high-pressure pump. Heading 8413 covers pumps for liquids and parts thereof; injectors are classified elsewhere (typically heading 8409 as parts of engines).",
+  "receipt_id": "rcpt_req_cn4y6krr",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359715": {
+  "code": "0511993060",
+  "fits": true,
+  "line": "",
+  "reason": "The product is dried crustacean eggs (fairy shrimp, moina, daphnia) with no additives, packaged in retail units for sale as live feed for ornamental fish and aquatic animals. This falls under Chapter 05 (products of animal origin not elsewhere specified) and specifically heading 0511. At Level 1, it is not bovine semen (0511.10). At Level 2, it is not 'Products of fish or crustaceans, molluscs or other aquatic invertebrates; dead animals of Chapter 3' (0511.91) because the eggs are live, dormant reproductive material \u2014 not dead animals or products derived from dead animals. At Level 3, the eggs are chiefly used as food for animals (live feed for ornamental fish), fitting 0511.99.30. At Level 4, they are not Antarctic krill, so 0511.99.30.60 applies.",
+  "receipt_id": "rcpt_req_h99u1yaa",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359705": {
+  "code": "6702903500",
+  "fits": false,
+  "line": "6702",
+  "reason": "The article is a decorative wire pumpkin whose essential character is given by the iron/steel wire frame that constitutes the pumpkin structure and stem. The artificial foliage (plastic, polyester, polyfoam, pinecone, rattan) is attached to the bottom center as an accessory. Heading 6702 covers artificial flowers, foliage, fruit and articles made *of* them\u2014i.e., articles whose essential character is the artificial botanical elements. This article is not made of artificial flowers/foliage/fruit; it is a metal-framed decorative object with attached foliage. Therefore it falls outside heading 6702 entirely.",
+  "receipt_id": "rcpt_req_697gpaq4",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359221": {
+  "code": "8704310120",
+  "fits": false,
+  "line": "8704.31.01.20",
+  "reason": "The proposed statistical subdivision 8704.31.01.20 requires the vehicle's G.V.W. not to exceed 2.5 metric tons. The importer has not provided the Gross Vehicle Weight (G.V.W.) rating of the 1990 Honda Acty truck; this value is required to confirm whether the correct statistical break is 8704.31.01.20 (\u2264 2.5 t) or 8704.31.01.40 (> 2.5 t \u2264 5 t).",
+  "receipt_id": "rcpt_req_9qt5gd99",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360414": {
+  "code": "8537109160",
+  "fits": false,
+  "line": "8537.10.91.60",
+  "reason": "The imported cabinet contains only passive components (bus bar, terminal block, grounding cables) and is designed to house active electrical equipment (power distribution, fiber optic) that will be added after importation. It does not constitute a 'programmable controller' (8537.10.91.60), which requires programmable logic/controller functionality. It also does not fit 'panel boards and distribution boards' (8537.10.91.50) or 'switchgear assemblies and switchboards' (8537.10.91.20) in its imported condition, as these require assembled functional power distribution/switching apparatus. The cabinet appears to be a base/housing 'equipped with' only two or more apparatus of heading 8536 (terminal block, grounding cables/connectors), making it potentially classifiable under 8537.10.91.70 (Other).",
+  "receipt_id": "rcpt_req_2ehqq4rn",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359001": {
+  "code": "8421210000",
+  "fits": true,
+  "line": "",
+  "reason": "The merchandise is an electrochemical water purification system that treats feed water by applying direct current to reactors containing anode and cathode surfaces, inducing electrochemical reactions that oxidize/reduce pollutants and generate oxidants for further contaminant treatment. This constitutes 'filtering or purifying machinery and apparatus for liquids' under heading 8421, specifically for water, placing it in subheading 8421.21.00. The alternative subheadings cover beverages (8421.22), oil/fuel filters for engines (8421.23), or other liquids (8421.29), which do not apply.",
+  "receipt_id": "rcpt_req_cnn5xrjr",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361571": {
+  "code": "8486900000",
+  "fits": true,
+  "line": "",
+  "reason": "The DGLM is a specialized membrane assembly installed within the wafer stage region of an EUV lithography machine. EUV lithography machines fall under heading 8486.20 as machines for the manufacture of semiconductor devices. The DGLM is shipped as a replacement/upgrade part for this machine, consists of aluminum, stainless steel, rubber, and plastics, and serves as a contamination barrier and spectral filter integral to the lithographic process. As a part dedicated solely/principally to a machine of heading 8486, it is classified under 8486.90 (Parts and accessories) per Note 1(C) to Chapter 84 and the structure of heading 8486.",
+  "receipt_id": "rcpt_req_ltk4x8uz",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359738": {
+  "code": "7615109100",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a cast-aluminum skillet used for cooking on a stove top, making it a kitchen article of aluminum. It is not sanitary ware (so not 7615.20), not a pot scourer or similar pad/glove (so not 7615.10.11), and not listed among the specific cooking/kitchen ware subheadings (enameled/glazed, cast iron, non-stick, etc.). Therefore it falls under the residual 7615.10.91.00. The 9% silicon plastic material is part of the cast aluminum alloy matrix, not a separate coating or nonstick finish.",
+  "receipt_id": "rcpt_req_jcisgtlu",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359779": {
+  "code": "9401790015",
+  "fits": true,
+  "line": "",
+  "reason": "Both items are seats with metal frames (steel and aluminum) that are not upholstered (fabric is integral to the frame, not a separate upholstery layer), so they fall under 9401.79.00. They are not highchairs, infant walkers, bouncers, swings, or stationary activity centers, so they fall under the 'Other' statistical breakout at level 3. They are designed for outdoor use (beach, camping), so they fall under 'Outdoor' at level 4. They have textile seating and backing materials, so they fall under 'With textile covered cushions or textile seating or backing material' at level 5. They are not household indoor furniture, so they fall under the residual 'Other' (9401.79.00.15) at level 6.",
+  "receipt_id": "rcpt_req_cq0pqs4p",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361392": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a costume (robe/dress) which is a festive/entertainment article. It is not a Christmas article (9505.10), a magic trick/practical joke article (9505.90.20), or confetti/paper spirals/streamers/party favors/noisemakers (9505.90.40). The unfinished edges and simple stitching do not affect classification at this level. It falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_hdhiuk1v",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359070": {
+  "code": "8518908100",
+  "fits": true,
+  "line": "",
+  "reason": "The faceted ear cups are structural housing components of aviation headsets (headphones combined with microphone, classifiable under 8518.30). As magnesium housings that form the ear cup enclosure, they are parts of heading 8518, not printed circuit assemblies, and not limited to line telephone handsets or repeaters. They fall under the residual 'Other' parts provision at 8518.90.81.00.",
+  "receipt_id": "rcpt_req_c3tzfrjx",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358735": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a festive/entertainment costume (Monster Scarecrow) consisting of a coat, chest piece, hands, belt, hat, and mask. It is not a Christmas article (9505.10), magic trick/practical joke article (9505.90.20), or confetti/party favor/noisemaker (9505.90.40). It falls under the residual 9505.90.60.00.",
+  "receipt_id": "rcpt_req_etei9911",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361415": {
+  "code": "9505906000",
+  "fits": false,
+  "line": "9505.90",
+  "reason": "The product is a textile plush heart-shaped decoration for Valentine's Day. Heading 9505 covers festive, carnival or other entertainment articles. While Valentine's Day is a festive occasion, the item is described as a 'home decoration' made of plush fabric and stuffing. Such decorative plush items are typically classified as stuffed toys (Heading 9503) or other textile made-up articles (Chapter 63) rather than entertainment articles under 9505, unless they are clearly intended for use in games, parties, or as party favors/novelties. The description does not indicate an entertainment function.",
+  "receipt_id": "rcpt_req_okwxhpr0",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361192": {
+  "code": "9403200086",
+  "fits": true,
+  "line": "",
+  "reason": "Both HSRF and VSRF are metal furniture (steel) not of a kind used in offices (9403.10), so they fall under 9403.20. They are not household furniture (LEVEL 2 alternative 'Household'), so 'Other' applies. At LEVEL 3 they are racks, which are explicitly listed under 'Counters, lockers, racks, display cases, shelves, partitions and similar fixtures'. At LEVEL 4, HSRF is a steel rack not covered by the boltless shelving statistical note 4, not a storage locker under note 5, and not the specific 'Steel racks' breakout 9403.20.00.82 (which is a separate statistical line for other steel racks), so the residual 'Other' (9403.20.00.86) applies. VSRF likewise falls under the same residual 'Other' line.",
+  "receipt_id": "rcpt_req_li4vqass",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357431": {
+  "code": "7306613000",
+  "fits": false,
+  "line": "LEVEL 1",
+  "reason": "The product consists of welded stainless steel pipes with a circular cross section. At LEVEL 1, the proposed path enters 'Other, welded, of noncircular cross section,' which explicitly excludes circular cross-section products. Circular cross-section welded stainless steel pipes are classified under 7306.40, an alternative at this same level.",
+  "receipt_id": "rcpt_req_9r1m3ogo",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359252": {
+  "code": "9021100090",
+  "fits": true,
+  "line": "",
+  "reason": "The rollators are appliances worn or carried to compensate for a walking disability. They are orthopedic appliances (crutches/walking aids) classified under 9021.10.00. They are not bone plates, screws, nails, or other internal fixation devices (9021.10.00.50), so they fall under the residual 'Other' line 9021.10.00.90.",
+  "receipt_id": "rcpt_req_2xe0xc2n",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358121": {
+  "code": "8537109160",
+  "fits": false,
+  "line": "8537.10.91.60",
+  "reason": "The product is a multi-axis joystick controller for fork trucks, consisting of a handle with switches, a Hall Effect position sensor, a control PCBA, and a connector. It is not a 'programmable controller' (PLC) as classified under 8537.10.91.60, which denotes an industrial digital computer for automation of electromechanical processes. The joystick is an input peripheral (operator control station) that sends signals to the truck's main controller; it does not execute programmable logic or control programs. Additionally, the article is a single apparatus (a joystick unit) rather than a 'board, panel, console, desk, cabinet or other base equipped with two or more apparatus of heading 8535 or 8536' as required by heading 8537.",
+  "receipt_id": "rcpt_req_37yq5a72",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361569": {
+  "code": "9403896015",
+  "fits": false,
+  "line": "9403.89",
+  "reason": "The furniture is made of powder-coated aluminum frames (metal) with sintered stone tops and textile cushions. Metal furniture is classified under 9403.10 (office) or 9403.20 (other metal furniture), not under 9403.89 which covers furniture of other materials such as cane, osier, bamboo, or similar materials. Since the description indicates outdoor patio use (not office), the correct heading is 9403.20.",
+  "receipt_id": "rcpt_req_p2d84me0",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359849": {
+  "code": "3105100000",
+  "fits": true,
+  "line": "",
+  "reason": "Biofran is a liquid mineral foliar fertilizer containing nitrogen, phosphorus, and potassium from urea and phosphoric acid, packaged in 1-liter containers (gross weight well under 10 kg). It falls squarely within heading 3105 as a mineral/chemical fertilizer, and because it is put up in packages not exceeding 10 kg, the correct subheading is 3105.10.00.00. The organic additives (amino acids, humic substances, hydrolyzed proteins, seaweed extract) are supplemental and do not alter the essential character as a mineral fertilizer. None of the alternative subheadings apply: 3105.20 requires the product not be in small packages, 3105.30/3105.40 are specific chemical compounds, 3105.50/3105.60 cover only two-element fertilizers, and 3105.90 is residual.",
+  "receipt_id": "rcpt_req_4zn54266",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358696": {
+  "code": "3924104000",
+  "fits": false,
+  "line": "3924",
+  "reason": "The product consists of decorative melting-art sculptures resembling melting ice pops, sold commercially in various colors. Heading 3924 covers tableware, kitchenware, other household articles, and hygienic or toilet articles of plastics. These sculptures are ornamental items, not articles for table or kitchen use, nor general household utility articles, nor hygienic/toilet articles.",
+  "receipt_id": "rcpt_req_0mvcq3qi",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359529": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a Halloween decoration (cat-shaped stuffed textile) marketed exclusively for Halloween. It is a festive/entertainment article but not a Christmas article (9505.10), magic trick/practical joke article (9505.90.20), or confetti/party favor/noisemaker (9505.90.40). It therefore falls under the residual 9505.90.60.00.",
+  "receipt_id": "rcpt_req_49zgpsc1",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358581": {
+  "code": "8708998180",
+  "fits": false,
+  "line": "LEVEL 0",
+  "reason": "A racing go-kart chassis without an engine or tires is not a 'part or accessory of the motor vehicles of headings 8701 to 8705.' Go-karts are classified under heading 9506 (articles for gymnastics, athletics, other sports or outdoor games) as sports vehicles, not as motor vehicles under headings 8701\u20138705. Therefore, heading 8708 does not apply.",
+  "receipt_id": "rcpt_req_924mqbky",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359291": {
+  "code": "8518908100",
+  "fits": false,
+  "line": "8518",
+  "reason": "The product is a standalone battery charger for a lithium-ion battery used in an aviation headset. It is not a microphone, loudspeaker, headphone/earphone, audio-frequency electric amplifier, electric sound amplifier set, or a part thereof. Battery chargers are not covered by heading 8518.",
+  "receipt_id": "rcpt_req_j5po8rlh",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361449": {
+  "code": "6114303070",
+  "fits": false,
+  "line": "LEVEL 2: 6114.30.30 Other",
+  "reason": "The proposed path selects subheading 6114.30.30 ('Other'), which is a residual category for knitted or crocheted man-made fiber garments not covered by the specific subheadings 6114.30.10 ('Tops') or 6114.30.20 ('Bodysuits and bodyshirts'). Without a description of the garment's design (e.g., whether it is a top, bodysuit, or another type of garment), it cannot be confirmed that the product falls outside the more specific 'Tops' or 'Bodysuits and bodyshirts' categories.",
+  "receipt_id": "rcpt_req_eiubb0hy",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357574": {
+  "code": "8544493080",
+  "fits": true,
+  "line": "",
+  "reason": "The cable is an insulated electric conductor rated for 300V (\u22641,000V) and not fitted with connectors, placing it in heading 8544.49. It is not coaxial (8544.20), not a wiring set for vehicles/aircraft/ships (8544.30), not for >1,000V (8544.60), and not optical fiber (8544.70). At the 8544.49 level, it is not fitted with connectors (8544.42). It is a copper conductor (8544.49.30) rated \u2264600V, so it falls in the residual 8544.49.30.80. All levels are satisfied.",
+  "receipt_id": "rcpt_req_uhhs7wk0",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361651": {
+  "code": "8708998180",
+  "fits": false,
+  "line": "8708.99.68",
+  "reason": "The timing chain tensioning assembly is a component of the engine's valve train that maintains chain tension and synchronizes crankshaft and camshaft motion. This function constitutes a power train part under heading 8708.99.68 ('Other parts for power trains') rather than the residual subheading 8708.99.81.",
+  "receipt_id": "rcpt_req_qybh25su",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361194": {
+  "code": "4010110000",
+  "fits": false,
+  "line": "4010.11.00.00 Reinforced only with metal",
+  "reason": "The product's reinforcement layers are 1-8 plies of polyester and nylon textile materials. It contains no metal reinforcement, so it cannot be classified under 'Reinforced only with metal.' The correct subheading for conveyor belts reinforced only with textile materials is 4010.12.",
+  "receipt_id": "rcpt_req_ifl3ddds",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359071": {
+  "code": "8518908100",
+  "fits": true,
+  "line": "",
+  "reason": "The faceted ear cups are structural housing components of aviation headsets (headphones combined with microphone, classifiable under 8518.30). As magnesium housings that form the ear cup enclosure, they are parts of heading 8518, not printed circuit assemblies, and not limited to line telephone handsets or repeaters. They fall under the residual 'Other' parts provision at 8518.90.81.00.",
+  "receipt_id": "rcpt_req_8hc52l9c",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359855": {
+  "code": "3105100000",
+  "fits": true,
+  "line": "",
+  "reason": "Aminomax is a mineral/chemical fertilizer containing nitrogen, phosphorus, and potassium (from urea and phosphoric acid) and is imported in 1-liter containers with a gross weight well under 10 kg. It therefore falls squarely within heading 3105 and, because it is put up in packages not exceeding 10 kg, the correct subheading is 3105.10.00.00. The organic additives (amino acids, humic substances, hydrolyzed proteins, seaweed extract) are supplemental and do not alter the essential character as a mineral fertilizer. None of the alternative subheadings apply: 3105.20 requires the product not be in small packages, 3105.30/3105.40 are specific chemical compounds, 3105.50/3105.60 cover only two-element fertilizers, and 3105.90 is residual.",
+  "receipt_id": "rcpt_req_djrr0tbn",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358621": {
+  "code": "8903120060",
+  "fits": true,
+  "line": "",
+  "reason": "The inflatable kayak/SUP board is an inflatable vessel for pleasure or sports, weighing ~11.3 kg (25 lbs) \u2014 well under the 100 kg limit \u2014 and is not designed for use with a motor. It therefore falls under 8903.12.00. As a complete set including paddle, pump, backpack and accessories, it is not a sailboat and is valued at $267.45 (<$500), so the residual subheading 8903.12.00.60 applies.",
+  "receipt_id": "rcpt_req_zga4129k",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361111": {
+  "code": "6116106500",
+  "fits": false,
+  "line": "6116.10.55",
+  "reason": "Classification between 6116.10.55 (coating < 50% by weight) and 6116.10.65 (coating >= 50% by weight) depends on whether the polyurethane dip coating accounts for 50% or more of the total glove weight. The product description gives fiber composition of the knit liner (95% nylon/5% polyurethane) but not the coating weight share.",
+  "receipt_id": "rcpt_req_igygcb3v",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359032": {
+  "code": "8421290065",
+  "fits": true,
+  "line": "",
+  "reason": "The Roxia Tower Press TP16 is a filtering machine for liquids. It is not a water filter (8421.21), beverage filter (8421.22), or oil/fuel filter for internal combustion engines (8421.23). At the statistical subdivision level, it is not a refrigerant recovery unit (8421.29.00.05), oil-separation equipment (8421.29.00.15), or hydraulic fluid power filter rated at 1,000 kPa or greater (8421.29.00.40). The remaining provision, 8421.29.00.65 'Other', is the correct residual category.",
+  "receipt_id": "rcpt_req_re7z0zmr",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358516": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a non-functional Halloween decorative potion bottle shaped as an apothecary bottle with a spider motif, marketed and sold as an eerie decoration for Halloween. It is a festive/entertainment article for Halloween, not a Christmas article (9505.10), magic trick or practical joke article (9505.90.20), or confetti/paper spirals/streamers/party favors/noisemakers (9505.90.40). Therefore, it falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_pg5xf35s",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358036": {
+  "code": "7324900000",
+  "fits": false,
+  "line": "7324",
+  "reason": "The products are shower/bathroom storage accessories (soap saver, shower basket, corner basket) made of steel wire with bamboo inserts and suction cups. They are not sanitary ware (sinks, wash basins, baths, bidets, water closets, urinals, or similar fixed sanitary fixtures) nor parts thereof. Heading 7324 covers sanitary fixtures for hygiene (washing, bathing, waste disposal), not movable storage caddies.",
+  "receipt_id": "rcpt_req_vx9emsbn",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359804": {
+  "code": "8428900390",
+  "fits": true,
+  "line": "",
+  "reason": "The IndeeLift PPU-S is a self-contained, battery-powered lifting device with a vertical post, actuator assembly, and a seat/platform that lowers to the floor to raise a person up to 30 inches. It is not a passenger/freight elevator (8428.10), pneumatic elevator/conveyor (8428.20), continuous-action goods conveyor (8428.3x), escalator/moving walkway (8428.40), teleferic/chair lift (8428.60), or industrial robot (8428.70). At the subheading level 8428.90.03 'Other machinery,' it is not woodland log handling equipment (8428.90.03.10). Therefore it falls under the residual statistical suffix 8428.90.03.90 'Other.'",
+  "receipt_id": "rcpt_req_fmqk3n1v",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359300": {
+  "code": "3004909235",
+  "fits": false,
+  "line": "3004.90.92.35",
+  "reason": "The product contains clozapine, an atypical antipsychotic. The proposed line 3004.90.92.35 is specifically for medicaments containing tramadol. Clozapine is not tramadol, so this line does not apply. At Level 6, clozapine is not listed among the named subheadings (tolmetin, ibuprofen, acetaminophen, aspirin, tramadol); it falls under the residual 'Other' line 3004.90.92.36.",
+  "receipt_id": "rcpt_req_5h8256ba",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361386": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a costume (flimsy robe), which is a festive/entertainment article. It is not a Christmas article (9505.10), a magic trick/practical joke article (9505.90.20), or confetti/paper spirals/streamers/party favors/noisemakers (9505.90.40). The unfinished edges and simple stitching do not affect classification at this level. It falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_e60lvvs8",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358898": {
+  "code": "8544429090",
+  "fits": false,
+  "line": "8544.30.00.00",
+  "reason": "The harness is a wiring set of a kind used in vehicles (commercial vehicles) with multiple coaxial conductors fitted with connectors, which falls under heading 8544.30 (Ignition wiring sets and other wiring sets of a kind used in vehicles, aircraft or ships) rather than 8544.42.",
+  "receipt_id": "rcpt_req_zxpz9dba",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360179": {
+  "code": "9008504000",
+  "fits": true,
+  "line": "",
+  "reason": "The tracing projector is a compact plastic device that projects images from interchangeable disks onto paper for children to trace. It is an image projector, not a cinematographic projector, slide projector, microform reader, or photographic enlarger/reducer. Therefore, it falls under 9008.50.40.00 (Other image projectors).",
+  "receipt_id": "rcpt_req_n0vo3dik",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361291": {
+  "code": "8716390090",
+  "fits": false,
+  "line": "8716.31.00.00",
+  "reason": "The product is a tanker trailer designed to transport propane (a liquid/gas), which falls specifically under 8716.31.00.00 'Tanker trailers and tanker semi-trailers.' The proposed path incorrectly places it under the residual 8716.39 'Other' category.",
+  "receipt_id": "rcpt_req_c0sxewk3",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358304": {
+  "code": "8518210000",
+  "fits": false,
+  "line": "8518.21.00.00",
+  "reason": "The speaker module incorporates two speakers in a single enclosure, making it 'Multiple loudspeakers, mounted in the same enclosure' under 8518.22.00.00, not 'Single loudspeakers' under 8518.21.00.00.",
+  "receipt_id": "rcpt_req_k7pm2yqb",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N356812": {
+  "code": "8516606000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is an electrothermic appliance of a kind used for domestic purposes (electric skillet/griddle). It falls under 8516.60 (other ovens; cooking stoves, ranges, cooking plates, boiling rings, grillers and roasters). It is not a cooking stove, range, or oven (8516.60.40), so it is correctly classified under the residual 8516.60.60.00. Prior rulings (N261921, N118555, N130979, N151555, N179422) confirm this classification for similar electric skillets/griddles.",
+  "receipt_id": "rcpt_req_1m6wxnm7",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360406": {
+  "code": "8708998180",
+  "fits": false,
+  "line": "8708.99.68",
+  "reason": "The temperature control assembly is an integral part of the engine's cooling system, regulating coolant flow to the radiator and heater via a thermostatic wax element. This function is essential to the engine's operation and power train, making it a part for power trains under 8708.99.68 rather than a residual 'Other' part under 8708.99.81.",
+  "receipt_id": "rcpt_req_w6dx52e7",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361312": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a costume (vest), which is a festive/entertainment article. It is not a Christmas article (9505.10), a magic trick/practical joke article (9505.90.20), or confetti/paper spirals/streamers/party favors/noisemakers (9505.90.40). The raw, unfinished armholes and non-functional buttons do not affect classification at this level. It falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_daaagw3q",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359447": {
+  "code": "3004909220",
+  "fits": false,
+  "line": "3004.90.92.20",
+  "reason": "The proposed line 3004.90.92.20 is specifically for cardiovascular medicaments containing amiodarone or its salts. The product contains riociguat, a guanylate cyclase stimulator, which is not amiodarone. Riociguat is not listed among the named active ingredients in any of the alternative Level 5 lines (metoprolol, diltiazem, hydralazine, enoxaparin, labetalol, or the group in 3004.90.92.25). Therefore, the product falls under the residual 'Other' line 3004.90.92.26.",
+  "receipt_id": "rcpt_req_jo5iocj9",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359594": {
+  "code": "8703230190",
+  "fits": false,
+  "line": "8703.23.01",
+  "reason": "The vehicle has a 5,344 cc engine, which exceeds the 3,000 cc upper limit for subheading 8703.23.01. The correct subheading for a cylinder capacity exceeding 3,000 cc is 8703.24.01.",
+  "receipt_id": "rcpt_req_z42aoxlv",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361157": {
+  "code": "8537109170",
+  "fits": false,
+  "line": "8537",
+  "reason": "The imported merchandise consists of complete vessel fin stabilizer systems (HS, LR, LRSTAB) and a vessel steering system (DIRECTA). These are integrated electromechanical systems whose primary function is the physical control of a vessel's motion (roll, pitch, yaw, steering) through actuators, fins, motors, inertial platforms, and control units. Heading 8537 covers bases (boards, panels, consoles, cabinets) equipped with two or more apparatus of heading 8535 or 8536 for electric control or distribution of electricity. The stabilizer and steering systems are not merely equipped bases for electrical control/distribution; they are complete machinery systems for vessel motion control. The individual control panels (Electronic Control Unit, Electronic Power Unit, Wheelhouse Control Station) may fall in 8537 when imported separately, but the complete systems as described are excluded from 8537 and belong in headings such as 8483 (transmission/gearing), 8481 (hydraulic/pneumatic actuators), 9014/9032 (navigation/automatic control), or 8908 (vessel equipment).",
+  "receipt_id": "rcpt_req_f8jrmrwp",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359913": {
+  "code": "3004909221",
+  "fits": false,
+  "line": "3004.90.92.21",
+  "reason": "The proposed line 3004.90.92.21 is specifically for cardiovascular medicaments containing diltiazem or its salts. The product contains olmesartan medoxomil, an angiotensin II receptor blocker (ARB), which is not diltiazem. Olmesartan medoxomil is not listed among the named active ingredients in any of the alternative Level 5 lines (metoprolol, amiodarone, hydralazine, enoxaparin, labetalol, or the group in 3004.90.92.25). Therefore, the product falls under the residual 'Other' line 3004.90.92.26.",
+  "receipt_id": "rcpt_req_8xm5lrbl",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358307": {
+  "code": "3401190000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a tissue-paper wipe (paper) impregnated with a cleaning solution containing a surfactant (detergent). This matches the explicit language of heading 3401 covering 'paper, wadding, felt and nonwovens, impregnated, coated or covered with soap or detergent' and the residual subheading 3401.19.00 for all such articles other than those for toilet use. Precedent rulings N309230 and N321568 confirm classification under 3401.19.0000 for essentially identical lens-cleaning paper wipes. The product is not for toilet use, so 3401.11 does not apply, and it is not a soap bar/cake or a skin-washing liquid/cream, so the other level-1 alternatives do not apply.",
+  "receipt_id": "rcpt_req_ubmjd9nc",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N360804": {
+  "code": "8518302000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a headphone assembly consisting of two ear cup speakers with integrated microphones, a cable harness, and a wired control box module, all imported together as a complete retrofit kit for aviation helmets. This constitutes 'headphones and earphones, whether or not combined with a microphone' under heading 8518.30. It is not a line telephone handset (8518.30.10), so it falls under the 'Other' subheading 8518.30.20.00.",
+  "receipt_id": "rcpt_req_zemm6fhx",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358156": {
+  "code": "3406000000",
+  "fits": false,
+  "line": "3406.00.00.00 Candles, tapers and the like",
+  "reason": "Each imported SKU is a retail set of a candle and a separate steel stand/holder. GRI 3(b) gives essential character to the candle, but the set as a whole is not a 'candle, taper or the like' and should be classified as a set under GRI 3(c) (likely in heading 8306).",
+  "receipt_id": "rcpt_req_nuq49na3",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358387": {
+  "code": "6307909891",
+  "fits": true,
+  "line": "",
+  "reason": "The foldable hand fan is a made-up textile article not specifically provided for elsewhere in the tariff schedule. It falls under heading 6307 as 'Other made up articles'. It is not a cleaning cloth (6307.10), lifejacket (6307.20), needlecraft set, label (6307.90.30), cord/tassel (6307.90.40), lacing (6307.90.50), surgical drape, pet toy (6307.90.75), or man-made fiber wall banner (6307.90.85). At the 6307.90.98 level, it is not a surgical towel, cotton pile/tufted towel, pillow shell, or quilt shell (6307.90.89), nor a national flag, face mask, cotton towel (6307.90.98.82), man-made fiber towel (6307.90.98.84), or furniture mover's pad (6307.90.98.85/87). The residual 'Other' (6307.90.98.91) is therefore correct.",
+  "receipt_id": "rcpt_req_hvhsxoof",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357223": {
+  "code": "3824999397",
+  "fits": false,
+  "line": "3824",
+  "reason": "The Titan Pro Ice Pack Set is a composite article consisting of a gel sealed inside a multi-layer nylon/aluminum/mylar pouch, not a bulk chemical preparation classifiable under heading 3824. The essential character of the product is that of a refrigerating pack (a manufactured article), so it falls outside Chapter 38.",
+  "receipt_id": "rcpt_req_5dt0z67i",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357206": {
+  "code": "3214100020",
+  "fits": true,
+  "line": "",
+  "reason": "The product consists of industrial silicone-based sealing compounds (Loctite 5900 and 5910) designed for engine flange sealing and industrial machinery gasketing. They are non-corrosive, flexible, oil-resistant compounds used in MRO operations. At Level 0, heading 3214 covers 'caulking compounds and other mastics.' At Level 1, subheading 3214.10.00 covers 'caulking compounds and other mastics; painters' fillings,' which is the correct provision as opposed to 3214.90 (Other). At Level 2, the products are mastics (mastic-type sealing compounds), not painters' fillings. At Level 3, the statistical reporting number 3214.10.00.20 ('Other') correctly captures mastics other than caulking compounds (3214.10.00.10). The product fits the full path.",
+  "receipt_id": "rcpt_req_b0h41qww",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357964": {
+  "code": "8501314000",
+  "fits": false,
+  "line": "8501",
+  "reason": "The product is a dynamometer test system \u2014 an assembled apparatus comprising two permanent-magnet motors, gearboxes, torque transducers, controllers, power supply, cooling fans, safety cover, and mounting hardware \u2014 designed to simulate riding loads on e-bike mid-drive units. Heading 8501 covers electric motors and generators as individual machines; it does not cover complex testing systems that incorporate motors as sub-components.",
+  "receipt_id": "rcpt_req_t9ueljs1",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359763": {
+  "code": "8525894000",
+  "fits": false,
+  "line": "8525.89.40.00",
+  "reason": "The product captures video images and transmits them to a connected gateway for processing and recording, and explicitly cannot record images. Therefore, it is a television camera (video camera) rather than a video camera recorder. Subheading 8525.89.40.00 is limited to digital still image video cameras, which are a type of video camera recorder. The product belongs under the alternative 'Television cameras' within 8525.89.",
+  "receipt_id": "rcpt_req_nmpu41xu",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359807": {
+  "code": "8471410150",
+  "fits": true,
+  "line": "",
+  "reason": "The gaming PCs are automatic data processing machines comprising in the same housing at least a central processing unit and an input and output unit (via USB, HDMI, etc.), making them classifiable under 8471.41.01. They are not portable machines (8471.30) as they are traditional desktop PCs, and they are not 'Other, entered in the form of systems' (8471.49) as each is a single integrated unit. The 8-digit subheading 8471.41.01 covers both CRT and non-CRT types; since these are modern desktops without CRT, the statistical suffix .50 'Other' applies.",
+  "receipt_id": "rcpt_req_mgczq6sm",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359472": {
+  "code": "9405994090",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a stainless steel housing for an in-roadway pedestrian crosswalk warning light (LightStar\u2122 Plus with SMPL\u2122). At Level 1, it is a part of a luminaire/lighting fitting (the complete warning light unit), not a complete luminaire itself, so it falls under 'Parts' (9405.99). At Level 2, it is 'Other' (9405.99) because it is of stainless steel, not glass (9405.91) or plastics (9405.92). At Level 3, it is 'Other' (9405.99.40) because it is not of brass (9405.99.20). At Level 4, the statistical suffixes cover lampposts/bases of cast iron (.10) and aluminum (.20); a stainless steel housing for an in-roadway marker is neither, so it falls under the residual 'Other' (.90).",
+  "receipt_id": "rcpt_req_bogsn9a9",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358088": {
+  "code": "4201006000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a pet costume made of 100% polyester with foam lining, which is neither a dog leash, collar, muzzle, harness, nor similar dog equipment. It therefore falls outside 4201.00.30.00 and within the residual 'Other' subheading 4201.00.60.00.",
+  "receipt_id": "rcpt_req_4yy99hba",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "H321679": {
+  "code": "4202924500",
+  "fits": false,
+  "line": "LEVEL 3",
+  "reason": "The product description identifies the items as 'hamper tote bags' but does not state their intended use. Classification under 'Travel, sports and similar bags' requires that the bags be of a kind normally used for travel, sports, or similar activities. Without knowing the principal use, it cannot be confirmed that they fall within this subheading rather than 'Insulated food or beverage bags', 'Musical instrument cases', or the residual 'Other' category at this level.",
+  "receipt_id": "rcpt_req_21433hrm",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359532": {
+  "code": "7324900000",
+  "fits": false,
+  "line": "7324.90.00.00",
+  "reason": "The 2-piece set consists of a foot-pedal trash can (body, lid, pedal of powder-coated iron sheet metal; inner bucket and base of PP) and a toilet brush with holder. Neither article is sanitary ware (baths, wash-basins, sinks, bidets, lavatory pans, flushing cisterns, urinals, or similar fixed installations) nor a part thereof; both are freestanding household articles of iron or steel and plastics. The set is therefore excluded from heading 7324 and would fall under heading 7323 (table, kitchen or other household articles and parts thereof, of iron or steel) or heading 3924 (household articles of plastics) under GRI 3(b) depending on essential character.",
+  "receipt_id": "rcpt_req_2uc7u2e2",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358235": {
+  "code": "9506996080",
+  "fits": true,
+  "line": "",
+  "reason": "Athletic groin protectors (protective cups) are sports protective equipment used across multiple sports (e.g., baseball, hockey, football, lacrosse, martial arts) and are not limited to a single named sport. They are not 'articles and equipment for general physical exercise, gymnastics or athletics' (9506.91) because they are protective gear, not exercise equipment. They do not fall under any of the named sport-specific subheadings at Level 3 (archery, badminton, baseball, football/soccer/polo, ice-hockey/field-hockey, lacrosse sticks, lawn-tennis, skeet, sleds, snowshoes, swimming pools) because they are not dedicated to one of those sports. The product therefore falls under the residual 'Other' at Level 3 (9506.99.60) and, at Level 4, is not a net, so it is classified under 9506.99.60.80 Other.",
+  "receipt_id": "rcpt_req_jgr711ti",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359501": {
+  "code": "9031808085",
+  "fits": true,
+  "line": "",
+  "reason": "Both the CISC RFID Xplorer and the CISC RAIN Xplorer Inline 100 are instruments that measure and evaluate UHF RFID performance parameters (tag sensitivity, backscatter power, radiation patterns, conformance metrics, read/write/encode verification). They are not balancing machines (9031.10), test benches (9031.20), optical instruments (9031.40), electron-beam microscopes for semiconductor handling (9031.80.40), or equipment for testing internal combustion engines (the 9031.80.80 breakout for engine-testing equipment). Their essential character is that of measuring/checking instruments not specified elsewhere in Chapter 90, so they fall within the residual 9031.80.80.85 provision.",
+  "receipt_id": "rcpt_req_2032qoha",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358745": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is an adult-size 'Elven Archer' costume consisting of a tunic, pants, belt with shoulder strap, hooded shoulder cape, gauntlets, and artificial elf ears. This is a festive/entertainment costume for occasions such as Halloween, masquerade, or theatrical use. It is not a Christmas article (9505.10), a magic trick or practical joke article (9505.90.20), nor confetti, paper spirals, streamers, party favors, or noisemakers (9505.90.40). Therefore, it falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_6i53otzr",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358452": {
+  "code": "8527212525",
+  "fits": true,
+  "line": "",
+  "reason": "The product is a radiobroadcast receiver (AM/FM) not capable of operating without an external power source, of a kind used in motor vehicles (Level 1). It is combined with sound reproducing apparatus via USB playback and Bluetooth audio streaming (Level 2). It is not a radio-tape player combination (Level 3). It does not incorporate optical disc players or recorders (Level 5 alternative). It is not capable of receiving and decoding digital radio data system signals (Level 4 alternative). Therefore, it falls under the residual 8527.21.25.25.",
+  "receipt_id": "rcpt_req_fpp02eh7",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358306": {
+  "code": "8436800090",
+  "fits": true,
+  "line": "",
+  "reason": "The RIC2Discover System is a complete cattle feeding and watering system that provides feed and water to cattle while recording individual animal intake via RFID and weighing technology. This constitutes 'Other agricultural... machinery' under heading 8436. It is not machinery for preparing animal feeds (8436.10), poultry-keeping machinery, or parts. At the statistical suffix level, it is not forestry machinery (.20), barn and barnyard machines (.40), machines for preparing crops for market (.60), or bee-keeping machinery (.70). As livestock (cattle) feeding and watering equipment with integrated data recording for research and commercial farms, it falls under the residual 'Other' category 8436.80.00.90.",
+  "receipt_id": "rcpt_req_0y7e0ey7",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359915": {
+  "code": "3004909235",
+  "fits": false,
+  "line": "3004.90.92.35",
+  "reason": "The product contains olanzapine, an atypical antipsychotic. At Level 6 under 'Analgesics, antipyretics and nonhormonal anti-inflammatory agents', the proposed line 3004.90.92.35 is specifically for medicaments containing tramadol. Olanzapine is not tramadol. Furthermore, olanzapine is an antipsychotic, not an analgesic/antipyretic/NSAID. The correct Level 5 classification would be 'Antidepressants, tranquilizers, and other psychotherapeutic agents', and at Level 6 it would fall under 3004.90.92.36 (Other).",
+  "receipt_id": "rcpt_req_12ku4xbf",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N358186": {
+  "code": "3004909220",
+  "fits": false,
+  "line": "3004.90.92.20",
+  "reason": "The proposed line 3004.90.92.20 is specifically for cardiovascular medicaments containing amiodarone or its salts. The product contains rivaroxaban, a factor Xa inhibitor (direct oral anticoagulant), which is not amiodarone. Rivaroxaban is not listed among the named active ingredients in any of the alternative Level 5 lines (metoprolol, diltiazem, hydralazine, enoxaparin, labetalol, or the group in 3004.90.92.25). Therefore, the product falls under the residual 'Other' line 3004.90.92.26.",
+  "receipt_id": "rcpt_req_fpdskwnd",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359912": {
+  "code": "3004909228",
+  "fits": false,
+  "line": "3004.90.92.28",
+  "reason": "The proposed line 3004.90.92.28 is specifically for 'Tolmetin sodium dihydrate'. The product contains diclofenac sodium, which is a different NSAID. At level 6, diclofenac sodium is not listed among the named subheadings (tolmetin, ibuprofen, acetaminophen, aspirin, tramadol), so it falls under the residual 'Other' line 3004.90.92.36.",
+  "receipt_id": "rcpt_req_cn9hp2ra",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N357467": {
+  "code": "9505906000",
+  "fits": true,
+  "line": "",
+  "reason": "The product is an adult-size Renaissance Peasant Blouse costume made of flimsy, loose-weave man-made fabric with distinctive costume construction (exposed elastic, loose overlock stitching, off-shoulder design). It is a festive/entertainment costume for occasions such as Halloween, Renaissance fairs, or theatrical use. It is not a Christmas article (9505.10), a magic trick or practical joke article (9505.90.20), nor confetti, paper spirals, streamers, party favors, or noisemakers (9505.90.40). Therefore, it falls under the residual subheading 9505.90.60.00.",
+  "receipt_id": "rcpt_req_mkwpqiwn",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N359976": {
+  "code": "8528712000",
+  "fits": true,
+  "line": "",
+  "reason": "The Xumo Stream Box is a reception apparatus for television that receives streaming content via the Internet and outputs it to a TV via HDMI. It is not designed to incorporate a video display or screen (level 2: 8528.71). It does not incorporate video recording or reproducing apparatus (level 3 alternative 8528.71.10). It is a set top box with a communications function (network connectivity for Internet streaming), which matches 8528.71.20.00. The lack of a tuner does not exclude it from this heading, as heading 8528 covers reception apparatus 'whether or not incorporating television reception apparatus.'",
+  "receipt_id": "rcpt_req_7swq8rrv",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ },
+ "N361275": {
+  "code": "7307199060",
+  "fits": false,
+  "line": "7307.19.30",
+  "reason": "The product is a 'ductile fitting' (ductile iron), which is expressly covered by 7307.19.30 'Ductile fittings' at Level 3. The proposed line 7307.19.90.60 is a sibling under 'Other' and therefore does not apply.",
+  "receipt_id": "rcpt_req_h087gzby",
+  "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+ }
+}
