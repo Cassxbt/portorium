@@ -56,10 +56,14 @@ function chrome() {
   const next = PAGES[(i + 1) % PAGES.length];
   document.body.insertAdjacentHTML("beforeend", `
     <footer class="colophon">
-      <span>Open Agent Hackathon 2026<br>Track 03 · Reasoning Architecture</span>
-      <span>Zetaris · Meterless Nightshift + H-MEM<br>NVIDIA Nemotron</span>
-      <span><a href="${REPO}">Source</a> · <a href="/judges">Verify the claims</a></span>
-      <span class="next">Next: <a href="${next[0]}">${next[1]} →</a></span>
+      <a class="next" href="${next[0]}"><span class="label">Next · ${num(next[0])} / ${String(PAGES.length).padStart(2, "0")}</span>
+        <span class="title">${next[1]}<span class="arrow" aria-hidden="true">→</span></span></a>
+      <div class="cols">
+        <div><span class="mark">Portorium</span><p>No code without a living precedent.</p></div>
+        <div><span class="label">Event</span><p>Open Agent Hackathon 2026<br>Track 03 · Reasoning Architecture</p></div>
+        <div><span class="label">Built on</span><p>Zetaris<br>Meterless Nightshift and H-MEM<br>NVIDIA Nemotron</p></div>
+        <div><span class="label">Check it</span><p><a href="/judges">Verify every claim</a><br><a href="/limits">What it does not do</a><br><a href="${REPO}">Source code</a></p></div>
+      </div>
     </footer>`);
   menuBehaviour();
 }

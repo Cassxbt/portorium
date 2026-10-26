@@ -11,13 +11,14 @@
 <style>
   .intro { padding: 72px 0 56px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: end; }
   .story { display: grid; grid-template-columns: 4fr 8fr; gap: clamp(40px, 5vw, 96px); }
+  .story > *, .intro > * { min-width: 0; }
   .chapters { position: sticky; top: 120px; align-self: start; padding-top: 56px; }
   .chapters a { display: grid; grid-template-columns: 4ch 1fr; gap: 10px; padding: 12px 0; border-top: 1px solid var(--rule);
                 color: var(--ink-3); text-decoration: none; font: 400 clamp(24px, 1.9vw, 34px)/1.1 var(--serif); transition: color .32s var(--ease); }
   .chapters a .n { font: 500 12px var(--mono); letter-spacing: .08em; padding-top: 8px; }
   .chapters a.on { color: var(--ink); }
   .chapters a .by { grid-column: 2; font: 400 11.5px var(--mono); letter-spacing: .04em; color: var(--ink-3); margin-top: 2px; }
-  .chapters .case { margin-top: 26px; font: 400 13px/1.6 var(--mono); color: var(--ink-2); border-top: 1px solid var(--ink); padding-top: 14px; }
+  .chapters .case { overflow-wrap: anywhere; margin-top: 26px; font: 400 13px/1.6 var(--mono); color: var(--ink-2); border-top: 1px solid var(--ink); padding-top: 14px; }
   .station { min-height: 88vh; padding: 56px 0 72px; border-bottom: 1px solid var(--rule); scroll-margin-top: 100px; }
   .station h2 { margin: 16px 0 22px; }
   .station .lead { margin-bottom: 28px; }
@@ -28,12 +29,21 @@
   .evidence .label { margin-bottom: 10px; }
   .ev { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 7px 0; border-top: 1px solid var(--rule); font: 400 13px/1.55 var(--mono); color: var(--ink-2); }
   .ev:first-of-type { border-top: none; }
+  .ev > span { min-width: 0; overflow-wrap: anywhere; }
   .ev .who { color: var(--ink); } .ev .who i { font-style: normal; color: var(--pen); }
   .ev.call { padding-left: 18px; grid-template-columns: 132px 1fr; color: var(--ink-3); }
   .tag { font: 500 10.5px var(--mono); padding: 1px 6px; border: 1px solid var(--rule); margin-right: 6px; color: var(--ink); white-space: nowrap; }
   table.rules td:first-child { font: 500 12px var(--mono); color: var(--ink-3); width: 4ch; }
   table.rules td.out { white-space: nowrap; font: 500 13px var(--mono); }
   @media (max-width: 960px) { .story, .intro, .grid2 { grid-template-columns: 1fr; } .chapters { position: static; } }
+  @media (max-width: 560px) {
+    .ev, .ev.call { grid-template-columns: 1fr; gap: 2px; }
+    table.rules, table.rules tbody { display: block; }
+    table.rules tr:first-child { display: none; }
+    table.rules tr { display: grid; grid-template-columns: 3ch 1fr; gap: 4px 10px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+    table.rules td { padding: 0; border: none; }
+    table.rules td.out { grid-column: 2; white-space: normal; overflow-wrap: anywhere; }
+  }
 </style>
 </head>
 <body>

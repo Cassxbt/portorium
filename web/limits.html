@@ -19,7 +19,7 @@
   .next div { padding: 24px 24px 0 0; } .next div + div { padding-left: 24px; border-left: 1px solid var(--rule); }
   .next b { display: block; font: 400 26px/1.1 var(--serif); margin-bottom: 10px; }
   .next p { margin: 0; font-size: 16px; color: var(--ink-2); }
-  @media (max-width: 960px) { .head, ol.limits li, .next { grid-template-columns: 1fr; } }
+  @media (max-width: 960px) { .next div + div { padding-left: 0; border-left: none; border-top: 1px solid var(--rule); margin-top: 20px; } .head, ol.limits li, .next { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>

@@ -39,7 +39,7 @@
   .takeaways b { display: block; font: 400 30px/1.05 var(--serif); margin-bottom: 10px; }
   .method { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
   .method p { font-size: 16.5px; color: var(--ink-2); }
-  @media (max-width: 960px) { .head, .hero-stat, .takeaways, .method { grid-template-columns: 1fr; } .bar, .axis { grid-template-columns: 1fr; } }
+  @media (max-width: 960px) { .hero-stat > div + div, .takeaways div + div { padding-left: 0; border-left: none; border-top: 1px solid var(--rule); margin-top: 20px; } .head, .hero-stat, .takeaways, .method { grid-template-columns: 1fr; } .bar, .axis { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>

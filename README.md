@@ -25,7 +25,7 @@ Portorium classifies imports under the US tariff schedule. It gives a 10-digit c
 
 <!-- DEMO_VIDEO -->
 
-A women's V-neck pullover. The closest CBP ruling is a 1992 exact match, and Nemotron 3 Ultra proposes its code with **confidence 100**. Zetaris answers that `6110.20.2075` is no longer in the schedule, so the gate refuses to give it and lists the codes its line carries now. A polo shirt comes next: its code is alive, but the Critic reads the schedule's current wording and asks the one fact it needs, the fibre. The importer answers, the whole loop runs again, and the verdict is stamped CLASSIFIED with three Nightshift receipts. H-MEM keeps the answer for the next shipment.
+A women's V-neck pullover. The closest CBP ruling is a 1992 exact match, and Nemotron 3 Ultra proposes its code with **confidence 95**. Zetaris answers that `6110.20.2075` is no longer in the schedule, so the gate refuses to give it and lists the codes its line carries now. A polo shirt comes next: its code is alive, but the Critic reads the schedule's current wording and asks the one fact it needs, the fibre. The importer answers, the whole loop runs again, and the verdict is stamped CLASSIFIED with three Nightshift receipts. H-MEM keeps the answer for the next shipment.
 
 ## Contents
 
@@ -72,16 +72,16 @@ python3 run.py classify "Women's V-neck pullover, 100% cotton jersey knit fabric
 ```
 
 ```text
-  trace Auditor.check_liveness -> Adjudicator success: 951484 6110202075 split; 951485 6110202075 split; 952370 REVOKED ...
-  trace Proposer.propose -> Gate [nvidia/nemotron-3-ultra-550b-a55b] success: 6110202075 at confidence 100
+  trace Auditor.check_liveness -> Adjudicator success: 952530 6109100070 living; d83103 6110303055 split; 951484 6110202075 split; ...
+  trace Proposer.propose -> Gate [nvidia/nemotron-3-ultra-550b-a55b] success: 6110202075 at confidence 95
   trace Gate.decide -> Broker needs_review: REVIEW SPLIT_SUCCESSORS
 
 REVIEW  [SPLIT_SUCCESSORS]
-  951485      1992-08-11  full     6110.20.2075  split   code_in_schedule  women's knit pullover, 100% cotton jersey knit fabric, V-neck, ...
+  951485      1992-08-11  full     6110.20.2075  split   code_in_schedule  Women's V-neck pullover, 100% cotton jersey knit, long sleeves, ...
       gone from Rev 21; its line 6110.20.20 now has 15 codes: 6110.20.2005, 6110.20.2010, 6110.20.2015, ...
-  951484      1992-08-11  partial  6110.20.2075  split   code_in_schedule  women's knit pullover, 100% cotton jersey knit fabric, ...
+  951484      1992-08-11  partial  6110.20.2075  split   code_in_schedule  Round neck and breast pocket differ from V-neck, no pocket
       gone from Rev 21; its line 6110.20.20 now has 15 codes: 6110.20.2005, 6110.20.2010, 6110.20.2015, ...
-  952370      1992-09-22  partial  6110.20.2065  revoked ruling_revoked  men's V-neck pullover, 100% cotton jersey knit, ...
+  952370      1992-09-22  partial  6110.20.2065  revoked ruling_revoked  Men's garment, crew/rib neck, fabric weight 171.5 g/m²
 ```
 
 | Try | Expect |
