@@ -200,7 +200,8 @@ def score(predictions: list[Prediction], items: list[Item], liveness: Liveness) 
         covered = [p for p in preds if p.code]
         acc10 = sum(p.code == answers[p.ruling_number] for p in covered)
         acc6 = sum(p.code[:6] == answers[p.ruling_number][:6] for p in covered)
-        stale = sum(liveness.status(p.code) != LIVING for p in covered if len(p.code) == 10)
+        # An answer that is not a 10-digit line of the schedule counts as stale, whatever its length.
+        stale = sum(len(p.code) != 10 or liveness.status(p.code) != LIVING for p in covered)
         lo, hi = wilson(acc10, len(covered))
         rows.append({"system": system, "items": len(preds), "coverage": round(len(covered) / max(1, len(preds)), 3),
                      "acc10_covered": round(acc10 / max(1, len(covered)), 3), "acc10_ci95": [round(lo, 3), round(hi, 3)],

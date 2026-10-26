@@ -73,12 +73,16 @@ def main() -> int:
     if gate_preds and any(p.system == "retrieval_ultra" for p in predictions):
         coverage = sum(bool(p.code) for p in gate_preds) / len(gate_preds)
         predictions += threshold_baseline(predictions, coverage)
-    table = score([p for p in predictions if p.system != "error"], items, gate.liveness)
+    # Every system is scored on the same items: an item where any system failed is left out for all of them.
     errors = [asdict(p) for p in predictions if p.system == "error"]
+    failed = {e["ruling_number"] for e in errors}
+    scored = [i for i in items if i.ruling_number not in failed]
+    table = score([p for p in predictions if p.system != "error" and p.ruling_number not in failed], scored, gate.liveness)
     RESULTS.mkdir(parents=True, exist_ok=True)
     out = RESULTS / f"{args.split}_{started}.json"
     prompt = prompts_sha256()
-    out.write_text(json.dumps({"split": args.split, "items": len(items), "gate_prompt_sha256": prompt, "table": table, "errors": errors,
+    out.write_text(json.dumps({"split": args.split, "items": len(scored), "items_run": len(items), "items_failed": len(failed),
+                               "gate_prompt_sha256": prompt, "table": table, "errors": errors,
                                "dq": gate.liveness.counts, "predictions": [asdict(p) for p in predictions]}, indent=1))
     for row in table:
         print(row)
