@@ -41,7 +41,8 @@ pip install -e '.[dev]'</pre></div>
         <div class="step"><div><h3>Meterless H-MEM conformance</h3><p>The official H-MEM test vectors against the Python port, and a mutation test showing the vectors catch a broken port.</p></div>
           <pre class="cmd">pytest tests/test_hmem_conformance.py -v</pre></div>
         <div class="step"><div><h3>Classify in sample mode</h3><p>The recorded demo inputs replay exactly. Each prints its precedents, Zetaris status, receipts and the trace file it wrote.</p></div>
-          <pre class="cmd" id="sampleCmd">SAMPLE_MODE=true portorium classify "<span id="sampleProduct">Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom</span>"</pre></div>
+          <pre class="cmd" id="sampleCmd">SAMPLE_MODE=true portorium classify "<span id="sampleProduct">Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom</span>"
+SAMPLE_MODE=true portorium classify "Men's knitted polo shirt with short sleeves and a three-button placket"</pre></div>
         <div class="step"><div><h3>Open the console and this site</h3><p>Same code, served locally.</p></div>
           <pre class="cmd">SAMPLE_MODE=true uvicorn portorium.web:app --port 8781
 <span class="c"># http://127.0.0.1:8781</span></pre></div>

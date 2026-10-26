@@ -94,16 +94,17 @@
 </main>
 <script src="/assets/app.js"></script>
 <script>
-const SAMPLES = [
-  ["classified", "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights"],
-  ["dead code", "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom"],
-  ["question", "Yoga mat of polyurethane foam, 6 mm thick, 183 x 61 cm, for floor exercise"],
-];
+let recordedAnswers = {};
 const ROLES = new Set(["retrieve", "recall", "check_liveness", "judge", "propose", "decide", "schedule_text", "critique", "answer", "sign_off", "record", "rescreen", "error"]);
 let answers = [];
 
-$("examples").innerHTML = SAMPLES.map(([k, s]) => `<button data-s="${esc(s)}"><span class="label">${k}</span><span>${esc(s)}</span></button>`).join("");
-document.querySelectorAll("#examples button").forEach((b) => (b.onclick = () => { $("product").value = b.dataset.s; $("product").focus(); }));
+// The examples are the recorded demo runs, so in sample mode each one replays exactly.
+api("/api/examples").then((list) => {
+  const firsts = list.filter((e) => !e.answers.length && !/-remembered$/.test(e.name));
+  list.filter((e) => e.answers.length).forEach((e) => (recordedAnswers[e.product] = e.answers[e.answers.length - 1][1]));
+  $("examples").innerHTML = firsts.map((e) => `<button data-s="${esc(e.product)}"><span class="label">${esc(e.name.replace("-", " "))}</span><span>${esc(e.product)}</span></button>`).join("");
+  document.querySelectorAll("#examples button").forEach((b) => (b.onclick = () => { $("product").value = b.dataset.s; $("product").focus(); }));
+}).catch(() => {});
 
 async function status() {
   try {
@@ -123,6 +124,7 @@ function render(v) {
   stamp($("verdict").querySelector(".stamp"));
   $("ask").classList.toggle("hide", !(v.decision === "REVIEW" && v.question));
   $("qtext").textContent = v.question || "";
+  if (v.question && recordedAnswers[$("product").value] && !$("answer").value) $("answer").value = recordedAnswers[$("product").value];
   $("signoff").classList.remove("hide");
   $("signcode").value = v.code ? fmt(v.code) : "";
   const rows = (v.precedents || []).map((p, i) => {

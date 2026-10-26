@@ -157,6 +157,7 @@ def examples() -> list[dict]:
         e = json.loads(path.read_text())
         v = e["verdict"]
         out.append({"name": path.stem, "title": e.get("title", path.stem), "product": e["input"]["product"],
+                    "answers": e["input"].get("answers", []),
                     "decision": v["decision"], "reason": v["reason"], "code": v["code"]})
     return out
 

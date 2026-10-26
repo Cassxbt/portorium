@@ -24,9 +24,8 @@ CASES = [
      "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights", None),
     ("dead-code", "The closest precedent's code no longer exists",
      "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom", None),
-    ("question", "One question to the importer",
-     "Yoga mat of polyurethane foam, 6 mm thick, 183 x 61 cm, for floor exercise",
-     "Cellular polyurethane foam throughout, with no textile layer, covering or reinforcement"),
+    ("question", "The Critic asks the one fact the schedule needs",
+     "Men's knitted polo shirt with short sleeves and a three-button placket", "100% cotton jersey knit"),
 ]
 
 
