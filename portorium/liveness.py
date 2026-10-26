@@ -81,15 +81,20 @@ def schedule_text(zetaris: Zetaris, code: str) -> list[dict]:
     """A 10-digit line of the schedule with every level above it, and the other lines at each level.
 
     The meaning of a line depends on its ancestors and, for "Other", on its siblings, so a code can
-    survive a revision while what it covers moves. Rows come back in schedule order.
+    survive a revision while what it covers moves. Rows come back in schedule order. Where the indentation
+    skips a level, the last line at that level belongs to an earlier branch, so an ancestor is kept only if
+    it comes after every ancestor above it.
     """
     h = "portorium_files.hts_line"
     rows = zetaris.query(f"""WITH t AS (SELECT CAST(row_idx AS INT) AS r, CAST(indent AS INT) AS d FROM {h}
             WHERE code_digits = '{code.replace("'", "")}'),
-        anc AS (SELECT CAST(x.indent AS INT) AS lvl, max(CAST(x.row_idx AS INT)) AS r FROM {h} x CROSS JOIN t
+        anc0 AS (SELECT CAST(x.indent AS INT) AS lvl, max(CAST(x.row_idx AS INT)) AS r FROM {h} x CROSS JOIN t
             WHERE CAST(x.row_idx AS INT) <= t.r AND CAST(x.indent AS INT) <= t.d GROUP BY CAST(x.indent AS INT)),
-        bounds AS (SELECT a.lvl, a.r AS own, p.r AS pr, min(CAST(x.row_idx AS INT)) AS nb FROM anc a JOIN anc p ON p.lvl = a.lvl - 1
-            LEFT JOIN {h} x ON CAST(x.row_idx AS INT) > p.r AND CAST(x.indent AS INT) < a.lvl GROUP BY a.lvl, a.r, p.r)
+        anc AS (SELECT a.lvl, a.r FROM anc0 a LEFT JOIN anc0 b ON b.lvl < a.lvl AND b.r > a.r
+            GROUP BY a.lvl, a.r HAVING count(b.lvl) = 0),
+        par AS (SELECT a.lvl, a.r AS own, max(p.lvl) AS plvl FROM anc a JOIN anc p ON p.lvl < a.lvl GROUP BY a.lvl, a.r),
+        bounds AS (SELECT par.lvl, par.own, p.r AS pr, min(CAST(x.row_idx AS INT)) AS nb FROM par JOIN anc p ON p.lvl = par.plvl
+            LEFT JOIN {h} x ON CAST(x.row_idx AS INT) > p.r AND CAST(x.indent AS INT) < par.lvl GROUP BY par.lvl, par.own, p.r)
         SELECT 'path' AS kind, anc.lvl AS lvl, anc.r AS r, x.htsno, x.description FROM anc JOIN {h} x ON CAST(x.row_idx AS INT) = anc.r
         UNION ALL
         SELECT 'alternative' AS kind, b.lvl AS lvl, CAST(x.row_idx AS INT) AS r, x.htsno, x.description FROM bounds b JOIN {h} x

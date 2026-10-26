@@ -16,7 +16,7 @@ def judged(number, match, code, status, kind="ruling", unresolved=False):
 def decide(*precedents, proposed="6110202079", statuses=None, question=""):
     gate = PrecedentGate(None, None, None, LIVE)
     if statuses is None:
-        statuses = {j.ruling_number: j.status for j in precedents if proposed in j.codes}
+        statuses = gate._statuses(proposed, list(precedents), {})
     proposal = Proposal(proposed, 95.0, Answer("{}", {"routed_model": "nvidia/proposer"}))
     return gate.decide(list(precedents), question, Answer("{}", {"routed_model": "nvidia/ultra"}), proposal, statuses)
 
@@ -31,9 +31,10 @@ def test_a_proposal_no_retrieved_ruling_cites_goes_to_review():
     assert (v.decision, v.reason, v.question) == (REVIEW, "NO_PRECEDENT_FOR_PROPOSAL", "Is it for men or women?")
 
 
-def test_a_split_code_goes_to_review():
-    v = decide(judged("N1", "full", "8708295160", SPLIT), proposed="8708295160")
+def test_a_split_code_goes_to_review_and_names_its_successors():
+    v = decide(judged("N1", "full", "6110202076", SPLIT), proposed="6110202076")
     assert (v.decision, v.reason) == (REVIEW, "SPLIT_SUCCESSORS")
+    assert v.proposal["successors"] == ["6110202075", "6110202079"]
 
 
 def test_a_dead_proposal_is_refused_unless_a_living_candidate_remains():
@@ -61,7 +62,8 @@ def test_a_broker_decision_that_contradicts_the_proposal_sends_it_to_review():
 def test_every_verdict_carries_both_receipts_and_the_proposal():
     v = decide(judged("N1", "none", None, None))
     assert [r["routed_model"] for r in v.receipts] == ["nvidia/ultra", "nvidia/proposer"]
-    assert v.proposal == {"code": "6110202079", "confidence": 95.0, "routed_model": "nvidia/proposer", "receipt_id": None}
+    assert v.proposal == {"code": "6110202079", "confidence": 95.0, "routed_model": "nvidia/proposer", "receipt_id": None,
+                          "status": "living", "successors": []}
 
 
 class FakeNightshift:
@@ -112,3 +114,8 @@ def test_zetaris_status_per_decision_overrides_the_startup_snapshot():
     j = gate.judge("product", [p], [], {"N333333": "facts"}, rows)[0][0]
     assert (j.status, j.failed_rule) == (SPLIT, "code_in_schedule")
     assert j.successors == ["6110202075"]
+
+
+def test_a_precedent_judged_a_different_product_does_not_carry_the_proposal():
+    assert decide(judged("N1", "none", "6110202079", LIVING)).reason == "NO_PRECEDENT_FOR_PROPOSAL"
+    assert decide(judged("MEM:mem-7", "partial", "6110202079", LIVING, MEMORY)).reason == "NO_PRECEDENT_FOR_PROPOSAL"

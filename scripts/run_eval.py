@@ -14,7 +14,7 @@ from pathlib import Path
 
 from portorium.config import DATA, settings
 from portorium.eval import load_items, run, score, threshold_baseline
-from portorium.gate import SYSTEM, PrecedentGate
+from portorium.gate import PrecedentGate, prompts_sha256
 from portorium.index import PrecedentIndex, index_dir
 from portorium.liveness import Liveness
 from portorium.nightshift import Nightshift
@@ -67,7 +67,7 @@ def main() -> int:
         digest = hashlib.sha256((DATA / "eval" / "test.jsonl").read_bytes()).hexdigest()
         commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit,
-                                    "gate_prompt_sha256": hashlib.sha256(SYSTEM.encode()).hexdigest()[:16]}))
+                                    "gate_prompt_sha256": prompts_sha256()}))
     predictions = run(gate, items, systems, workers=args.workers, checkpoint=checkpoint, tracer=tracer)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
     if gate_preds and any(p.system == "retrieval_ultra" for p in predictions):
@@ -77,7 +77,7 @@ def main() -> int:
     errors = [asdict(p) for p in predictions if p.system == "error"]
     RESULTS.mkdir(parents=True, exist_ok=True)
     out = RESULTS / f"{args.split}_{started}.json"
-    prompt = hashlib.sha256(SYSTEM.encode()).hexdigest()[:16]
+    prompt = prompts_sha256()
     out.write_text(json.dumps({"split": args.split, "items": len(items), "gate_prompt_sha256": prompt, "table": table, "errors": errors,
                                "dq": gate.liveness.counts, "predictions": [asdict(p) for p in predictions]}, indent=1))
     for row in table:

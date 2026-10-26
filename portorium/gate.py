@@ -14,6 +14,7 @@ rulings, so a remembered decision counts only for a product the model finds to b
 Anything the gate cannot settle goes to REVIEW with one question, or to a broker.
 """
 import contextvars
+import hashlib
 import re
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
@@ -198,8 +199,10 @@ class PrecedentGate:
         lines.append(f"PROPOSED: {code[:4]}.{code[4:6]}.{code[6:8]}.{code[8:]}")
         for r in path:
             lines.append(f"LEVEL {r['lvl']}: {r['htsno'] or ''} {r['description']}".replace("  ", " "))
-            alternatives = [a for a in rows if a["kind"] == "alternative" and a["lvl"] == r["lvl"]][:14]
-            lines += [f"  alternative: {a['htsno'] or ''} {a['description'][:160]}".replace("  ", " ", 1) for a in alternatives]
+            alternatives = [a for a in rows if a["kind"] == "alternative" and a["lvl"] == r["lvl"]]
+            lines += [f"  alternative: {a['htsno'] or ''} {a['description'][:160]}".replace("  ", " ", 1) for a in alternatives[:60]]
+            if len(alternatives) > 60:
+                lines.append(f"  ({len(alternatives) - 60} more alternatives at this level not shown)")
         with trace.role("Critic"):
             messages = [{"role": "system", "content": CRITIC}, {"role": "user", "content": "\n".join(lines)}]
             data, answer = self.nightshift.chat_json(messages, {"fits": (True, False), "reason": None, "question": None},
@@ -259,10 +262,11 @@ class PrecedentGate:
         """Status of the proposed code for each precedent that cites it, per Zetaris for this request."""
         out = {}
         for j in judged:
-            if not code or code not in j.codes:
+            # A ruling counts only if judged the same or a similar article; a remembered broker decision only if the same.
+            if not code or code not in j.codes or j.match not in (("full",) if j.kind == MEMORY else ("full", "partial")):
                 continue
             row = rows.get(j.ruling_number)
-            if j.kind == RULING and row and row["revoked"]:
+            if j.kind == RULING and ((row and row["revoked"]) or j.status == REVOKED):
                 out[j.ruling_number] = REVOKED
             else:
                 out[j.ruling_number] = (row or {}).get("codes", {}).get(code) or self.liveness.status(code)
@@ -330,7 +334,11 @@ class PrecedentGate:
                      "from_cache": a.receipt.get("from_cache")} for role, a in (("Adjudicator", answer), ("Proposer", proposal.answer))]
 
         def verdict(decision, reason, code=None, ask=""):
-            return Verdict(decision, reason, code, judged, ask, receipts, self.liveness.counts, proposal=proposal.to_dict())
+            shown = proposal.to_dict()
+            if proposal.code:
+                shown["status"] = self.liveness.status(proposal.code)
+                shown["successors"] = self.liveness.successors(proposal.code) if shown["status"] == SPLIT else []
+            return Verdict(decision, reason, code, judged, ask, receipts, self.liveness.counts, proposal=shown)
 
         citing = [j for j in judged if j.ruling_number in statuses]
         if not citing:
@@ -352,3 +360,8 @@ def _broker_names(precedents: list[Precedent]) -> dict[str, str]:
     given product and memory content stays the same after a wipe."""
     brokers = [p.ruling_number for p in precedents if p.ruling_number.startswith("MEM:")]
     return {number: f"BROKER-{i}" for i, number in enumerate(brokers, 1)}
+
+
+def prompts_sha256() -> str:
+    """One hash over every prompt that decides a verdict, recorded with each evaluation run."""
+    return hashlib.sha256("\n".join((SYSTEM, PROPOSE, CRITIC)).encode()).hexdigest()[:16]
