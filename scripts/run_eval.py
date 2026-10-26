@@ -76,9 +76,10 @@ def main() -> int:
     kept = [p for p in predictions if p.system != "error" and p.ruling_number not in failed]
     gate_preds = [p for p in kept if p.system == "precedent_gate"]
     if gate_preds and any(p.system == "retrieval_ultra" for p in kept):
-        kept += threshold_baseline(kept, sum(bool(p.code) for p in gate_preds) / len(gate_preds))
+        threshold = threshold_baseline(kept, sum(bool(p.code) for p in gate_preds) / len(gate_preds))
+        kept += threshold
+        predictions += threshold
     table = score(kept, scored, gate.liveness)
-    predictions = kept + [p for p in predictions if p.system == "error"]
     RESULTS.mkdir(parents=True, exist_ok=True)
     out = RESULTS / f"{args.split}_{started}.json"
     prompt = prompts_sha256()
