@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -e . && chown portorium /app
 USER portorium
 ENV SAMPLE_MODE=true PORT=7860
 EXPOSE 7860
-CMD ["sh", "-c", "uvicorn portorium.web:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "exec uvicorn portorium.web:app --host 0.0.0.0 --port ${PORT}"]
