@@ -18,7 +18,7 @@ import numpy as np
 
 from . import trace
 from .config import DATA
-from .gate import CLASSIFIED, PrecedentGate, Verdict
+from .gate import CLASSIFIED, PrecedentGate
 from .index import PrecedentIndex
 from .leakage import extract_facts, strip_codes
 from .liveness import LIVING, Liveness
@@ -69,11 +69,6 @@ def load_items(split: str, sample: int | None = None, seed: int = 20261025) -> l
 ZERO_SHOT = ("You are a US customs classification analyst. Give the 10-digit HTSUS code for the product. "
              'Reply with only a JSON object: {"code": "<10 digits, no dots>"}')
 
-PICK = ("You are a US customs classification analyst. Choose the code for the product from the prior CBP rulings "
-        "listed, and state your confidence from 0 to 100 that it is correct at 10 digits. "
-        'Reply with only a JSON object: {"code": "<one listed code, 10 digits>", "confidence": <0-100>}')
-
-
 def zero_shot(ns: Nightshift, item: Item, model: str) -> Prediction:
     data, answer = ns.chat_json([{"role": "system", "content": ZERO_SHOT},
                                  {"role": "user", "content": f"PRODUCT: {item.query}"}], {"code": None}, model=model)
@@ -82,34 +77,22 @@ def zero_shot(ns: Nightshift, item: Item, model: str) -> Prediction:
     return Prediction(name, item.ruling_number, code, {"routed_model": answer.routed_model})
 
 
-def retrieval_pick(ns: Nightshift, gate: PrecedentGate, item: Item) -> tuple[Prediction, Prediction]:
+def gate_predictions(gate: PrecedentGate, item: Item) -> list[Prediction]:
+    """The gate and, from the same run, each layer it adds: retrieval, the Proposer, Zetaris liveness, the Critic."""
+    v = gate.classify(item.query, item.as_of, exclude=item.exclude)
     precedents = gate.index.search(gate.nvidia, item.query, item.as_of, exclude=item.exclude)[: gate.top]
-    top1 = Prediction("retrieval_top1", item.ruling_number, precedents[0].codes[0] if precedents else None)
-    facts = {p.ruling_number: f for p in precedents if gate.texts and (f := gate.texts.facts(p.ruling_number))}
-    listing = "\n".join(f"{p.ruling_number}: {p.subject}. CODES: {', '.join(p.codes)}."
-                        + (f" FACTS: {facts[p.ruling_number]}" if p.ruling_number in facts else "") for p in precedents)
-    data, answer = ns.chat_json([{"role": "system", "content": PICK},
-                                 {"role": "user", "content": f"PRODUCT: {item.query}\nPRIOR RULINGS:\n{listing}"}],
-                                {"code": None, "confidence": None})
-    code = re.sub(r"\D", "", str(data["code"]))[:10] or None
-    pick = Prediction("retrieval_ultra", item.ruling_number, code,
-                      {"confidence": float(data.get("confidence") or 0), "routed_model": answer.routed_model,
-                       "top_score": precedents[0].score if precedents else 0.0})
-    return top1, pick
-
-
-def gate_predictions(gate: PrecedentGate, item: Item) -> tuple[Prediction, Prediction]:
-    verdict = gate.classify(item.query, item.as_of, exclude=item.exclude)
-    full = Prediction("precedent_gate", item.ruling_number, verdict.code if verdict.decision == CLASSIFIED else None,
-                      {"decision": verdict.decision, "reason": verdict.reason, "receipts": verdict.receipts,
-                       "question": verdict.question, "judged": [asdict(j) for j in verdict.precedents]})
-    living_blind = _ignore_liveness(verdict)
-    return full, Prediction("gate_without_liveness", item.ruling_number, living_blind, {})
-
-
-def _ignore_liveness(v: Verdict) -> str | None:
-    codes = {j.code for j in v.precedents if j.match == "full" and j.code}
-    return codes.pop() if len(codes) == 1 else None
+    n, proposal = item.ruling_number, v.proposal
+    before_critic = v.critique.get("code") if v.critique else (v.code if v.decision == CLASSIFIED else None)
+    return [
+        Prediction("precedent_gate", n, v.code if v.decision == CLASSIFIED else None,
+                   {"decision": v.decision, "reason": v.reason, "receipts": v.receipts, "question": v.question,
+                    "proposal": proposal, "critique": v.critique, "judged": [asdict(j) for j in v.precedents]}),
+        Prediction("gate_without_critic", n, before_critic),
+        Prediction("retrieval_ultra", n, proposal.get("code"),
+                   {"confidence": proposal.get("confidence", 0.0), "routed_model": proposal.get("routed_model"),
+                    "top_score": precedents[0].score if precedents else 0.0}),
+        Prediction("retrieval_top1", n, precedents[0].codes[0] if precedents else None),
+    ]
 
 
 class KeywordIndex:
@@ -147,8 +130,7 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
     steps = [("keyword_top1", lambda item: [keyword.top1(item)]),
              ("ultra_zero_shot", lambda item: [zero_shot(ns, item, ULTRA)]),
              ("lightning_zero_shot", lambda item: [zero_shot(ns, item, LIGHTNING)]),
-             ("retrieval_ultra", lambda item: list(retrieval_pick(ns, gate, item))),
-             ("precedent_gate", lambda item: list(gate_predictions(gate, item)))]
+             ("precedent_gate", lambda item: gate_predictions(gate, item))]
 
     def one(item: Item, names: set[str]) -> list[Prediction]:
         out = []
@@ -183,7 +165,7 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
     return latest(predictions)
 
 
-EMITS = {"retrieval_ultra": ("retrieval_ultra", "retrieval_top1"), "precedent_gate": ("precedent_gate", "gate_without_liveness")}
+EMITS = {"precedent_gate": ("precedent_gate", "gate_without_critic", "retrieval_ultra", "retrieval_top1")}
 
 
 def pending(items: list[Item], systems: set[str], predictions: list[Prediction]) -> list[tuple[Item, set[str]]]:

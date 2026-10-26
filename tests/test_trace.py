@@ -29,6 +29,8 @@ class FakeNightshift:
         self.fits = fits
 
     def chat_json(self, messages, required, model):
+        if "code" in required:
+            return {"code": "6110.20.2079", "confidence": 90}, Answer("{}", {"routed_model": model, "receipt_id": "rcpt_3"})
         if "fits" in required:
             return ({"fits": self.fits, "line": "" if self.fits else "6110.20.20", "reason": "r", "question": "" if self.fits else "Is it knitted?"},
                     Answer("{}", {"routed_model": model, "receipt_id": "rcpt_2"}))
@@ -59,10 +61,12 @@ def test_a_classification_traces_each_role_handing_off_to_the_next(tmp_path):
     lines = _lines(run)
     assert all(FIELDS <= set(line) and line["subject"] == "N999999" for line in lines)
     handoffs = [(l["agent_name"], l["action"], l["target_agent"]) for l in lines if l["action"] != "hmem.query"]
-    assert handoffs == [("Retriever", "retrieve", "Adjudicator"), ("Memory", "recall", "Adjudicator"),
-                        ("Auditor", "sql", None), ("Auditor", "check_liveness", "Adjudicator"),
-                        ("Adjudicator", "judge", "Gate"), ("Gate", "decide", None),
-                        ("Auditor", "sql", None), ("Auditor", "schedule_text", "Critic"), ("Critic", "critique", "Gate")]
+    assert handoffs[:4] == [("Retriever", "retrieve", "Adjudicator"), ("Memory", "recall", "Adjudicator"),
+                            ("Auditor", "sql", None), ("Auditor", "check_liveness", "Adjudicator")]
+    # The Adjudicator and the Proposer run in parallel, so their lines may come in either order.
+    assert sorted(handoffs[4:6]) == [("Adjudicator", "judge", "Gate"), ("Proposer", "propose", "Gate")]
+    assert handoffs[6:] == [("Gate", "decide", "Critic"), ("Auditor", "sql", None),
+                            ("Auditor", "schedule_text", "Critic"), ("Critic", "critique", "Gate")]
     assert [l["agent_name"] for l in lines if l["action"] == "hmem.query"] == ["Memory", "Memory"]
     decide = next(l for l in lines if l["action"] == "decide")
     assert (decide["status"], decide["detail"]["rule"]) == ("success", verdict.reason)

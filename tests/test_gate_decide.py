@@ -1,8 +1,8 @@
 import json
 
-from portorium.gate import CLASSIFIED, MEMORY, REFUSE, REVIEW, JudgedPrecedent, PrecedentGate
+from portorium.gate import CLASSIFIED, MEMORY, REFUSE, REVIEW, JudgedPrecedent, PrecedentGate, Proposal
 from portorium.index import Precedent
-from portorium.liveness import LIVING, REMOVED, SPLIT, Liveness
+from portorium.liveness import LIVING, REMOVED, REVOKED, SPLIT, Liveness
 from portorium.nightshift import Answer
 
 LIVE = Liveness({"6110202079", "6110202075", "6702903500"}, {"61102020", "67029035", "87082951"})
@@ -13,64 +13,55 @@ def judged(number, match, code, status, kind="ruling", unresolved=False):
                            kind=kind, unresolved=unresolved)
 
 
-def decide(*precedents, question=""):
+def decide(*precedents, proposed="6110202079", statuses=None, question=""):
     gate = PrecedentGate(None, None, None, LIVE)
-    return gate.decide(list(precedents), question, Answer("{}", {"routed_model": "nvidia/ultra"}))
+    if statuses is None:
+        statuses = {j.ruling_number: j.status for j in precedents if proposed in j.codes}
+    proposal = Proposal(proposed, 95.0, Answer("{}", {"routed_model": "nvidia/proposer"}))
+    return gate.decide(list(precedents), question, Answer("{}", {"routed_model": "nvidia/ultra"}), proposal, statuses)
 
 
-def test_classified_only_when_living_full_matches_agree_at_ten_digits():
-    v = decide(judged("N1", "full", "6110202079", LIVING), judged("N2", "full", "6110202079", LIVING))
-    assert (v.decision, v.code, v.reason) == (CLASSIFIED, "6110202079", "LIVING_PRECEDENT_AGREES")
+def test_a_proposal_cited_by_a_living_precedent_is_a_candidate():
+    v = decide(judged("N1", "partial", "6110202079", LIVING))
+    assert (v.decision, v.code, v.reason) == (CLASSIFIED, "6110202079", "LIVING_PRECEDENT")
 
 
-def test_agreement_at_six_digits_is_not_enough():
-    v = decide(judged("N1", "full", "6110202079", LIVING), judged("N2", "full", "6110202075", LIVING),
-               question="Is it for men or women?")
-    assert (v.decision, v.reason, v.question) == (REVIEW, "PRECEDENTS_DISAGREE", "Is it for men or women?")
+def test_a_proposal_no_retrieved_ruling_cites_goes_to_review():
+    v = decide(judged("N1", "full", "6110202075", LIVING), question="Is it for men or women?")
+    assert (v.decision, v.reason, v.question) == (REVIEW, "NO_PRECEDENT_FOR_PROPOSAL", "Is it for men or women?")
 
 
-def test_partial_match_never_classifies():
-    assert decide(judged("N1", "partial", "6110202079", LIVING)).reason == "ONLY_PARTIAL"
-
-
-def test_split_precedent_goes_to_review():
-    v = decide(judged("N1", "full", "8708295160", SPLIT))
+def test_a_split_code_goes_to_review():
+    v = decide(judged("N1", "full", "8708295160", SPLIT), proposed="8708295160")
     assert (v.decision, v.reason) == (REVIEW, "SPLIT_SUCCESSORS")
 
 
-def test_removed_precedent_is_refused_as_stale():
-    v = decide(judged("N1", "full", "9999999999", REMOVED))
+def test_a_dead_proposal_is_refused_unless_a_living_candidate_remains():
+    v = decide(judged("N1", "full", "9999999999", REMOVED), proposed="9999999999")
     assert (v.decision, v.reason, v.code) == (REFUSE, "STALE_PRECEDENT", None)
+    v = decide(judged("N1", "full", "9999999999", REMOVED), judged("N2", "partial", "6110202079", LIVING), proposed="9999999999")
+    assert (v.decision, v.reason) == (REVIEW, "STALE_PROPOSAL")
 
 
-def test_no_match_is_refused():
-    assert decide(judged("N1", "none", None, None)).reason == "NO_LIVING_PRECEDENT"
+def test_a_revoked_ruling_does_not_carry_its_code():
+    v = decide(judged("N1", "full", "6110202079", REVOKED), statuses={"N1": REVOKED})
+    assert v.decision == REFUSE
 
 
-def test_an_unresolved_full_match_fails_closed():
-    v = decide(judged("N1", "full", "6110202079", LIVING), judged("N2", "full", None, None, unresolved=True))
-    assert (v.decision, v.reason) == (REVIEW, "UNRESOLVED_MATCH")
+def test_a_broker_decision_alone_classifies_as_broker_memory():
+    v = decide(judged("MEM:mem-1", "full", "6110202079", LIVING, MEMORY))
+    assert (v.decision, v.reason) == (CLASSIFIED, "BROKER_MEMORY")
 
 
-def test_broker_memory_settles_review_only_with_a_candidate_code():
-    v = decide(judged("N1", "partial", "6110202079", LIVING), judged("MEM:mem-1", "full", "6110202079", LIVING, MEMORY))
-    assert (v.decision, v.reason, v.code) == (CLASSIFIED, "BROKER_MEMORY", "6110202079")
-    v = decide(judged("N1", "partial", "6110202079", LIVING), judged("MEM:mem-1", "full", "6110202075", LIVING, MEMORY))
-    assert v.decision == REVIEW
-
-
-def test_broker_memory_judged_partial_does_not_settle_anything():
-    v = decide(judged("N1", "partial", "6110202079", LIVING), judged("MEM:mem-1", "partial", "6110202079", LIVING, MEMORY))
-    assert v.reason == "ONLY_PARTIAL"
-
-
-def test_broker_memory_that_contradicts_a_classification_sends_it_to_review():
+def test_a_broker_decision_that_contradicts_the_proposal_sends_it_to_review():
     v = decide(judged("N1", "full", "6110202079", LIVING), judged("MEM:mem-1", "full", "6110202075", LIVING, MEMORY))
     assert (v.decision, v.reason) == (REVIEW, "MEMORY_CONFLICT")
 
 
-def test_every_verdict_carries_the_receipt():
-    assert decide(judged("N1", "none", None, None)).receipts[0]["routed_model"] == "nvidia/ultra"
+def test_every_verdict_carries_both_receipts_and_the_proposal():
+    v = decide(judged("N1", "none", None, None))
+    assert [r["routed_model"] for r in v.receipts] == ["nvidia/ultra", "nvidia/proposer"]
+    assert v.proposal == {"code": "6110202079", "confidence": 95.0, "routed_model": "nvidia/proposer", "receipt_id": None}
 
 
 class FakeNightshift:
@@ -121,13 +112,3 @@ def test_zetaris_status_per_decision_overrides_the_startup_snapshot():
     j = gate.judge("product", [p], [], {"N333333": "facts"}, rows)[0][0]
     assert (j.status, j.failed_rule) == (SPLIT, "code_in_schedule")
     assert j.successors == ["6110202075"]
-
-
-def test_old_precedent_rule_needs_a_recent_or_a_second_agreeing_precedent():
-    old = JudgedPrecedent("N1", "2015-01-01", "s", ["6110202079"], "full", "6110202079", "f", LIVING, pre_hs2022=True)
-    recent = JudgedPrecedent("N2", "2023-01-01", "s", ["6110202079"], "full", "6110202079", "f", LIVING)
-    gate = PrecedentGate(None, None, None, LIVE, old_precedent_rule=True)
-    receipt = Answer("{}", {})
-    assert gate.decide([old], "", receipt).reason == "OLD_PRECEDENT_ONLY"
-    assert gate.decide([old, recent], "", receipt).decision == CLASSIFIED
-    assert gate.decide([old, JudgedPrecedent(**{**vars(old), "ruling_number": "N3"})], "", receipt).decision == CLASSIFIED

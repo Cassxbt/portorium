@@ -23,7 +23,7 @@ from portorium.rulings import RulingTexts
 from portorium.trace import Trace, role
 from portorium.zetaris import Zetaris
 
-ALL = "keyword_top1,ultra_zero_shot,lightning_zero_shot,retrieval_ultra,precedent_gate"
+ALL = "keyword_top1,ultra_zero_shot,lightning_zero_shot,precedent_gate"
 RESULTS = DATA / "eval" / "results"
 LOCK = DATA / "eval" / "TEST_RUN.lock"
 
@@ -70,7 +70,7 @@ def main() -> int:
                                     "gate_prompt_sha256": hashlib.sha256(SYSTEM.encode()).hexdigest()[:16]}))
     predictions = run(gate, items, systems, workers=args.workers, checkpoint=checkpoint, tracer=tracer)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
-    if gate_preds and "retrieval_ultra" in systems:
+    if gate_preds and any(p.system == "retrieval_ultra" for p in predictions):
         coverage = sum(bool(p.code) for p in gate_preds) / len(gate_preds)
         predictions += threshold_baseline(predictions, coverage)
     table = score([p for p in predictions if p.system != "error"], items, gate.liveness)

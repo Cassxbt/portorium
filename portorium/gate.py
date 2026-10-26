@@ -1,19 +1,21 @@
 """Precedent Gate: no code without a living precedent.
 
-Numbered checks, decided in code. The model only judges whether a precedent describes the same
-product; it never chooses a code from memory.
+A model proposes; Zetaris and a second model verify; code decides.
   1 retrieve   Nemotron Embed + Rerank over CBP rulings issued before `as_of`
-  2 living     Zetaris, per decision: ruling not revoked; code_in_schedule / parent_survives (HTS 2026 Rev 21)
-  3 same       Nemotron Ultra via Nightshift: full | partial | none, on product facts only
-  4 decide     CLASSIFIED only when every living full-match precedent agrees at 10 digits
-  5 critique   Nemotron Ultra checks that code's Rev 21 text, every level and its alternatives, from Zetaris;
-               a code can survive a revision while what it covers moves
+  2 living     Zetaris, per request: ruling not revoked; code_in_schedule / parent_survives (HTS 2026 Rev 21)
+  3 judge      Nemotron Ultra via Nightshift: is each precedent the same article; one question if they differ
+  3 propose    Nemotron Ultra via Nightshift, in parallel: one code from the retrieved rulings, with a confidence
+  4 decide     the proposed code must be cited by a standing ruling and be living in Rev 21
+  5 critique   Nemotron Ultra checks the product against that code's Rev 21 text, every level and its
+               alternatives, read from Zetaris: a code can survive a revision while what it covers moves
 
-Broker decisions recalled from memory (Meterless H-MEM) are judged in the same call as the
+Broker decisions recalled from memory (Meterless H-MEM) are judged and offered to the Proposer like
 rulings, so a remembered decision counts only for a product the model finds to be the same.
-Anything the gate cannot resolve goes to REVIEW.
+Anything the gate cannot settle goes to REVIEW with one question, or to a broker.
 """
+import contextvars
 import re
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 
 from . import trace
@@ -52,6 +54,10 @@ Reply with only a JSON object:
 "fact": "<for full, the shared identity; otherwise the decisive difference or unknown, short>"}], "question": "<question or empty>"}"""
 
 
+PROPOSE = ("You are a US customs classification analyst. Choose the code for the product from the prior CBP rulings "
+           "listed, and state your confidence from 0 to 100 that it is correct at 10 digits. "
+           'Reply with only a JSON object: {"code": "<one listed code, 10 digits>", "confidence": <0-100>}')
+
 CRITIC = """You check a proposed US tariff classification against the words of the schedule, HTS 2026 Revision 21.
 You get the importer's product, any answers the importer gave, and the proposed 10-digit line with every level
 above it. Under each level you also get the alternatives: the other lines at that level. A line reading "Other"
@@ -82,6 +88,17 @@ class JudgedPrecedent:
 
 
 @dataclass
+class Proposal:
+    code: str | None
+    confidence: float
+    answer: Answer
+
+    def to_dict(self) -> dict:
+        return {"code": self.code, "confidence": self.confidence, "routed_model": self.answer.routed_model,
+                "receipt_id": self.answer.receipt.get("receipt_id")}
+
+
+@dataclass
 class Verdict:
     decision: str
     reason: str
@@ -92,6 +109,7 @@ class Verdict:
     dq: dict = field(default_factory=dict)
     remembered: list[dict] = field(default_factory=list)
     critique: dict = field(default_factory=dict)
+    proposal: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -108,12 +126,10 @@ def _key(value) -> str:
 class PrecedentGate:
     def __init__(self, index: PrecedentIndex, nvidia: Nvidia, nightshift: Nightshift, liveness: Liveness,
                  texts: RulingTexts | None = None, zetaris: Zetaris | None = None, model: str = ULTRA, top: int = 6,
-                 old_precedent_rule: bool = False, critic: bool = True):
-        """old_precedent_rule: a lone precedent from before HS 2022 cannot classify on its own.
-        critic: a classification must also fit the code's current schedule text (needs Zetaris)."""
+                 critic: bool = True):
+        """critic: a classification must also fit the code's current schedule text (needs Zetaris)."""
         self.index, self.nvidia, self.nightshift, self.liveness = index, nvidia, nightshift, liveness
-        self.texts, self.zetaris, self.model, self.top = texts, zetaris, model, top
-        self.old_precedent_rule, self.critic = old_precedent_rule, critic
+        self.texts, self.zetaris, self.model, self.top, self.critic = texts, zetaris, model, top, critic
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
                  exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
@@ -148,19 +164,22 @@ class PrecedentGate:
                 trace.event("check_liveness", ", ".join(rows), "; ".join(
                     f"{n}{' REVOKED' if r['revoked'] else ''} " + ", ".join(f"{c} {st}" for c, st in r["codes"].items())
                     for n, r in rows.items()), target_agent="Adjudicator")
-        with trace.role("Adjudicator"):
-            judged, question, answer = self.judge(product, precedents, answers, facts, rows, remembered)
-            trace.event("judge", f"{product} vs {len(precedents)} precedents, {len(answers)} importer answer(s)",
-                        "; ".join(f"{j.ruling_number} {j.match} {j.code or '-'}" for j in judged)
-                        + (f"; question: {question}" if question else ""),
-                        target_agent="Gate", model=answer.routed_model or self.model, receipt_id=answer.receipt.get("receipt_id"))
+        # The Adjudicator and the Proposer are independent calls; each thread carries this request's trace.
+        with ThreadPoolExecutor(2) as pool:
+            judging = pool.submit(contextvars.copy_context().run, self._judge_traced, product, precedents, answers, facts,
+                                  rows, remembered)
+            proposing = pool.submit(contextvars.copy_context().run, self._propose_traced, product, precedents, answers, facts,
+                                    remembered)
+            judged, question, answer = judging.result()
+            proposal = proposing.result()
         with trace.role("Gate"):
-            verdict = self.decide(judged, question, answer)
+            verdict = self.decide(judged, question, answer, proposal, self._statuses(proposal.code, judged, rows))
             verdict.remembered = [{"question": q, "answer": a, "memory_id": m} for q, a, m in remembered]
-            trace.event("decide", "; ".join(f"{j.ruling_number} {j.match} {j.code or '-'} {j.status or ''} {j.failed_rule or ''}".strip()
-                                            for j in judged),
+            trace.event("decide", f"proposed {proposal.code or '-'}; " + "; ".join(
+                f"{j.ruling_number} {j.match} {j.code or '-'} {j.status or ''}".strip() for j in judged),
                         f"{verdict.decision} {verdict.reason} {verdict.code or ''}".strip(),
-                        target_agent="Importer" if verdict.question else ("Broker" if verdict.decision == REVIEW else None),
+                        target_agent="Critic" if verdict.decision == CLASSIFIED and self.critic and self.zetaris
+                        else "Importer" if verdict.question else "Broker" if verdict.decision == REVIEW else None,
                         status={CLASSIFIED: "success", REVIEW: "needs_review", REFUSE: "refused"}[verdict.decision],
                         rule=verdict.reason)
         if verdict.decision == CLASSIFIED and self.critic and self.zetaris:
@@ -201,16 +220,59 @@ class PrecedentGate:
                         target_agent="Importer" if revised.question else "Broker", status="needs_review", rule=revised.reason)
         return revised
 
+    def _judge_traced(self, product, precedents, answers, facts, rows, remembered):
+        with trace.role("Adjudicator"):
+            judged, question, answer = self.judge(product, precedents, answers, facts, rows, remembered)
+            trace.event("judge", f"{product} vs {len(precedents)} precedents, {len(answers)} importer answer(s)",
+                        "; ".join(f"{j.ruling_number} {j.match} {j.code or '-'}" for j in judged)
+                        + (f"; question: {question}" if question else ""),
+                        target_agent="Gate", model=answer.routed_model or self.model, receipt_id=answer.receipt.get("receipt_id"))
+        return judged, question, answer
+
+    def _propose_traced(self, product, precedents, answers, facts, remembered) -> Proposal:
+        with trace.role("Proposer"):
+            proposal = self.propose(product, precedents, answers, facts, remembered)
+            trace.event("propose", f"{product} from {len(precedents)} precedents",
+                        f"{proposal.code or 'no code'} at confidence {proposal.confidence:g}", target_agent="Gate",
+                        model=proposal.answer.routed_model or self.model, receipt_id=proposal.answer.receipt.get("receipt_id"))
+        return proposal
+
+    def propose(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str], remembered=()) -> Proposal:
+        """One code from the listed rulings; without answers or memory the request is the evaluated one."""
+        names = _broker_names(precedents)
+        listing = "\n".join(f"{names.get(p.ruling_number, p.ruling_number)}: {p.subject}. CODES: {', '.join(p.codes)}."
+                            + (f" FACTS: {facts[p.ruling_number]}" if p.ruling_number in facts else "") for p in precedents)
+        told = "".join(f"\nIMPORTER ANSWERED: {q} -> {a}" for q, a in answers) + \
+            "".join(f"\nIMPORTER ANSWERED EARLIER for a similar product (use only if it applies): {q} -> {a}" for q, a, _ in remembered)
+        data, answer = self.nightshift.chat_json(
+            [{"role": "system", "content": PROPOSE}, {"role": "user", "content": f"PRODUCT: {product}{told}\nPRIOR RULINGS:\n{listing}"}],
+            {"code": None, "confidence": None}, model=self.model)
+        try:
+            confidence = float(data.get("confidence") or 0)
+        except (TypeError, ValueError):
+            confidence = 0.0
+        return Proposal(normalize_code(data["code"])[:10] or None, confidence, answer)
+
+    def _statuses(self, code: str | None, judged: list[JudgedPrecedent], rows: dict[str, dict]) -> dict[str, str]:
+        """Status of the proposed code for each precedent that cites it, per Zetaris for this request."""
+        out = {}
+        for j in judged:
+            if not code or code not in j.codes:
+                continue
+            row = rows.get(j.ruling_number)
+            if j.kind == RULING and row and row["revoked"]:
+                out[j.ruling_number] = REVOKED
+            else:
+                out[j.ruling_number] = (row or {}).get("codes", {}).get(code) or self.liveness.status(code)
+        return out
+
     def judge(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str],
               rows: dict[str, dict] | None = None, remembered=()) -> tuple[list[JudgedPrecedent], str, Answer]:
         lines = [f"PRODUCT: {product}"]
         lines += [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
         lines += [f"IMPORTER ANSWERED EARLIER for a similar product (use only if it applies): {q} -> {a}"
                   for q, a, _ in remembered]
-        # Memory ids grow with every write, so broker entries get per-request labels: the prompt for a
-        # given product and memory content stays the same after a wipe.
-        brokers = [p.ruling_number for p in precedents if p.ruling_number.startswith("MEM:")]
-        names = {number: f"BROKER-{i}" for i, number in enumerate(brokers, 1)}
+        names = _broker_names(precedents)
         for p in precedents:
             codes = ", ".join(f"{c[:4]}.{c[4:6]}.{c[6:]}" for c in p.codes)
             detail = f" FACTS: {facts[p.ruling_number]}" if p.ruling_number in facts else ""
@@ -259,38 +321,32 @@ class PrecedentGate:
             bool(p.ruling_date) and p.ruling_date < HS2022, kind, unresolved,
             self.liveness.successors(code) if status == SPLIT else [])
 
-    def decide(self, judged: list[JudgedPrecedent], question: str, answer: Answer) -> Verdict:
-        receipt = {"routed_model": answer.routed_model, "receipt_id": answer.receipt.get("receipt_id"),
-                   "from_cache": answer.receipt.get("from_cache")}
-        rulings = [j for j in judged if j.kind == RULING]
-        broker = [j for j in judged if j.kind == MEMORY and j.match == "full" and j.code]
-        full = [j for j in rulings if j.match == "full" and j.code]
-        living_full = [j for j in full if j.status == LIVING]
-        split_full = [j for j in full if j.status == SPLIT]
-        candidates = {j.code for j in rulings if j.code and j.match in ("full", "partial") and j.status == LIVING}
+    def decide(self, judged: list[JudgedPrecedent], question: str, answer: Answer, proposal: Proposal,
+               statuses: dict[str, str]) -> Verdict:
+        """The rules, in order. statuses: the proposed code's status for each precedent citing it."""
+        receipts = [{"role": role, "routed_model": a.routed_model, "receipt_id": a.receipt.get("receipt_id"),
+                     "from_cache": a.receipt.get("from_cache")} for role, a in (("Adjudicator", answer), ("Proposer", proposal.answer))]
 
         def verdict(decision, reason, code=None, ask=""):
-            return Verdict(decision, reason, code, judged, ask, [receipt], self.liveness.counts)
+            return Verdict(decision, reason, code, judged, ask, receipts, self.liveness.counts, proposal=proposal.to_dict())
 
-        if any(j.unresolved and j.match == "full" for j in judged):
-            return verdict(REVIEW, "UNRESOLVED_MATCH", ask=question)
-        broker_codes = {j.code for j in broker}
-        if living_full:
-            codes = {j.code for j in living_full}
-            if len(codes) > 1:
-                return verdict(REVIEW, "PRECEDENTS_DISAGREE", ask=question)
-            code = codes.pop()
-            if broker_codes - {code}:
-                return verdict(REVIEW, "MEMORY_CONFLICT", ask=question)
-            if self.old_precedent_rule and len(living_full) < 2 and all(j.pre_hs2022 for j in living_full):
-                return verdict(REVIEW, "OLD_PRECEDENT_ONLY", ask=question)
-            return verdict(CLASSIFIED, "LIVING_PRECEDENT_AGREES", code)
-        if len(broker_codes) == 1 and next(iter(broker_codes)) in candidates:
-            return verdict(CLASSIFIED, "BROKER_MEMORY", next(iter(broker_codes)))
-        if split_full:
-            return verdict(REVIEW, "SPLIT_SUCCESSORS")
-        if candidates:
-            return verdict(REVIEW, "ONLY_PARTIAL", ask=question)
-        if full:
+        citing = [j for j in judged if j.ruling_number in statuses]
+        if not citing:
+            return verdict(REVIEW, "NO_PRECEDENT_FOR_PROPOSAL", ask=question)
+        living = [j for j in citing if statuses[j.ruling_number] == LIVING]
+        if not living:
+            if SPLIT in statuses.values():
+                return verdict(REVIEW, "SPLIT_SUCCESSORS")
+            if any(j.code and j.status == LIVING and j.match != "none" for j in judged):
+                return verdict(REVIEW, "STALE_PROPOSAL", ask=question)
             return verdict(REFUSE, "STALE_PRECEDENT")
-        return verdict(REFUSE, "NO_LIVING_PRECEDENT")
+        if {j.code for j in judged if j.kind == MEMORY and j.match == "full" and j.code} - {proposal.code}:
+            return verdict(REVIEW, "MEMORY_CONFLICT", ask=question)
+        return verdict(CLASSIFIED, "BROKER_MEMORY" if all(j.kind == MEMORY for j in living) else "LIVING_PRECEDENT", proposal.code)
+
+
+def _broker_names(precedents: list[Precedent]) -> dict[str, str]:
+    """Memory ids grow with every write, so broker entries get per-request labels: the prompt for a
+    given product and memory content stays the same after a wipe."""
+    brokers = [p.ruling_number for p in precedents if p.ruling_number.startswith("MEM:")]
+    return {number: f"BROKER-{i}" for i, number in enumerate(brokers, 1)}
