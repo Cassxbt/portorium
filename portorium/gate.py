@@ -210,12 +210,14 @@ class PrecedentGate:
                         status="success" if fits else "needs_revision", receipt_id=answer.receipt.get("receipt_id"))
         critique = {"code": code, "fits": fits, "line": str(data.get("line") or ""), "reason": str(data.get("reason") or ""),
                     "receipt_id": answer.receipt.get("receipt_id"), "routed_model": answer.routed_model}
+        receipts = verdict.receipts + [{"role": "Critic", "routed_model": answer.routed_model,
+                                        "receipt_id": answer.receipt.get("receipt_id"), "from_cache": answer.receipt.get("from_cache")}]
         if fits:
-            verdict.critique = critique
+            verdict.critique, verdict.receipts = critique, receipts
             return verdict
         with trace.role("Gate"):
             revised = Verdict(REVIEW, "SCHEDULE_TEXT_DISAGREES", None, verdict.precedents, str(data.get("question") or ""),
-                              verdict.receipts, verdict.dq, verdict.remembered, critique)
+                              receipts, verdict.dq, verdict.remembered, critique, verdict.proposal)
             trace.event("decide", f"{code} does not fit its Rev 21 text", "REVIEW SCHEDULE_TEXT_DISAGREES",
                         target_agent="Importer" if revised.question else "Broker", status="needs_review", rule=revised.reason)
         return revised
