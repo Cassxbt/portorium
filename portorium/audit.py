@@ -16,7 +16,7 @@ RELEASE = "2026HTSRev21"
 
 
 def _quote(value) -> str:
-    return "'" + str(value or "").replace("\\", " ").replace("'", "''")[:2000] + "'"
+    return "'" + str(value or "")[:2000].replace("\\", " ").replace("'", "''") + "'"
 
 
 def record(zetaris: Zetaris, verdict: Verdict, product: str, importer: str) -> str | None:
