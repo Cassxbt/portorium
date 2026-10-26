@@ -6,9 +6,9 @@ All data is public US government data, fetched during the hackathon (22–27 Oct
 |---|---|---|---|
 | `hts/hts_2026HTSRev21.json.gz` | The full Harmonized Tariff Schedule, 2026 Revision 21 (35,805 rows) | USITC, `https://hts.usitc.gov/reststop/exportList?from=0101&to=9999&format=JSON&styles=false` | yes |
 | `hts/release_2026HTSRev21.json` | The release the snapshot came from | USITC, `https://hts.usitc.gov/reststop/currentRelease` (Zetaris also reads it live, see `scripts/zetaris_usl.sql`) | yes |
-| `eval/dev.jsonl`, `eval/test.jsonl` | 780 dev and 684 test items: CBP "Classification" rulings issued in 2026 that cite exactly one 10-digit code. Dev: Jan–May 2026, used for tuning. Test: from 1 Jun 2026, after the Nemotron 3.5 post-training cutoff, run once. | built by `scripts/build_eval_sets.py` from the CROSS snapshot | yes |
+| `eval/dev.jsonl`, `eval/test.jsonl` | 780 dev and 684 test items: CBP "Classification" rulings issued in 2026 that cite exactly one 10-digit code. Dev: Jan–May 2026, used for tuning. Test: from 1 Jun 2026, after the Nemotron 3 Ultra and 3.5 Lightning post-training cutoff (May 2026), run once. | built by `scripts/build_eval_sets.py` from the CROSS snapshot | yes |
 | `facts/<ruling>.txt` | The product description of each ruling the gate or the evaluation has read: the text between the salutation and the legal analysis, with any sentence carrying a title and name, a postal address, an email or a phone number removed (`portorium/rulings.py`) | CBP CROSS, `https://rulings.cbp.gov/api/ruling/<number>` | yes |
-| `sample/` | The sample-mode bundle: recorded service responses for the documented demo inputs and the index rows their searches touch | `scripts/build_sample.py` | yes |
+| `sample/` | The sample-mode bundle: recorded responses of NVIDIA, Nightshift and Zetaris for the documented demo inputs, each search's candidate list, and the index entries those name | `scripts/build_sample.py` | yes |
 | `eval/results/` | Evaluation runs: predictions, judgments and the score table | `scripts/run_eval.py` | final runs only |
 | `cross/` | CROSS search snapshot (75,733 rulings, 35 MB). Subject lines name importers, so it is not committed. | `scripts/pull_cross.py` (1 request/s) | no |
 | `index/` | Nemotron Embed vectors for the 56,371 labelled rulings issued before 1 Jun 2026 (231 MB) | `scripts/build_index.py` | no |

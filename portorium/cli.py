@@ -31,7 +31,7 @@ def build_gate() -> tuple[PrecedentGate, Zetaris]:
     zetaris = Zetaris(s, s.live)
     with trace.role("Auditor"):
         liveness = Liveness.from_zetaris(zetaris)
-    gate = PrecedentGate(PrecedentIndex(index_dir(s.live)), Nvidia(s, s.live), Nightshift(s, s.live), liveness, RulingTexts(s.live), zetaris)
+    gate = PrecedentGate(PrecedentIndex(index_dir(s.live), s.live), Nvidia(s, s.live), Nightshift(s, s.live), liveness, RulingTexts(s.live), zetaris)
     return gate, zetaris
 
 
