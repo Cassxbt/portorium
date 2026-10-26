@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence · Portorium</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .head { padding: 72px 0 48px; display: grid; grid-template-columns: 8fr 4fr; gap: 56px; align-items: end; border-bottom: 1px solid var(--rule); }
+  .tabs { display: flex; border: 1px solid var(--ink); width: max-content; }
+  .tabs button { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 10px 16px; background: none; border: none;
+                 border-right: 1px solid var(--ink); cursor: pointer; color: var(--ink-2); }
+  .tabs button:last-child { border-right: none; }
+  .tabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .tabs button:disabled { color: var(--rule); cursor: not-allowed; }
+  .hero-stat { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--ink); margin-top: 40px; }
+  .hero-stat > div { padding: 28px 32px 32px 0; } .hero-stat > div + div { padding-left: 32px; border-left: 1px solid var(--rule); }
+  .hero-stat .v { font: 400 clamp(120px, 11vw, 200px)/.82 var(--serif); letter-spacing: -.04em; }
+  .hero-stat .v small { font-size: .3em; }
+  .hero-stat p { font-size: 17px; color: var(--ink-2); max-width: 40ch; }
+  .chart { margin-top: 30px; }
+  .bar { display: grid; grid-template-columns: 300px 1fr 110px 110px; gap: 22px; align-items: center; padding: 14px 0; border-top: 1px solid var(--rule); }
+  .bar .name { font-size: 16px; } .bar .name small { display: block; font: 400 11.5px var(--mono); color: var(--ink-3); letter-spacing: .03em; }
+  .bar .track { position: relative; height: 30px; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--rule) calc(10% - 1px) 10%); }
+  .bar .fill { position: absolute; left: 0; top: 6px; bottom: 6px; background: var(--ink-3); width: 0; transition: width .8s var(--ease); }
+  .bar.us .fill { background: var(--classified); }
+  .bar .ci { position: absolute; top: 50%; height: 1.5px; background: var(--ink); transform: translateY(-50%); }
+  .bar .ci::before, .bar .ci::after { content: ""; position: absolute; top: -7px; width: 1.5px; height: 15px; background: var(--ink); }
+  .bar .ci::before { left: 0; } .bar .ci::after { right: 0; }
+  .bar .num { font: 500 15px var(--mono); text-align: right; }
+  .bar .num small { display: block; font: 400 11px var(--mono); color: var(--ink-3); }
+  .axis { display: grid; grid-template-columns: 300px 1fr 110px 110px; gap: 22px; font: 400 11px var(--mono); color: var(--ink-3); padding-bottom: 8px; }
+  .axis .ticks { display: flex; justify-content: space-between; }
+  .takeaways { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); margin-top: 32px; }
+  .takeaways div { padding: 24px 24px 0 0; font-size: 17px; } .takeaways div + div { padding-left: 24px; border-left: 1px solid var(--rule); }
+  .takeaways b { display: block; font: 400 30px/1.05 var(--serif); margin-bottom: 10px; }
+  .method { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .method p { font-size: 16.5px; color: var(--ink-2); }
+  @media (max-width: 960px) { .head, .hero-stat, .takeaways, .method { grid-template-columns: 1fr; } .bar, .axis { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <section class="head">
+      <div>
+        <div class="label" id="splitLabel">Evaluation</div>
+        <h1 style="margin-top:18px">Fewer answers. <em>No dead codes.</em></h1>
+      </div>
+      <div><div class="tabs" id="tabs"><button data-s="test">Test · frozen</button><button data-s="dev">Dev · tuning</button></div>
+        <p class="muted mono" id="file" style="margin-top:12px;font-size:12px"></p></div>
+    </section>
+
+    <section class="band" style="padding-top:56px">
+      <div class="label">Stale-code rate · answers whose 10-digit code is not in HTS 2026 Rev 21</div>
+      <div class="hero-stat" id="heroStat"></div>
+    </section>
+
+    <section class="band">
+      <div class="label">Exact 10-digit accuracy on the products each system answers · 95% Wilson interval</div>
+      <h2 style="margin-top:16px;max-width:28ch">How often the code it gives is the one CBP gave.</h2>
+      <div class="chart" id="chart"></div>
+      <div class="takeaways" id="takeaways"></div>
+    </section>
+
+    <section class="band">
+      <div class="label">Every number</div>
+      <div id="table" style="margin-top:20px"></div>
+    </section>
+
+    <section class="band">
+      <div class="label">Method</div>
+      <div class="method" style="margin-top:20px">
+        <div>
+          <h3>Items</h3>
+          <p>CBP "Classification" rulings from 2026 that cite exactly one 10-digit code; that code is the answer. Dev: January to May 2026, used for tuning. Test: from 1 June 2026, after the post-training cutoff of Nemotron 3 Ultra and 3.5 Lightning (May 2026, per NVIDIA's model cards), run once. Dev is after their September 2025 pre-training cutoff.</p>
+          <h3>No leakage</h3>
+          <p>Every system sees the same product description with all tariff numbers, chapter references and ruling numbers removed. Precedent search returns only rulings issued before the split starts, and never the ruling itself or one it cites. A test checks every input for its own answer.</p>
+        </div>
+        <div>
+          <h3>Systems</h3>
+          <p>Keyword match; Nemotron 3.5 Lightning and Nemotron 3 Ultra asked for a code; the closest retrieved ruling's code; the Proposer alone (Ultra choosing among retrieved rulings); the Proposer kept only when its own stated confidence is high enough to answer as often as the gate does; the Proposer filtered by Zetaris liveness; and the gate, which adds the Critic. The last four come from the same calls on the same items, so each difference is one layer.</p>
+          <h3>Metrics</h3>
+          <p>Coverage is the share of items a system answers. Accuracy counts exact 10-digit matches on answered items, with 95% Wilson intervals. Stale-code rate is the share of answers whose code is not in HTS 2026 Rev 21, checked against the Zetaris schedule.</p>
+          <p class="mono" id="lock" style="font-size:12.5px"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const SYSTEMS = [
+  ["precedent_gate", "Portorium", "Proposer + Zetaris + Critic"],
+  ["gate_without_critic", "Without the Critic", "Proposer + Zetaris liveness"],
+  ["confidence_threshold", "Confidence threshold", "the Proposer's own confidence, same coverage"],
+  ["retrieval_ultra", "Proposer alone", "Nemotron 3 Ultra picks from retrieved rulings"],
+  ["retrieval_top1", "Closest ruling's code", "retrieval only"],
+  ["ultra_zero_shot", "Ultra asked for a code", "Nemotron 3 Ultra, no retrieval"],
+  ["lightning_zero_shot", "Lightning asked for a code", "Nemotron 3.5 Lightning, no retrieval"],
+  ["keyword_top1", "Keyword match", "no models"],
+];
+
+function draw(e) {
+  const by = e.by, g = by.precedent_gate, zs = by.ultra_zero_shot, top = by.retrieval_top1, ct = by.confidence_threshold;
+  $("splitLabel").textContent = e.split === "test" ? `Frozen test set · ${e.items} CBP rulings from June 2026 on` : `Dev set · ${e.items} CBP rulings, January to May 2026`;
+  $("file").textContent = `${e.file} · gate prompt ${e.gate_prompt_sha256 || "–"}`;
+  $("heroStat").innerHTML = `
+    <div><div class="v">${(100 * zs.stale_code_rate).toFixed(0)}<small>%</small></div><p>of Nemotron Ultra's answers, asked for a code directly, name a code that is no longer in the schedule.</p></div>
+    <div><div class="v CLASSIFIED">${(100 * g.stale_code_rate).toFixed(0)}<small>%</small></div><p>for Portorium. Every precedent it relies on passes the Zetaris liveness rules against HTS 2026 Rev 21.</p></div>`;
+  const rows = SYSTEMS.filter(([s]) => by[s]);
+  $("chart").innerHTML = `<div class="axis"><span></span><span class="ticks"><span>0%</span><span>50%</span><span>100%</span></span><span style="text-align:right">accuracy</span><span style="text-align:right">coverage</span></div>` +
+    rows.map(([s, name, sub]) => {
+      const r = by[s];
+      return `<div class="bar ${s === "precedent_gate" ? "us" : ""}"><div class="name">${name}<small>${sub}</small></div>
+        <div class="track"><div class="fill" data-w="${100 * r.acc10_covered}"></div><div class="ci" style="left:${100 * r.acc10_ci95[0]}%;width:${100 * (r.acc10_ci95[1] - r.acc10_ci95[0])}%"></div></div>
+        <div class="num">${pct(r.acc10_covered)}<small>${pct(r.acc10_ci95[0], 0)}–${pct(r.acc10_ci95[1], 0)}</small></div><div class="num">${pct(r.coverage, 0)}<small>answered</small></div></div>`;
+    }).join("");
+  requestAnimationFrame(() => setTimeout(() => document.querySelectorAll(".fill").forEach((f) => (f.style.width = f.dataset.w + "%")), 60));
+  const vs = ct ? (g.acc10_covered >= ct.acc10_covered ? "above" : "below") : null;
+  $("takeaways").innerHTML = `
+    <div><b>${pct(g.stale_code_rate, 0)} vs ${pct(top.stale_code_rate, 0)}</b>Copying the closest ruling's code gives a dead code ${pct(top.stale_code_rate, 0)} of the time. The gate's liveness check removes them.</div>
+    <div><b>${pct(g.coverage, 0)} answered</b>The gate answers when a living precedent describes the same article. It sends the rest to one question or to a broker.</div>
+    ${ct ? `<div><b>${pct(g.acc10_covered, 0)} vs ${pct(ct.acc10_covered, 0)}</b>At the same coverage, a confidence threshold on Ultra's pick is ${pct(ct.acc10_covered, 0)} accurate, with a ${pct(ct.stale_code_rate, 0)} stale-code rate; the gate is ${vs} it on accuracy. The intervals show how far either number can be trusted at this sample size.</div>` : ""}`;
+  $("table").innerHTML = `<table class="ledger"><tr><th>System</th><th style="text-align:right">Items</th><th style="text-align:right">Coverage</th><th style="text-align:right">Accuracy @10</th><th style="text-align:right">95% CI</th><th style="text-align:right">@6 digits</th><th style="text-align:right">Stale codes</th><th style="text-align:right">@10, all items</th></tr>` +
+    rows.map(([s, name]) => { const r = by[s]; return `<tr class="${s === "precedent_gate" ? "mark" : ""}"><td>${name} <span class="muted mono">${s}</span></td><td class="n">${r.items}</td><td class="n">${pct(r.coverage)}</td><td class="n">${pct(r.acc10_covered)}</td><td class="n">${pct(r.acc10_ci95[0])}–${pct(r.acc10_ci95[1])}</td><td class="n">${pct(r.acc6_covered)}</td><td class="n">${pct(r.stale_code_rate)}</td><td class="n">${pct(r.acc10_all)}</td></tr>`; }).join("") + `</table>`;
+  $("lock").textContent = e.lock ? `Test lock: started ${e.lock.started} · test.jsonl sha256 ${e.lock.test_jsonl_sha256.slice(0, 16)}… · commit ${e.lock.git_commit.slice(0, 10)} · gate prompt ${e.lock.gate_prompt_sha256 || "–"}` : "";
+}
+
+async function load(split) {
+  document.querySelectorAll("#tabs button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.s === split));
+  draw(await evaluation(split));
+}
+
+(async () => {
+  const have = {};
+  for (const s of ["test", "dev"]) { try { await api(`/api/eval?split=${s}`); have[s] = true; } catch {} }
+  document.querySelectorAll("#tabs button").forEach((b) => { b.disabled = !have[b.dataset.s]; b.onclick = () => load(b.dataset.s); });
+  const first = have.test ? "test" : have.dev ? "dev" : null;
+  if (first) load(first); else $("heroStat").innerHTML = `<div class="empty">No evaluation run yet.</div>`;
+})();
+</script>
+</body>
+</html>

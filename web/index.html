@@ -3,284 +3,186 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Portorium · Broker Console</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f3eee3'/%3E%3Ctext x='16' y='24' font-family='Georgia' font-weight='700' font-size='22' text-anchor='middle' fill='%231b1a17'%3EP%3C/text%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Portorium · No code without a living precedent</title>
+<meta name="description" content="A customs tariff classification agent that answers only when a prior US Customs ruling describes the same article and its code still exists in today's schedule.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
 <style>
-  :root {
-    --paper: #f3eee3;
-    --paper-deep: #e9e1d1;
-    --ink: #1b1a17;
-    --ink-soft: #5b564c;
-    --rule: #d6ccb9;
-    --green: #1f6b4a;
-    --amber: #a8681a;
-    --red: #b3261e;
-    --display: "Fraunces", Georgia, serif;
-    --body: "Source Sans 3", "Helvetica Neue", sans-serif;
-    --mono: "JetBrains Mono", Menlo, monospace;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; color: var(--ink); background: var(--paper); font: 17px/1.5 var(--body);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-  header {
-    display: flex; align-items: baseline; gap: 28px; padding: 26px 48px 18px; border-bottom: 2px solid var(--ink);
-  }
-  .mark { font: 700 34px/1 var(--display); letter-spacing: .01em; }
-  .mark small { display: block; font: 500 13px var(--body); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); margin-top: 6px; }
-  .motto { font: italic 500 19px var(--display); color: var(--ink-soft); }
-  nav { margin-left: auto; display: flex; gap: 6px; }
-  nav button {
-    font: 600 14px var(--body); letter-spacing: .12em; text-transform: uppercase; background: none; border: 1px solid transparent;
-    padding: 8px 14px; cursor: pointer; color: var(--ink-soft);
-  }
-  nav button.on { color: var(--ink); border-color: var(--ink); }
-  .status { font: 13px var(--mono); color: var(--ink-soft); padding: 10px 48px; border-bottom: 1px solid var(--rule); display: flex; gap: 26px; flex-wrap: wrap; }
-  .status b { color: var(--ink); font-weight: 600; }
-  main { padding: 34px 48px 60px; }
-  .grid { display: grid; grid-template-columns: minmax(340px, 5fr) 7fr; gap: 44px; align-items: start; }
-  h2 { font: 700 15px var(--body); letter-spacing: .2em; text-transform: uppercase; margin: 0 0 12px; color: var(--ink-soft); }
-  textarea, input[type=text] {
-    width: 100%; font: 17px/1.45 var(--body); color: var(--ink); background: rgba(255,255,255,.55);
-    border: 1px solid var(--ink); padding: 14px 16px; resize: vertical;
-  }
-  textarea { min-height: 140px; }
-  .row { display: flex; gap: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
-  button.act {
-    font: 600 15px var(--body); letter-spacing: .1em; text-transform: uppercase; padding: 12px 22px; cursor: pointer;
-    background: var(--ink); color: var(--paper); border: 1px solid var(--ink);
-  }
-  button.ghost { background: transparent; color: var(--ink); }
-  button:disabled { opacity: .45; cursor: progress; }
-  .samples { font-size: 14px; color: var(--ink-soft); margin-top: 14px; }
-  .samples a { color: var(--ink); cursor: pointer; text-decoration: underline dotted; margin-right: 12px; }
-  .verdict { position: relative; margin-top: 30px; padding: 26px 26px 22px; border: 1px solid var(--rule); background: rgba(255,255,255,.4); min-height: 190px; }
-  .stamp {
-    display: inline-block; font: 700 40px/1 var(--display); letter-spacing: .08em; padding: 10px 18px 8px;
-    border: 4px double currentColor; transform: rotate(-4deg); opacity: 0; mix-blend-mode: multiply;
-  }
-  .stamp.in { animation: stamp .42s cubic-bezier(.2,1.6,.4,1) forwards; }
-  @keyframes stamp { 0% { opacity: 0; transform: rotate(-4deg) scale(1.8); } 100% { opacity: .92; transform: rotate(-4deg) scale(1); } }
-  .CLASSIFIED { color: var(--green); } .REVIEW { color: var(--amber); } .REFUSE { color: var(--red); }
-  .reason { font: 600 15px var(--mono); margin-top: 18px; letter-spacing: .04em; }
-  .code { font: 600 34px var(--mono); margin-top: 6px; letter-spacing: .02em; }
-  .question { margin-top: 18px; padding: 14px 16px; border-left: 4px solid var(--amber); background: rgba(168,104,26,.08); font-size: 17px; }
-  .receipt { font: 13px/1.6 var(--mono); color: var(--ink-soft); margin-top: 16px; word-break: break-all; }
-  .empty { color: var(--ink-soft); font-style: italic; }
-  table { width: 100%; border-collapse: collapse; font-size: 15px; }
-  th { text-align: left; font: 600 12px var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft); padding: 8px 10px; border-bottom: 2px solid var(--ink); }
-  td { padding: 11px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
-  td.m { font-family: var(--mono); font-size: 14px; white-space: nowrap; }
-  tr { opacity: 0; animation: rise .35s ease forwards; }
-  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  .pill { font: 600 12px var(--mono); padding: 2px 8px; border: 1px solid currentColor; letter-spacing: .04em; }
-  .living { color: var(--green); } .split { color: var(--amber); } .removed { color: var(--red); }
-  .full { font-weight: 700; } .partial { color: var(--amber); } .none { color: var(--ink-soft); }
-  .fact { color: var(--ink-soft); font-size: 14px; }
-  .panel { margin-top: 36px; border-top: 2px solid var(--ink); padding-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
-  .panel p { margin: 0 0 10px; font-size: 15px; }
-  .mono { font-family: var(--mono); font-size: 14px; }
-  #evalView table td.n { font-family: var(--mono); text-align: right; }
-  #evalView tr.gate td { background: rgba(31,107,74,.08); font-weight: 600; }
-  .note { color: var(--ink-soft); font-size: 14px; margin-top: 14px; max-width: 920px; }
-  .hide { display: none; }
-  .err { color: var(--red); font: 14px var(--mono); margin-top: 12px; }
-  .trace { margin-top: 36px; border-top: 2px solid var(--ink); padding-top: 18px; }
-  .trace h2 span { font: 400 12px var(--mono); letter-spacing: 0; text-transform: none; margin-left: 10px; }
-  .step { display: grid; grid-template-columns: 74px 190px 1fr; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--rule);
-          font-size: 14px; opacity: 0; animation: rise .3s ease forwards; }
-  .step .t { font: 12px var(--mono); color: var(--ink-soft); padding-top: 2px; }
-  .step .who { font-weight: 600; } .step .who i { font-style: normal; font-weight: 400; color: var(--ink-soft); }
-  .step .what { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); word-break: break-word; }
-  .step .what b { color: var(--ink); font-weight: 600; margin-right: 6px; }
-  .step.call { padding: 3px 0 3px 26px; border-bottom: none; font-size: 13px; }
-  .step.call .who { font-weight: 400; color: var(--ink-soft); }
-  .chip { font: 600 11px var(--mono); padding: 1px 6px; border: 1px solid var(--rule); margin-right: 6px; color: var(--ink); white-space: nowrap; }
-  .s-success { color: var(--green); } .s-needs_review, .s-feedback, .s-retry { color: var(--amber); } .s-refused, .s-error { color: var(--red); }
+  .hero { display: grid; grid-template-columns: 6fr 5fr; gap: clamp(40px, 5vw, 96px); align-items: center;
+          min-height: calc(100vh - 120px); padding: 48px 0 64px; border-bottom: 1px solid var(--rule); }
+  .hero .lead { margin: 30px 0 36px; }
+  .hero .ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .exhibit { padding: 26px 28px 28px; position: relative; }
+  .exhibit .switch { display: flex; gap: 0; border: 1px solid var(--ink); width: max-content; margin-bottom: 22px; }
+  .exhibit .switch:empty { display: none; }
+  .exhibit .switch button { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 8px 12px; background: none;
+                            border: none; border-right: 1px solid var(--ink); cursor: pointer; color: var(--ink-2); }
+  .exhibit .switch button:last-child { border-right: none; }
+  .exhibit .switch button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .exhibit .product { font: 400 clamp(22px, 1.6vw, 28px)/1.3 var(--serif); margin: 8px 0 20px; }
+  .exhibit .prec { display: grid; grid-template-columns: 9ch 7ch 1fr; gap: 6px 14px; font: 400 13.5px/1.5 var(--mono);
+                   border-top: 1px solid var(--rule); padding: 12px 0; }
+  .exhibit .prec .sub { grid-column: 1 / -1; font: 400 14px/1.45 var(--sans); color: var(--ink-2); }
+  .exhibit .prec .code { font-size: 17px; }
+  .exhibit .note { grid-column: 1 / -1; font: 400 12.5px/1.5 var(--mono); color: var(--refuse); }
+  .exhibit .verdict { display: flex; align-items: center; gap: 22px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--ink); }
+  .exhibit .verdict .reason { font: 500 13px/1.5 var(--mono); letter-spacing: .05em; }
+  .failure { display: grid; grid-template-columns: 5fr 7fr; gap: 64px; align-items: end; }
+  .bigstat { font: 400 clamp(130px, 13vw, 240px)/.8 var(--serif); letter-spacing: -.04em; }
+  .bigstat small { font-size: .32em; letter-spacing: 0; }
+  .ladder { display: grid; gap: 0; margin-top: 30px; }
+  .ladder div { display: grid; grid-template-columns: 1fr 9ch; gap: 20px; padding: 13px 0; border-top: 1px solid var(--rule); font-size: 17px; }
+  .ladder div b { font: 500 17px var(--mono); text-align: right; }
+  .ladder div.us { border-top: 1px solid var(--ink); }
+  .ladder div.us b { color: var(--classified); }
+  .roles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 48px; border-top: 1px solid var(--ink); }
+  .roles a { display: block; padding: 26px 24px 30px 0; border-bottom: 1px solid var(--rule); color: inherit; text-decoration: none; }
+  .roles a:not(:nth-child(4n+1)) { padding-left: 24px; border-left: 1px solid var(--rule); }
+  .roles a:hover h3 { text-decoration: underline; text-underline-offset: 4px; }
+  .roles .n { font: 500 12px var(--mono); color: var(--ink-3); letter-spacing: .1em; }
+  .roles h3 { font: 400 clamp(30px, 2.3vw, 40px)/1 var(--serif); margin: 14px 0 10px; }
+  .roles p { margin: 0; color: var(--ink-2); font-size: 16px; }
+  .roles .by { font: 400 12px var(--mono); color: var(--pen); margin-top: 14px; display: block; }
+  .proof { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 44px; border-top: 1px solid var(--ink); }
+  .proof > div { padding: 28px 28px 8px 0; }
+  .proof > div + div { padding-left: 28px; border-left: 1px solid var(--rule); }
+  .proof .v { font: 400 clamp(64px, 5.4vw, 104px)/.9 var(--serif); letter-spacing: -.03em; }
+  .proof .ci { font: 400 12.5px var(--mono); color: var(--ink-3); margin-top: 10px; }
+  .proof p { font-size: 16px; color: var(--ink-2); }
+  .sponsors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 44px; border-top: 1px solid var(--ink); }
+  .sponsors div { padding: 24px 24px 0 0; } .sponsors div + div { padding-left: 24px; border-left: 1px solid var(--rule); }
+  .sponsors h3 { font: 400 34px/1 var(--serif); margin-bottom: 12px; }
+  .sponsors p { font-size: 16px; color: var(--ink-2); margin: 0; }
+  @media (max-width: 960px) { .hero, .failure { grid-template-columns: 1fr; } .roles, .proof, .sponsors { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<header>
-  <div class="mark">Portorium<small>Broker Console</small></div>
-  <div class="motto">No code without a living precedent.</div>
-  <nav><button class="on" data-view="console">Console</button><button data-view="evalView">Evaluation</button></nav>
-</header>
-<div class="status" id="status">connecting…</div>
-
 <main>
-  <section id="console">
-    <div class="grid">
+  <div class="wrap">
+    <section class="hero">
       <div>
-        <h2>Product</h2>
-        <textarea id="product" placeholder="Describe the product as the importer would: material, construction, use, who it is for."></textarea>
-        <div class="row">
-          <button class="act" id="go">Classify</button>
-          <input type="text" id="importer" value="demo" style="width:150px" title="Importer (memory namespace)">
-        </div>
-        <div class="samples">Try:
-          <a data-s="Women's pullover sweater, knitted, 60% cotton 40% acrylic, long sleeves, rib-knit cuffs and waistband">knit sweater</a>
-          <a data-s="Yoga mat of polyurethane foam, 6 mm thick, 183 x 61 cm, for floor exercise">yoga mat</a>
-          <a data-s="Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights">party speaker</a>
-        </div>
-        <div class="verdict" id="verdict"><div class="empty">The verdict appears here, stamped, with the precedents that support or block it.</div></div>
-        <div id="ask" class="hide">
-          <div class="question" id="qtext"></div>
-          <div class="row"><input type="text" id="answer" placeholder="Importer's answer"><button class="act" id="reply">Answer & re-run</button></div>
-        </div>
-        <div id="signoff" class="hide">
-          <div class="row">
-            <input type="text" id="broker" value="broker-1" style="width:150px" title="Broker">
-            <input type="text" id="signcode" placeholder="10-digit code to sign off" style="width:230px">
-            <button class="act ghost" id="sign">Broker sign-off</button>
-          </div>
-        </div>
-        <div class="err" id="err"></div>
+        <div class="label">US customs tariff classification · an agent that knows when to stop</div>
+        <h1 class="display" style="margin-top:22px">No code without a <em>living</em> precedent.</h1>
+        <p class="lead">Portorium gives an import a tariff code only when a prior US Customs ruling cites it, that ruling still stands, the code still exists in today's schedule, and the product fits the code's current wording. Otherwise it asks the importer one question, or refuses.</p>
+        <div class="ctas"><a class="btn" href="/console">Classify a product</a><a class="btn ghost" href="/how">How it decides</a></div>
       </div>
-      <div>
-        <h2>Precedents · CBP rulings issued before today</h2>
-        <div id="precedents" class="empty">Nemotron retrieves the closest CBP rulings; Zetaris decides whether each code is still alive in the tariff schedule.</div>
-        <div class="trace hide" id="traceBox">
-          <h2>Reasoning trace<span id="traceFile"></span></h2>
-          <div id="trace"></div>
-        </div>
-        <div class="panel">
-          <div>
-            <h2>Schedule watch · Zetaris</h2>
-            <p class="mono" id="release" style="white-space:pre-wrap">–</p>
-            <button class="act ghost" id="rescreen">Check revision</button>
-          </div>
-          <div>
-            <h2>Broker memory · Meterless H-MEM</h2>
-            <p id="memory" class="mono" style="white-space:pre-wrap">–</p>
-            <button class="act ghost" id="wipe">Wipe memory</button>
-          </div>
-        </div>
+      <div class="exhibit sheet" id="exhibit">
+        <div class="switch" id="switch" role="group" aria-label="Recorded examples"></div>
+        <div id="case"><div class="empty">Loading a recorded run…</div></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="evalView" class="hide">
-    <h2 id="evalTitle">Evaluation</h2>
-    <div id="evalTable" class="empty">No evaluation yet.</div>
-    <p class="note">Test: CBP rulings issued from 1 June 2026, after the Nemotron 3.5 post-training cutoff (May 2026, per NVIDIA's model cards). Dev: January to May 2026, after the September 2025 pre-training cutoff. Every system sees the same product description with all tariff numbers, chapter references and ruling numbers removed. Precedents are searched as of the start of each split, so no system sees a ruling issued after it. Coverage is the share of items a system answers; accuracy is measured on the items it answers.</p>
-  </section>
+    <section class="band">
+      <div class="failure">
+        <div>
+          <div class="label">The failure</div>
+          <h2 style="margin-top:18px">Tariff codes die. Models keep using them.</h2>
+          <p class="lead" style="margin-top:22px">The 2026 US tariff schedule is already on its 21st revision. Codes are split, renumbered and deleted, and old rulings are revoked. A code recalled by a model, or copied from a past ruling, can name a line that no longer exists.</p>
+        </div>
+        <div class="reveal">
+          <div class="label" id="staleLabel">Share of answers with a code not in HTS 2026 Rev 21</div>
+          <div class="bigstat" id="staleBig">–</div>
+          <div class="ladder" id="ladder"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="label">The mechanism · a model proposes, others verify, code decides</div>
+      <h2 style="margin-top:18px;max-width:24ch">The model may suggest a code. It never gets to give one.</h2>
+      <div class="roles reveal">
+        <a href="/how#retriever"><span class="n">01</span><h3>Retriever</h3><p>Finds the closest CBP rulings issued before the date of the question.</p><span class="by">Nemotron Embed 1B · Rerank 8B</span></a>
+        <a href="/how#memory"><span class="n">02</span><h3>Memory</h3><p>Recalls what a broker signed off and what the importer already answered.</p><span class="by">Meterless H-MEM</span></a>
+        <a href="/how#auditor"><span class="n">03</span><h3>Auditor</h3><p>Asks whether each ruling still stands and its codes still exist in the schedule.</p><span class="by">Zetaris data-quality rules</span></a>
+        <a href="/how#adjudicator"><span class="n">04</span><h3>Adjudicator</h3><p>Judges each precedent: the same article, a similar one, or a different one.</p><span class="by">Nemotron 3 Ultra via Nightshift</span></a>
+        <a href="/how#adjudicator"><span class="n">05</span><h3>Proposer</h3><p>Picks one code, only from the codes those rulings cite, with a confidence.</p><span class="by">Nemotron 3 Ultra via Nightshift</span></a>
+        <a href="/how#gate"><span class="n">06</span><h3>Gate</h3><p>Lets the code through only if a standing ruling cites it and it is alive in Rev 21.</p><span class="by">Deterministic rules</span></a>
+        <a href="/how#critic"><span class="n">07</span><h3>Critic</h3><p>Reads the code's current wording, every level, and checks the product fits it.</p><span class="by">Zetaris text · Nemotron 3 Ultra</span></a>
+        <a href="/how#importer"><span class="n">08</span><h3>Importer · Broker</h3><p>Answers the one question, then the loop runs again; or a broker signs off.</p><span class="by">Human in the loop</span></a>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="label" id="proofLabel">Measured on 2026 CBP rulings</div>
+      <h2 style="margin-top:18px;max-width:24ch">It answers less often, and never with a dead code.</h2>
+      <div class="proof reveal" id="proof"><div class="empty">Loading the evaluation…</div></div>
+      <p style="margin-top:28px"><a href="/evidence">The full evaluation, baselines and method →</a></p>
+    </section>
+
+    <section class="band">
+      <div class="label">Built on</div>
+      <div class="sponsors reveal">
+        <div><h3>Zetaris</h3><p>Holds the schedule and the rulings as one virtual layer. Its data-quality rules decide whether a precedent is alive, it returns each code's current wording for the Critic, and every verdict is written back and re-screened.</p></div>
+        <div><h3>Meterless</h3><p>Nightshift routes every reasoning call and returns a receipt naming the model that ran. H-MEM keeps broker sign-offs and importer answers, with a deletion ledger.</p></div>
+        <div><h3>NVIDIA Nemotron</h3><p>Embed and Rerank find the precedents. Nemotron 3 Ultra compares them, proposes a code and checks it against the schedule's wording. Lightning serves as an evaluation baseline.</p></div>
+      </div>
+      <p style="margin-top:28px"><a href="/stack">Which model or engine runs each step →</a></p>
+    </section>
+  </div>
 </main>
-
+<script src="/assets/app.js"></script>
 <script>
-const $ = (id) => document.getElementById(id);
-const fmt = (c) => c && c.length === 10 ? `${c.slice(0,4)}.${c.slice(4,6)}.${c.slice(6)}` : (c || "–");
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (ch) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-let answers = [];
+const ORDER = ["dead-code", "classified", "question"];
+const NAMES = { "dead-code": "Dead code", classified: "Classified", question: "One question" };
 
-async function api(path, body) {
-  const r = await fetch(path, body ? {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)} : {});
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data.detail || `HTTP ${r.status}`);
-  return data;
+function exhibit(e) {
+  const v = e.verdict;
+  const shown = v.precedents.filter((p) => p.match !== "none").slice(0, 3);
+  const rows = shown.map((p) => {
+    const dead = p.status && p.status !== "living";
+    const note = p.status === "split" ? `Split in Rev 21 into ${p.successors.length} codes: ${p.successors.slice(0, 3).map(fmt).join(", ")}${p.successors.length > 3 ? " …" : ""}`
+      : p.status === "revoked" ? "Ruling revoked" : p.status === "removed" ? "Code no longer in the schedule" : "";
+    return `<div class="prec"><span>${esc(p.ruling_number)}</span><span class="muted">${esc((p.ruling_date || "").slice(0, 4))}</span>` +
+      `<span><span class="code ${dead ? "struck" : ""}">${fmt(p.code)}</span> <span class="chip ${p.match === "full" ? "living" : "split"}" style="margin-left:8px">${p.match === "full" ? "same article" : "similar"}</span></span>` +
+      `<span class="sub">${esc(p.fact)}</span>${note ? `<span class="note">${esc(note)}</span>` : ""}</div>`;
+  }).join("");
+  const prop = v.proposal && v.proposal.code ? `<div class="prec"><span class="label" style="grid-column:1/3">Proposed</span><span><span class="code">${fmt(v.proposal.code)}</span> <span class="muted">confidence ${esc(v.proposal.confidence)}</span></span>` +
+    (v.critique && v.critique.reason ? `<span class="sub">Critic: ${esc(v.critique.reason)}</span>` : "") + `</div>` : "";
+  $("case").innerHTML = `<div class="label">Importer's product</div><div class="product">${esc(e.input.product)}</div>${rows}${prop}` +
+    `<div class="verdict"><span class="stamp ${v.decision}">${v.decision}</span><div class="reason">${esc(v.reason)}${v.code ? `<br><span class="code" style="font-size:20px">${fmt(v.code)}</span>` : ""}` +
+    `${v.question ? `<br><span class="muted" style="letter-spacing:0">asks: ${esc(v.question)}</span>` : ""}</div></div>`;
+  stamp($("case").querySelector(".stamp"));
+  setTimeout(() => $("case").querySelectorAll(".struck").forEach((el) => el.classList.add("in")), 500);
 }
 
-async function status() {
+async function examples() {
   try {
-    const s = await api("/api/status");
-    const d = s.dq.code_in_schedule || {};
-    $("status").innerHTML = `<span>mode <b>${s.live ? "LIVE" : "SAMPLE"}</b></span><span>precedents <b>${s.precedents.toLocaleString()}</b></span>` +
-      `<span>Zetaris code_in_schedule <b>${Number(d.valid_record).toLocaleString()}</b> living · <b>${Number(d.invalid_record).toLocaleString()}</b> not in HTS 2026 Rev 21</span>`;
-  } catch (e) { $("status").textContent = `status unavailable: ${e.message}`; }
+    const list = await api("/api/examples");
+    const names = ORDER.filter((n) => list.some((x) => x.name === n));
+    if (!names.length) throw new Error("no recorded examples yet");
+    $("switch").innerHTML = names.map((n) => `<button data-n="${n}" aria-pressed="false">${NAMES[n]}</button>`).join("");
+    const show = async (n) => {
+      $("switch").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.n === n));
+      exhibit(await api(`/api/examples/${n}`));
+    };
+    $("switch").querySelectorAll("button").forEach((b) => (b.onclick = () => show(b.dataset.n)));
+    show(names[0]);
+  } catch (e) { $("case").innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
 }
 
-function render(v) {
-  const code = v.code ? `<div class="code">${fmt(v.code)}</div>` : "";
-  const r = (v.receipts || [])[0] || {};
-  $("verdict").innerHTML = `<span class="stamp ${v.decision}">${v.decision}</span>${code}<div class="reason">${v.reason}</div>` +
-    `<div class="receipt">Nightshift receipt ${esc(r.receipt_id)} · routed_model ${esc(r.routed_model)} · from_cache ${esc(r.from_cache)}</div>`;
-  requestAnimationFrame(() => $("verdict").querySelector(".stamp").classList.add("in"));
-  $("ask").classList.toggle("hide", !(v.decision === "REVIEW" && v.question));
-  $("qtext").textContent = v.question || "";
-  $("signoff").classList.remove("hide");
-  $("signcode").value = v.code ? fmt(v.code) : "";
-  const rows = (v.precedents || []).map((p, i) => `<tr style="animation-delay:${i * 70}ms">
-      <td class="m">${esc(p.kind === "memory" ? "BROKER " + p.ruling_number.slice(4) : p.ruling_number)}<br><span class="fact">${esc(p.ruling_date || "signed off")}</span></td>
-      <td class="${p.match}">${p.match}</td>
-      <td class="m">${p.code ? fmt(p.code) : "–"}</td>
-      <td>${p.status ? `<span class="pill ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${p.pre_hs2022 ? `<div class="fact">pre-HS 2022</div>` : ""}${(p.successors || []).length ? `<div class="fact mono">now: ${p.successors.slice(0, 4).map(fmt).join(", ")}</div>` : ""}</td>
-      <td>${esc(p.subject)}<div class="fact">${esc(p.fact)}</div></td></tr>`).join("");
-  $("precedents").className = "";
-  $("precedents").innerHTML = `<table><tr><th>Ruling</th><th>Match</th><th>Code</th><th>Zetaris</th><th>Product</th></tr>${rows}</table>`;
-  const recalled = (v.precedents || []).filter((p) => p.kind === "memory")
-    .map((m) => `${m.ruling_number.slice(4)} → ${fmt(m.codes[0])} judged ${m.match}`);
-  const answered = (v.remembered || []).map((m) => `${m.memory_id}: ${m.question} → ${m.answer}`);
-  $("memory").textContent = [...recalled, ...answered].join("\n") || "nothing recalled";
+async function numbers() {
+  try {
+    const e = await evaluation();
+    const g = e.by.precedent_gate, rows = [["ultra_zero_shot", "Nemotron Ultra, asked for a code"], ["retrieval_top1", "Copy the closest ruling's code"],
+      ["retrieval_ultra", "Ultra picks from retrieved rulings"], ["precedent_gate", "Portorium"]];
+    const worst = e.by.ultra_zero_shot;
+    $("staleBig").innerHTML = `${(100 * worst.stale_code_rate).toFixed(0)}<small>%</small>`;
+    $("staleLabel").textContent = `Nemotron Ultra asked directly: answers whose code is not in HTS 2026 Rev 21 (${e.split}, ${e.items} rulings)`;
+    $("ladder").innerHTML = rows.filter(([s]) => e.by[s]).map(([s, n]) =>
+      `<div class="${s === "precedent_gate" ? "us" : ""}"><span>${n}</span><b>${pct(e.by[s].stale_code_rate)}</b></div>`).join("");
+    $("proofLabel").textContent = e.split === "test" ? `Frozen test set · ${e.items} CBP rulings issued after the Nemotron post-training cutoff (May 2026)`
+      : `Dev set · ${e.items} CBP rulings issued after the Nemotron pre-training cutoff (September 2025)`;
+    $("proof").innerHTML = `
+      <div><div class="v">${pct(g.stale_code_rate, 0)}</div><div class="ci">stale-code rate</div><p>Answers that name a code no longer in the schedule. Every code it gives is alive.</p></div>
+      <div><div class="v">${pct(g.acc10_covered, 0)}</div><div class="ci">95% CI ${pct(g.acc10_ci95[0], 0)}–${pct(g.acc10_ci95[1], 0)}</div><p>Exact 10-digit match with the CBP ruling, on the products it answers.</p></div>
+      <div><div class="v">${pct(g.coverage, 0)}</div><div class="ci">coverage</div><p>Products it classifies on its own. The rest go to one question or to a broker.</p></div>`;
+  } catch (err) { $("proof").innerHTML = `<div class="empty">${esc(err.message)}</div>`; }
 }
 
-const ROLES = new Set(["retrieve", "recall", "check_liveness", "judge", "decide", "answer", "sign_off", "record", "rescreen", "error"]);
-
-async function showTrace(id) {
-  if (!id) return;
-  try {
-    const lines = await api(`/api/trace/${id}`);
-    $("traceFile").textContent = `logs/trace-${id}.jsonl · ${lines.length} lines`;
-    $("trace").innerHTML = lines.map((l, i) => {
-      const role = ROLES.has(l.action);
-      const target = l.target_agent ? ` <i>→ ${esc(l.target_agent)}</i>` : "";
-      const model = l.model ? `<span class="chip">${esc(l.model.replace(/nvidia\//g, ""))}</span>` : "";
-      const said = role ? l.output_summary : l.output_summary.slice(0, 140) + (l.output_summary.length > 140 ? "…" : "");
-      const retry = l.retry_count ? `<span class="chip">retry ${l.retry_count}</span>` : "";
-      return `<div class="step ${role ? "" : "call"}" style="animation-delay:${Math.min(i, 40) * 25}ms">
-        <span class="t">${esc(l.timestamp.slice(14, 23))}</span>
-        <span class="who">${role ? esc(l.agent_name) + target : esc(l.action)}</span>
-        <span class="what"><b class="s-${esc(l.status)}">${role ? esc(l.action) : esc(l.status)}</b>${model}${retry}${esc(said)}</span></div>`;
-    }).join("");
-    $("traceBox").classList.remove("hide");
-  } catch (e) { $("traceFile").textContent = e.message; }
-}
-
-async function classify() {
-  $("err").textContent = ""; $("go").disabled = $("reply").disabled = true;
-  $("verdict").innerHTML = `<div class="empty">Searching precedents, checking liveness in Zetaris, asking Nemotron Ultra…</div>`;
-  try {
-    const v = await api("/api/classify", {product: $("product").value, importer: $("importer").value, answers});
-    render(v);
-    showTrace(v.trace);
-  } catch (e) { $("err").textContent = e.message; }
-  $("go").disabled = $("reply").disabled = false;
-}
-
-$("go").onclick = () => { answers = []; classify(); };
-$("reply").onclick = () => { if ($("answer").value.trim()) { answers.push([$("qtext").textContent, $("answer").value.trim()]); $("answer").value = ""; classify(); } };
-$("sign").onclick = async () => {
-  try {
-    const r = await api("/api/confirm", {product: $("product").value, code: $("signcode").value, broker: $("broker").value, importer: $("importer").value});
-    $("memory").textContent = `${r.memory_id} stored: ${fmt(r.code)} signed off by ${$("broker").value}`;
-  } catch (e) { $("err").textContent = e.message; }
-};
-$("wipe").onclick = async () => { await api("/api/forget", {importer: $("importer").value}); $("memory").textContent = "memory wiped (ledger keeps the deletions)"; };
-$("rescreen").onclick = async () => {
-  try {
-    const r = await api("/api/rescreen");
-    const stale = r.stale_verdicts.map((v) => `\n  ${fmt(v.code)} · ${v.recorded_at} · ${v.product.slice(0, 48)}`).join("");
-    $("release").textContent = `live release ${r.release} · ${r.release_changed ? "CHANGED" : "unchanged"}\n` +
-      `classified_code_living: ${r.verdicts_checked} verdicts checked, ${r.stale_verdicts.length} no longer valid${stale}`;
-  } catch (e) { $("release").textContent = e.message; }
-};
-document.querySelectorAll(".samples a").forEach((a) => a.onclick = () => { $("product").value = a.dataset.s; });
-document.querySelectorAll("nav button").forEach((b) => b.onclick = async () => {
-  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("on", x === b));
-  ["console", "evalView"].forEach((id) => $(id).classList.toggle("hide", id !== b.dataset.view));
-  if (b.dataset.view === "evalView") {
-    try {
-      const e = await api("/api/eval");
-      $("evalTitle").textContent = `Evaluation · ${e.split} · ${e.items} rulings`;
-      const pct = (x) => (100 * x).toFixed(1) + "%";
-      $("evalTable").className = "";
-      $("evalTable").innerHTML = `<table><tr><th>System</th><th>Coverage</th><th>Accuracy @10 (answered)</th><th>95% CI</th><th>@6</th><th>Stale-code rate</th></tr>` +
-        e.table.map((r) => `<tr class="${r.system === "precedent_gate" ? "gate" : ""}"><td>${r.system}</td><td class="n">${pct(r.coverage)}</td><td class="n">${pct(r.acc10_covered)}</td><td class="n">${pct(r.acc10_ci95[0])}–${pct(r.acc10_ci95[1])}</td><td class="n">${pct(r.acc6_covered)}</td><td class="n">${pct(r.stale_code_rate)}</td></tr>`).join("") + `</table>`;
-    } catch (err) { $("evalTable").textContent = err.message; }
-  }
-});
-status();
+examples();
+numbers();
 </script>
 </body>
 </html>

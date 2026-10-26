@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Console · Portorium</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .status { display: flex; gap: 28px; flex-wrap: wrap; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .desk { display: grid; grid-template-columns: minmax(360px, 5fr) 7fr; gap: clamp(32px, 3.4vw, 64px); padding-top: 40px; align-items: start; }
+  textarea, input[type=text] {
+    width: 100%; font: 400 18px/1.5 var(--sans); color: var(--ink); background: var(--sheet); border: 1px solid var(--ink);
+    padding: 16px 18px; border-radius: 2px; resize: vertical;
+  }
+  textarea { min-height: 150px; }
+  input[type=text] { font-size: 16px; padding: 12px 14px; }
+  .row { display: flex; gap: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  .examples { margin-top: 18px; display: grid; gap: 6px; }
+  .examples button { text-align: left; background: none; border: none; border-top: 1px solid var(--rule); padding: 10px 0; cursor: pointer;
+                     font: 400 15px/1.4 var(--sans); color: var(--ink-2); display: grid; grid-template-columns: 9ch 1fr; gap: 12px; }
+  .examples button:hover { color: var(--ink); }
+  .examples button .label { padding-top: 3px; }
+  .verdict { margin-top: 30px; padding: 30px 28px 24px; min-height: 200px; position: relative; }
+  .verdict .reason { font: 500 14px var(--mono); letter-spacing: .06em; margin-top: 22px; }
+  .verdict .big { font: 500 clamp(30px, 2.4vw, 42px) var(--mono); margin-top: 8px; letter-spacing: .01em; }
+  .receipt { font: 400 12px/1.7 var(--mono); color: var(--ink-3); margin-top: 18px; word-break: break-all; }
+  .question { margin-top: 18px; padding: 16px 18px; border-left: 3px solid var(--review); background: color-mix(in srgb, var(--review) 8%, var(--sheet)); font-size: 17px; }
+  .err { color: var(--refuse); font: 13px var(--mono); margin-top: 12px; }
+  .prec td .fact { color: var(--ink-3); font-size: 13.5px; }
+  .prec td.m { font-family: var(--mono); font-size: 14px; white-space: nowrap; }
+  .prec tr { opacity: 0; animation: rise .32s var(--ease) forwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .full { font-weight: 600; } .partial { color: var(--review); } .none { color: var(--ink-3); }
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--ink); }
+  .panels p { font: 400 13px/1.7 var(--mono); white-space: pre-wrap; color: var(--ink-2); margin: 10px 0 14px; }
+  .trace { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--ink); }
+  .step { display: grid; grid-template-columns: 70px 200px 1fr; gap: 14px; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 14px;
+          opacity: 0; animation: rise .3s var(--ease) forwards; }
+  .step .t { font: 400 12px var(--mono); color: var(--ink-3); padding-top: 2px; }
+  .step .who { font-weight: 600; } .step .who i { font-style: normal; font-weight: 400; color: var(--pen); }
+  .step .what { font: 400 13px/1.55 var(--mono); color: var(--ink-2); word-break: break-word; }
+  .step .what b { font-weight: 500; margin-right: 8px; }
+  .step.call { padding: 3px 0 3px 28px; border-bottom: none; font-size: 13px; }
+  .step.call .who { font-weight: 400; color: var(--ink-3); }
+  .tag { font: 500 10.5px var(--mono); padding: 1px 6px; border: 1px solid var(--rule); margin-right: 6px; color: var(--ink); white-space: nowrap; }
+  @media (max-width: 960px) { .desk, .panels { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <div class="status label" id="status">connecting…</div>
+    <div class="desk">
+      <div>
+        <div class="label">Product, as the importer would describe it</div>
+        <textarea id="product" style="margin-top:12px" placeholder="Material, construction, function, who it is for."></textarea>
+        <div class="row">
+          <button class="btn" id="go">Classify</button>
+          <input type="text" id="importer" value="demo" style="width:150px" title="Importer: the memory namespace" aria-label="Importer">
+        </div>
+        <div class="examples" id="examples"></div>
+        <div class="verdict sheet" id="verdict"><div class="empty">The verdict lands here, stamped, with the rule that decided it.</div></div>
+        <div id="ask" class="hide">
+          <div class="question" id="qtext"></div>
+          <div class="row"><input type="text" id="answer" placeholder="The importer's answer" aria-label="Answer"><button class="btn" id="reply">Answer and re-run</button></div>
+        </div>
+        <div id="signoff" class="hide" style="margin-top:26px">
+          <div class="label">Licensed broker</div>
+          <div class="row">
+            <input type="text" id="broker" value="broker-1" style="width:140px" aria-label="Broker">
+            <input type="text" id="signcode" placeholder="10-digit code" style="width:190px" aria-label="Code to sign off">
+            <button class="btn ghost" id="sign">Sign off</button>
+          </div>
+        </div>
+        <div class="err" id="err"></div>
+      </div>
+      <div>
+        <div class="label">Precedents · CBP rulings issued before today · liveness from Zetaris</div>
+        <div id="precedents" class="empty" style="margin-top:14px">Nemotron retrieves the closest rulings. Zetaris says whether each one's code still exists in HTS 2026 Rev 21 and whether the ruling was revoked.</div>
+        <div class="trace hide" id="traceBox">
+          <div class="label">Reasoning trace <span id="traceFile" style="text-transform:none;letter-spacing:0"></span></div>
+          <div id="trace" style="margin-top:10px"></div>
+        </div>
+        <div class="panels">
+          <div><div class="label">Schedule watch · Zetaris</div><p id="release">Re-check the live USITC release and every past verdict.</p><button class="btn ghost" id="rescreen">Check revision</button></div>
+          <div><div class="label">Broker memory · Meterless H-MEM</div><p id="memory">Nothing recalled yet.</p><button class="btn ghost" id="wipe">Wipe memory</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const SAMPLES = [
+  ["classified", "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights"],
+  ["dead code", "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom"],
+  ["question", "Yoga mat of polyurethane foam, 6 mm thick, 183 x 61 cm, for floor exercise"],
+];
+const ROLES = new Set(["retrieve", "recall", "check_liveness", "judge", "propose", "decide", "schedule_text", "critique", "answer", "sign_off", "record", "rescreen", "error"]);
+let answers = [];
+
+$("examples").innerHTML = SAMPLES.map(([k, s]) => `<button data-s="${esc(s)}"><span class="label">${k}</span><span>${esc(s)}</span></button>`).join("");
+document.querySelectorAll("#examples button").forEach((b) => (b.onclick = () => { $("product").value = b.dataset.s; $("product").focus(); }));
+
+async function status() {
+  try {
+    const s = await api("/api/status");
+    const d = s.dq.code_in_schedule || {};
+    $("status").innerHTML = `<span>mode <b>${s.live ? "live" : "sample · recorded responses"}</b></span><span>precedents <b>${s.precedents.toLocaleString()}</b></span>` +
+      `<span>Zetaris code_in_schedule <b>${Number(d.valid_record).toLocaleString()}</b> living · <b>${Number(d.invalid_record).toLocaleString()}</b> not in Rev 21</span>`;
+  } catch (e) { $("status").textContent = `status unavailable: ${e.message}`; }
+}
+
+function render(v) {
+  $("verdict").innerHTML = `<span class="stamp ${v.decision}">${v.decision}</span>` +
+    (v.code ? `<div class="big">${fmt(v.code)}</div>` : "") + `<div class="reason">${esc(v.reason)}</div>` +
+    (v.proposal && v.proposal.code ? `<div class="receipt">Proposed ${fmt(v.proposal.code)} at confidence ${esc(v.proposal.confidence)}` +
+      (v.critique && v.critique.code ? ` · Critic: ${v.critique.fits ? "fits" : "does not fit"} its Rev 21 text${v.critique.reason ? ` (${esc(v.critique.reason)})` : ""}` : "") + `</div>` : "") +
+    (v.receipts || []).map((r) => `<div class="receipt">${esc(r.role || "")} receipt ${esc(r.receipt_id)} · routed_model ${esc(r.routed_model)} · from_cache ${esc(r.from_cache)}</div>`).join("");
+  stamp($("verdict").querySelector(".stamp"));
+  $("ask").classList.toggle("hide", !(v.decision === "REVIEW" && v.question));
+  $("qtext").textContent = v.question || "";
+  $("signoff").classList.remove("hide");
+  $("signcode").value = v.code ? fmt(v.code) : "";
+  const rows = (v.precedents || []).map((p, i) => {
+    const dead = p.status && p.status !== "living";
+    const code = p.code ? `<span class="${dead ? "struck" : ""}">${fmt(p.code)}</span>` : "–";
+    return `<tr style="animation-delay:${i * 70}ms">
+      <td class="m">${esc(p.kind === "memory" ? "broker " + p.ruling_number.slice(4) : p.ruling_number)}<div class="fact">${esc(p.ruling_date || "signed off")}</div></td>
+      <td class="${p.match}">${p.match}</td>
+      <td class="m">${code}</td>
+      <td>${p.status ? `<span class="chip ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${(p.successors || []).length ? `<div class="fact mono">now ${p.successors.slice(0, 3).map(fmt).join(", ")}${p.successors.length > 3 ? ` +${p.successors.length - 3}` : ""}</div>` : ""}</td>
+      <td>${esc(p.subject.replace(/^The tariff classification of (an? |the )?/i, ""))}<div class="fact">${esc(p.fact)}</div></td></tr>`;
+  }).join("");
+  $("precedents").className = "";
+  $("precedents").innerHTML = `<table class="ledger prec"><tr><th>Ruling</th><th>Same?</th><th>Code</th><th>Zetaris</th><th>Precedent</th></tr>${rows}</table>`;
+  setTimeout(() => document.querySelectorAll("#precedents .struck").forEach((el) => el.classList.add("in")), 300);
+  const recalled = (v.precedents || []).filter((p) => p.kind === "memory").map((m) => `${m.ruling_number.slice(4)} → ${fmt(m.codes[0])}, judged ${m.match}`);
+  const answered = (v.remembered || []).map((m) => `${m.memory_id}: ${m.question} → ${m.answer}`);
+  $("memory").textContent = [...recalled, ...answered].join("\n") || "Nothing recalled for this product.";
+}
+
+async function showTrace(id) {
+  if (!id) return;
+  try {
+    const lines = await api(`/api/trace/${id}`);
+    $("traceFile").textContent = ` · logs/trace-${id}.jsonl · ${lines.length} lines`;
+    $("trace").innerHTML = lines.map((l, i) => {
+      const role = ROLES.has(l.action);
+      const target = l.target_agent ? ` <i>→ ${esc(l.target_agent)}</i>` : "";
+      const model = l.model ? `<span class="tag">${esc(l.model.replace(/nvidia\//g, ""))}</span>` : "";
+      const retry = l.retry_count ? `<span class="tag">retry ${l.retry_count}</span>` : "";
+      const said = role ? l.output_summary : l.output_summary.slice(0, 140) + (l.output_summary.length > 140 ? "…" : "");
+      return `<div class="step ${role ? "" : "call"}" style="animation-delay:${Math.min(i, 40) * 25}ms"><span class="t">${esc(l.timestamp.slice(14, 23))}</span>` +
+        `<span class="who">${role ? esc(l.agent_name) + target : esc(l.action)}</span>` +
+        `<span class="what"><b class="${esc(l.status)}">${role ? esc(l.action) : esc(l.status)}</b>${model}${retry}${esc(said)}</span></div>`;
+    }).join("");
+    $("traceBox").classList.remove("hide");
+  } catch (e) { $("traceFile").textContent = ` · ${e.message}`; }
+}
+
+async function classify() {
+  $("err").textContent = ""; $("go").disabled = $("reply").disabled = true;
+  $("verdict").innerHTML = `<div class="empty">Searching rulings · asking Zetaris which codes are still alive · Nemotron Ultra comparing products…</div>`;
+  try {
+    const v = await api("/api/classify", { product: $("product").value, importer: $("importer").value, answers });
+    render(v);
+    showTrace(v.trace);
+  } catch (e) { $("err").textContent = e.message; $("verdict").innerHTML = `<div class="empty">No verdict.</div>`; }
+  $("go").disabled = $("reply").disabled = false;
+}
+
+$("go").onclick = () => { answers = []; classify(); };
+$("product").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) $("go").click(); });
+$("reply").onclick = () => {
+  if (!$("answer").value.trim()) return;
+  answers.push([$("qtext").textContent, $("answer").value.trim()]);
+  $("answer").value = "";
+  classify();
+};
+$("sign").onclick = async () => {
+  try {
+    const r = await api("/api/confirm", { product: $("product").value, code: $("signcode").value, broker: $("broker").value, importer: $("importer").value });
+    $("memory").textContent = `${r.memory_id} stored: ${fmt(r.code)} signed off by ${$("broker").value}`;
+  } catch (e) { $("err").textContent = e.message; }
+};
+$("wipe").onclick = async () => {
+  try { await api("/api/forget", { importer: $("importer").value }); $("memory").textContent = "Memory wiped. The H-MEM ledger keeps the deletions."; }
+  catch (e) { $("err").textContent = e.message; }
+};
+$("rescreen").onclick = async () => {
+  try {
+    const r = await api("/api/rescreen");
+    const stale = r.stale_verdicts.map((v) => `\n  ${fmt(v.code)} · ${v.recorded_at} · ${v.product.slice(0, 44)}`).join("");
+    $("release").textContent = `Live release ${r.release} · ${r.release_changed ? "CHANGED" : "unchanged"}\n` +
+      `classified_code_living: ${r.verdicts_checked} verdicts checked, ${r.stale_verdicts.length} no longer valid${stale}`;
+  } catch (e) { $("release").textContent = e.message; }
+};
+const preset = new URLSearchParams(location.search).get("product");
+if (preset) $("product").value = preset;
+status();
+</script>
+</body>
+</html>

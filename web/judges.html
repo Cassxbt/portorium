@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For judges · Portorium</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .head { padding: 72px 0 48px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 7fr 5fr; gap: 56px; align-items: end; }
+  .steps { counter-reset: step; margin-top: 30px; border-top: 1px solid var(--ink); }
+  .step { display: grid; grid-template-columns: 70px 5fr 6fr; gap: 28px; padding: 26px 0; border-bottom: 1px solid var(--rule); }
+  .step::before { counter-increment: step; content: counter(step, decimal-leading-zero); font: 400 44px/1 var(--serif); color: var(--ink-3); }
+  .step h3 { margin-bottom: 8px; } .step p { margin: 0; font-size: 16.5px; color: var(--ink-2); }
+  pre.cmd { margin: 0; padding: 16px 18px; background: var(--ink); color: var(--paper); font: 400 13.5px/1.7 var(--mono); white-space: pre-wrap; word-break: break-word; border-radius: 2px; }
+  pre.cmd .c { color: #a9a596; }
+  table.ledger td:first-child { width: 34%; }
+  table.ledger td code { font: 400 13px var(--mono); background: var(--paper-2); padding: 1px 5px; }
+  @media (max-width: 960px) { .head, .step { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <section class="head">
+      <div><div class="label">For judges</div><h1 style="margin-top:18px">Check every claim yourself, in about <em>five minutes</em>.</h1></div>
+      <p class="lead">No keys, no Zetaris and no Nightshift needed: sample mode replays the recorded responses of those services and runs the gate's own logic on them. Live mode needs all three.</p>
+    </section>
+
+    <section class="band" style="padding-top:48px">
+      <div class="label">From a fresh clone</div>
+      <div class="steps">
+        <div class="step"><div><h3>Install</h3><p>Python 3.12. No other system dependency.</p></div>
+          <pre class="cmd" id="clone">git clone https://github.com/Cassxbt/portorium && cd portorium
+python3.12 -m venv .venv && . .venv/bin/activate
+pip install -e '.[dev]'</pre></div>
+        <div class="step"><div><h3>Run the tests</h3><p>Gate rules, liveness, the Critic, traces, recorder replay, evaluation leakage and resume.</p></div>
+          <pre class="cmd">pytest -q</pre></div>
+        <div class="step"><div><h3>Meterless H-MEM conformance</h3><p>The official H-MEM test vectors against the Python port, and a mutation test showing the vectors catch a broken port.</p></div>
+          <pre class="cmd">pytest tests/test_hmem_conformance.py -v</pre></div>
+        <div class="step"><div><h3>Classify in sample mode</h3><p>The recorded demo inputs replay exactly. Each prints its precedents, Zetaris status, receipts and the trace file it wrote.</p></div>
+          <pre class="cmd" id="sampleCmd">SAMPLE_MODE=true portorium classify "<span id="sampleProduct">Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom</span>"</pre></div>
+        <div class="step"><div><h3>Open the console and this site</h3><p>Same code, served locally.</p></div>
+          <pre class="cmd">SAMPLE_MODE=true uvicorn portorium.web:app --port 8781
+<span class="c"># http://127.0.0.1:8781</span></pre></div>
+        <div class="step"><div><h3>Read a trace</h3><p>One JSON line per step: role, handoff, model, retries, status. Written as the run happens, never edited.</p></div>
+          <pre class="cmd">ls logs/ && head -3 logs/trace-*.jsonl</pre></div>
+        <div class="step"><div><h3>Check the test set was run once</h3><p>The lock records the test file's hash, the commit and the prompt hash at the start of the only test run.</p></div>
+          <pre class="cmd">cat data/eval/TEST_RUN.lock
+shasum -a 256 data/eval/test.jsonl</pre></div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="label">Claim → where to check</div>
+      <table class="ledger" style="margin-top:20px">
+        <tr><th>Claim</th><th>Evidence</th></tr>
+        <tr><td>A model may suggest a code but never gives one</td><td><code>portorium/gate.py</code>: the Proposer's code must be cited by a retrieved, standing ruling; <code>decide</code> is plain rules; the Critic can only send a case to review. Trace lines show which role produced what.</td></tr>
+        <tr><td>Zetaris decides whether a precedent is alive</td><td><code>scripts/zetaris_usl.sql</code> registers <code>code_in_schedule</code> and <code>parent_survives</code>; <code>portorium/liveness.py</code> cross-checks against their invalid records and queries per request.</td></tr>
+        <tr><td>A living code is also checked against its current text</td><td><code>liveness.schedule_text</code> builds the Rev 21 path and alternatives in Zetaris SQL; the Critic's verdict is in each trace.</td></tr>
+        <tr><td>Every reasoning call goes through Nightshift and names its model</td><td><code>portorium/nightshift.py</code>; every <code>chat</code> line in a trace carries <code>routed_model</code> and a receipt id.</td></tr>
+        <tr><td>Embed and Rerank are the only direct NVIDIA calls</td><td><code>portorium/nvidia.py</code> docstring: the Nightshift M1–M4 build returns 501 for <code>/v1/embeddings</code>.</td></tr>
+        <tr><td>Broker memory is Meterless H-MEM</td><td><code>portorium/engines/hmem.py</code>, <code>portorium/memory.py</code>, the conformance test above.</td></tr>
+        <tr><td>No evaluation input reveals its answer</td><td><code>portorium/leakage.py</code>; <code>pytest tests/test_eval_inputs.py</code> checks every dev and test item.</td></tr>
+        <tr><td>Numbers on this site come from the run files</td><td><code>/api/eval</code> reads <code>data/eval/results/</code>; no figure is typed into a page.</td></tr>
+        <tr><td>Sample mode is the real gate on recorded data</td><td><code>portorium/recorder.py</code> replays service responses by request hash; <code>scripts/build_sample.py</code> made them in one live walkthrough.</td></tr>
+      </table>
+    </section>
+  </div>
+</main>
+<script src="/assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Under the hood · Portorium</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .head { padding: 72px 0 48px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 7fr 5fr; gap: 56px; align-items: end; }
+  .flow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; margin-top: 34px; border: 1px solid var(--ink); }
+  .flow > div { padding: 18px 16px 20px; border-right: 1px solid var(--rule); position: relative; min-height: 190px; }
+  .flow > div:last-child { border-right: none; }
+  .flow > div:not(:last-child)::after { content: "→"; position: absolute; right: -9px; top: 16px; background: var(--paper); font: 400 14px var(--mono); color: var(--ink-3); }
+  .flow .n { font: 500 11px var(--mono); color: var(--ink-3); letter-spacing: .1em; }
+  .flow h3 { font: 400 28px/1 var(--serif); margin: 10px 0 12px; }
+  .flow .who { font: 500 11px/1.5 var(--mono); text-transform: uppercase; letter-spacing: .06em; padding: 3px 6px; display: inline-block; }
+  .flow .who.z { background: #e3ebe4; } .flow .who.m { background: #ebe3d3; } .flow .who.nv { background: #e4e8ef; } .flow .who.code { background: var(--paper-2); }
+  .flow p { font-size: 14px; color: var(--ink-2); margin: 10px 0 0; line-height: 1.45; }
+  .outcomes { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--ink); border-top: none; }
+  .outcomes div { padding: 14px 16px; font: 500 13px var(--mono); border-right: 1px solid var(--rule); }
+  .outcomes div:last-child { border-right: none; }
+  .outcomes span { display: block; font: 400 13px/1.45 var(--sans); color: var(--ink-2); margin-top: 4px; }
+  .sponsor { display: grid; grid-template-columns: 4fr 8fr; gap: 56px; }
+  .sponsor h2 { position: sticky; top: 120px; align-self: start; }
+  .sponsor h3 { margin: 26px 0 8px; } .sponsor h3:first-child { margin-top: 0; }
+  .sponsor p, .sponsor li { font-size: 16.5px; color: var(--ink-2); }
+  .sponsor ul { padding-left: 20px; }
+  code { font: 400 .88em var(--mono); background: var(--paper-2); padding: 1px 5px; }
+  .unique { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); margin-top: 28px; }
+  .unique div { padding: 24px 24px 0 0; } .unique div + div { padding-left: 24px; border-left: 1px solid var(--rule); }
+  .unique b { display: block; font: 400 28px/1.1 var(--serif); margin-bottom: 10px; }
+  .unique p { font-size: 16px; color: var(--ink-2); margin: 0; }
+  @media (max-width: 960px) { .head, .sponsor, .unique { grid-template-columns: 1fr; } .flow, .outcomes { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <section class="head">
+      <div><div class="label">Under the hood</div><h1 style="margin-top:18px">Which model or engine runs each step, and which steps are <em>not</em> a model.</h1></div>
+      <p class="lead">Retrieval uses two Nemotron models; three roles call Nemotron 3 Ultra; Zetaris answers three questions; memory is Meterless H-MEM. The decision is plain code you can read in one screen.</p>
+    </section>
+
+    <section class="band" style="padding-top:56px">
+      <div class="label">One request</div>
+      <div class="flow">
+        <div><span class="n">01</span><h3>Retriever</h3><span class="who nv">NVIDIA Nemotron</span><p>Embed 1B finds 20 rulings issued before the question date; Rerank 8B orders them; six go on.</p></div>
+        <div><span class="n">02</span><h3>Memory</h3><span class="who m">Meterless H-MEM</span><p>Recalls broker sign-offs and the importer's earlier answers for a similar product.</p></div>
+        <div><span class="n">03</span><h3>Auditor</h3><span class="who z">Zetaris</span><p>One query per request: is each ruling revoked, and is each code living, split or removed in Rev 21?</p></div>
+        <div><span class="n">04</span><h3>Adjudicator · Proposer</h3><span class="who nv">Nemotron 3 Ultra</span> <span class="who m">via Nightshift</span><p>In parallel: same article or not for each precedent, and one proposed code from their codes.</p></div>
+        <div><span class="n">05</span><h3>Gate</h3><span class="who code">Python rules</span><p>Ordered rules: a standing ruling must cite the code, and it must be alive.</p></div>
+        <div><span class="n">06</span><h3>Critic</h3><span class="who z">Zetaris text</span> <span class="who nv">Ultra</span><p>The code's current wording, every level and its alternatives; does the product fit?</p></div>
+        <div><span class="n">07</span><h3>Ledger</h3><span class="who z">Zetaris</span><p>Writes the verdict to an audit table that data-quality rules re-screen when the schedule changes.</p></div>
+      </div>
+      <div class="outcomes">
+        <div class="CLASSIFIED">CLASSIFIED<span>A living, same-article precedent, and no disagreement.</span></div>
+        <div class="REVIEW">REVIEW<span>One question to the importer, then the whole loop again; or a broker decides.</span></div>
+        <div class="REFUSE">REFUSE<span>Nothing alive to stand on.</span></div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="label">Per step</div>
+      <table class="ledger" style="margin-top:20px">
+        <tr><th>Step</th><th>Runs on</th><th>Kind</th><th>In → out</th><th>Code</th></tr>
+        <tr><td>Retriever</td><td>nvidia/nemotron-3.5-embed-1b (2048 dims), nvidia/nemotron-3.5-rerank-8b · NVIDIA API</td><td>embedding, reranking</td><td>product → 6 rulings with facts</td><td class="mono">index.py, nvidia.py</td></tr>
+        <tr><td>Memory</td><td>Meterless H-MEM, Python port · local</td><td>memory engine</td><td>product → remembered decisions, answers</td><td class="mono">memory.py, engines/hmem.py</td></tr>
+        <tr><td>Auditor</td><td>Zetaris · USL <span class="mono">portorium</span>, DQ <span class="mono">code_in_schedule</span>, <span class="mono">parent_survives</span></td><td>SQL, data-quality rules</td><td>ruling ids → revoked flag, code status</td><td class="mono">liveness.py</td></tr>
+        <tr><td>Adjudicator</td><td>nvidia/nemotron-3-ultra-550b-a55b · Meterless Nightshift</td><td>language model</td><td>product + precedent facts → same / similar / different, one question</td><td class="mono">gate.py · judge</td></tr>
+        <tr><td>Proposer</td><td>nvidia/nemotron-3-ultra-550b-a55b · Meterless Nightshift</td><td>language model</td><td>product + precedents → one cited code, confidence</td><td class="mono">gate.py · propose</td></tr>
+        <tr><td>Gate</td><td>Python</td><td>rules</td><td>proposal + liveness + memory → verdict and rule name</td><td class="mono">gate.py · decide</td></tr>
+        <tr><td>Critic</td><td>Zetaris (schedule path SQL) + nvidia/nemotron-3-ultra-550b-a55b · Nightshift</td><td>SQL, language model</td><td>code → Rev 21 wording and alternatives → fits or not, one question</td><td class="mono">liveness.py · schedule_text, gate.py · critique</td></tr>
+        <tr><td>Ledger</td><td>Zetaris · <span class="mono">audit.verdict_log</span>, DQ <span class="mono">classified_code_living</span>, <span class="mono">classified_has_receipt</span>, <span class="mono">release_is_snapshot</span></td><td>SQL, data-quality rules</td><td>verdict → audit row; schedule check</td><td class="mono">audit.py</td></tr>
+        <tr><td class="muted">Baseline only</td><td>nvidia/nemotron-3.5-lightning-30b-a3b · Meterless Nightshift</td><td>language model</td><td>product → code, for comparison</td><td class="mono">eval.py</td></tr>
+      </table>
+    </section>
+
+    <section class="band">
+      <div class="sponsor">
+        <h2>Zetaris</h2>
+        <div>
+          <h3>One virtual layer for the schedule and the precedents</h3>
+          <p>The USL <code>portorium</code> holds <code>hts_line</code> and <code>hts_code</code> (HTS 2026 Rev 21), <code>ruling</code> and <code>ruling_code</code> (CBP rulings and the codes they cite), and <code>hts_release</code>, a REST table that reads the live USITC release. A second USL, <code>audit</code>, holds the verdict log.</p>
+          <h3>Liveness is a data-quality decision</h3>
+          <p><code>code_in_schedule</code> fails a ruling code that is not a line of the current schedule; <code>parent_survives</code> fails one whose 8-digit parent is gone too, which separates a split from a removal. At start-up Portorium cross-checks its liveness sets against each rule's own invalid records and refuses to start if they differ.</p>
+          <p id="dq">Across 75,870 ruling codes: 53,723 living, 7,938 split, 14,209 removed.</p>
+          <h3>A code's current wording, read from the schedule's structure</h3>
+          <p>The schedule keeps its hierarchy as indentation. One Zetaris query over the loaded release walks it: for a 10-digit code, the last line at each level above it (heading, subheading, statistical groups) and every other line at each level. The Critic reads that, so "Other" means what the schedule says it means today.</p>
+          <h3>Every verdict goes back in</h3>
+          <p>Live verdicts are inserted into <code>audit.verdict_log</code>. <code>classified_code_living</code> flags a classified verdict whose code has since left the schedule; <code>release_is_snapshot</code> flags when USITC publishes a release newer than the one loaded.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="sponsor">
+        <h2>Meterless</h2>
+        <div>
+          <h3>Nightshift routes every reasoning call</h3>
+          <p>Portorium talks to Nightshift's OpenAI-compatible endpoint on the Mac. Every answer carries a receipt with <code>routed_model</code> and <code>receipt_id</code>; the verdict keeps it and the trace logs it, so each Nemotron call is attributable. For the evaluation, Nightshift's answer cache is set to 0% and each request carries a run tag, so no answer is replayed from an earlier run.</p>
+          <h3>H-MEM is the memory engine</h3>
+          <p>A Python port of the Meterless H-MEM reference (Apache-2.0). It passes the 13 official conformance vectors, and a mutation test shows the vectors catch a broken port. Broker sign-offs and importer answers are long-term factual memories with provenance; a wipe is logged in H-MEM's ledger.</p>
+          <p class="mono" style="font-size:13px">pytest tests/test_hmem_conformance.py</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="sponsor">
+        <h2>NVIDIA Nemotron</h2>
+        <div>
+          <h3>Four models, each with one job</h3>
+          <ul>
+            <li><b>Nemotron 3.5 Embed 1B</b>: one vector per ruling subject, 56,371 rulings.</li>
+            <li><b>Nemotron 3.5 Rerank 8B</b>: orders the 20 nearest rulings for each product.</li>
+            <li><b>Nemotron 3 Ultra 550B-A55B</b>: three roles. The Adjudicator compares precedents, the Proposer picks a cited code, the Critic checks it against the schedule's wording.</li>
+            <li><b>Nemotron 3.5 Lightning 30B-A3B</b>: evaluation baseline only.</li>
+          </ul>
+          <h3>Why Embed and Rerank are called directly</h3>
+          <p>The Nightshift M1–M4 build returns <code>501 route_not_implemented</code> for <code>/v1/embeddings</code>, so retrieval calls NVIDIA's API with the same key. Every reasoning call goes through Nightshift.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="label">What is different about this use</div>
+      <div class="unique">
+        <div><b>A model suggests; it never decides.</b><p>The Proposer may only pick a code a retrieved ruling cites. Zetaris and the Critic verify it; plain rules decide.</p></div>
+        <div><b>Zetaris decides what is alive.</b><p>Registered rules, not application code, say whether a precedent still stands, and the same rules re-screen past verdicts.</p></div>
+        <div><b>Memory is judged, not trusted.</b><p>A broker's remembered decision is weighed by the model like any precedent, and dropped if its code has died.</p></div>
+      </div>
+    </section>
+  </div>
+</main>
+<script src="/assets/app.js"></script>
+</body>
+</html>

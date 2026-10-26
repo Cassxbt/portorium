@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Traces · Portorium</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .head { padding: 72px 0 40px; display: grid; grid-template-columns: 7fr 5fr; gap: 56px; align-items: end; border-bottom: 1px solid var(--rule); }
+  .explorer { display: grid; grid-template-columns: 300px 1fr 260px; gap: 40px; padding-top: 36px; align-items: start; }
+  .runs { position: sticky; top: 110px; max-height: calc(100vh - 150px); overflow: auto; }
+  .runs h3 { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin: 18px 0 6px; }
+  .runs button { display: block; width: 100%; text-align: left; background: none; border: none; border-top: 1px solid var(--rule); padding: 11px 0;
+                 cursor: pointer; font: 400 14.5px/1.4 var(--sans); color: var(--ink-2); }
+  .runs button .d { display: block; font: 500 11px var(--mono); letter-spacing: .05em; margin-top: 4px; }
+  .runs button[aria-current="true"] { color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); padding-left: 12px; }
+  .spine { position: relative; padding-left: 34px; }
+  .spine::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 1px; background: var(--ink); }
+  .node { position: relative; padding: 12px 0 14px; border-bottom: 1px solid var(--rule); cursor: pointer; opacity: 0; animation: rise .3s var(--ease) forwards; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .node::before { content: ""; position: absolute; left: -30px; top: 18px; width: 11px; height: 11px; background: var(--paper); border: 1.5px solid var(--ink); border-radius: 50%; }
+  .node.call { padding: 5px 0 5px 22px; border-bottom: none; }
+  .node.call::before { left: -28px; top: 12px; width: 7px; height: 7px; border-width: 1px; border-color: var(--ink-3); }
+  .node .h { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .node .who { font: 400 26px/1.1 var(--serif); }
+  .node .who i { font-style: normal; color: var(--pen); font-size: 18px; }
+  .node .act { font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .node .t { margin-left: auto; font: 400 11.5px var(--mono); color: var(--ink-3); }
+  .node .o { font: 400 13.5px/1.55 var(--mono); color: var(--ink-2); margin-top: 6px; word-break: break-word; }
+  .node.call .h { font: 400 13px var(--mono); color: var(--ink-3); }
+  .node pre { display: none; margin: 10px 0 0; padding: 14px; background: var(--paper-2); font: 400 12px/1.55 var(--mono); white-space: pre-wrap; word-break: break-word; }
+  .node.open pre { display: block; }
+  .tag { font: 500 10.5px var(--mono); padding: 1px 6px; border: 1px solid var(--rule); color: var(--ink); white-space: nowrap; }
+  .tally { position: sticky; top: 110px; }
+  .tally div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--rule); font-size: 15px; }
+  .tally div b { font: 500 15px var(--mono); }
+  .tally ul { margin: 8px 0 0; padding: 0; list-style: none; font: 400 12.5px/1.7 var(--mono); color: var(--ink-2); }
+  @media (max-width: 1100px) { .explorer, .head { grid-template-columns: 1fr; } .runs, .tally { position: static; max-height: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <section class="head">
+      <div><div class="label">Traces</div><h1 style="margin-top:18px">Every verdict is a document you can <em>replay</em>.</h1></div>
+      <p class="lead">Each request writes one JSON line per step to <span class="mono">logs/trace-&lt;run&gt;.jsonl</span> as it happens: the role, who it hands to, the model or engine, retries and status. Click any line for the raw record.</p>
+    </section>
+    <div class="explorer">
+      <aside class="runs" id="runs"><div class="empty">Loading…</div></aside>
+      <div><div class="label" id="title"></div><div class="spine" id="spine" style="margin-top:16px"></div></div>
+      <aside class="tally" id="tally"></aside>
+    </div>
+  </div>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const ROLES = new Set(["retrieve", "recall", "check_liveness", "judge", "propose", "decide", "schedule_text", "critique", "answer", "sign_off", "record", "rescreen", "error"]);
+
+function show(lines, title) {
+  $("title").textContent = title;
+  $("spine").innerHTML = lines.map((l, i) => {
+    const role = ROLES.has(l.action);
+    const model = l.model ? `<span class="tag">${esc(l.model.replace(/nvidia\//g, ""))}</span>` : "";
+    const retry = l.retry_count ? `<span class="tag">retry ${l.retry_count}</span>` : "";
+    const head = role
+      ? `<span class="who">${esc(l.agent_name)}${l.target_agent ? ` <i>→ ${esc(l.target_agent)}</i>` : ""}</span><span class="act ${esc(l.status)}">${esc(l.action)} · ${esc(l.status)}</span>${model}${retry}`
+      : `<span>${esc(l.agent_name)} · ${esc(l.action)}</span><span class="${esc(l.status)}">${esc(l.status)}</span>${model}${retry}`;
+    const out = role ? l.output_summary : l.output_summary.slice(0, 180) + (l.output_summary.length > 180 ? "…" : "");
+    return `<div class="node ${role ? "" : "call"}" style="animation-delay:${Math.min(i, 50) * 18}ms"><div class="h">${head}<span class="t">${esc(l.timestamp.slice(11, 23))}</span></div>` +
+      `<div class="o">${esc(out)}</div><pre>${esc(JSON.stringify(l, null, 2))}</pre></div>`;
+  }).join("") || `<div class="empty">Empty trace.</div>`;
+  $("spine").querySelectorAll(".node").forEach((n) => (n.onclick = () => n.classList.toggle("open")));
+  const models = {}, count = (f) => lines.filter(f).length;
+  lines.filter((l) => l.model && !ROLES.has(l.action)).forEach((l) => (models[l.model] = (models[l.model] || 0) + 1));
+  const decide = [...lines].reverse().find((l) => l.action === "decide");
+  $("tally").innerHTML = `<div class="label">This run</div>
+    <div><span>Lines</span><b>${lines.length}</b></div>
+    <div><span>Zetaris queries</span><b>${count((l) => l.action === "sql")}</b></div>
+    <div><span>H-MEM operations</span><b>${count((l) => l.action.startsWith("hmem."))}</b></div>
+    <div><span>Model calls</span><b>${Object.values(models).reduce((a, b) => a + b, 0)}</b></div>
+    <div><span>Retries</span><b>${lines.reduce((a, l) => a + (l.retry_count || 0), 0)}</b></div>
+    <div><span>Feedback events</span><b>${count((l) => l.status === "feedback")}</b></div>
+    <ul>${Object.entries(models).map(([m, n]) => `<li>${esc(m)} × ${n}</li>`).join("")}</ul>
+    ${decide ? `<p class="${decide.status}" style="font:500 13px var(--mono);margin-top:18px">${esc(decide.output_summary)}</p>` : ""}`;
+}
+
+(async () => {
+  const [examples, recent] = await Promise.all([api("/api/examples").catch(() => []), api("/api/traces").catch(() => [])]);
+  const item = (key, text, d) => `<button data-k="${esc(key)}"><span>${esc(text.slice(0, 80))}</span><span class="d ${d.split(" ")[0]}">${esc(d)}</span></button>`;
+  $("runs").innerHTML = (examples.length ? `<h3>Recorded examples</h3>` + examples.map((e) => item(`ex:${e.name}`, e.product, `${e.decision} ${e.reason}`)).join("") : "") +
+    (recent.length ? `<h3>Recent runs · logs/</h3>` + recent.map((t) => item(`run:${t.run_id}`, t.subject || t.run_id, t.decision || `${t.lines} lines`)).join("") : "") ||
+    `<div class="empty">No traces yet. Classify a product in the console.</div>`;
+  const open = async (key) => {
+    $("runs").querySelectorAll("button").forEach((b) => b.setAttribute("aria-current", b.dataset.k === key));
+    if (key.startsWith("ex:")) { const e = await api(`/api/examples/${key.slice(3)}`); show(e.trace, `output_examples/${key.slice(3)}.json`); }
+    else { show(await api(`/api/trace/${key.slice(4)}`), `logs/trace-${key.slice(4)}.jsonl`); }
+  };
+  $("runs").querySelectorAll("button").forEach((b) => (b.onclick = () => open(b.dataset.k)));
+  const want = new URLSearchParams(location.search).get("run");
+  const first = want ? `run:${want}` : $("runs").querySelector("button")?.dataset.k;
+  if (first) open(first);
+})();
+</script>
+</body>
+</html>

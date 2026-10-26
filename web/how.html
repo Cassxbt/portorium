@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works · Portorium</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .intro { padding: 72px 0 56px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 7fr 5fr; gap: 64px; align-items: end; }
+  .story { display: grid; grid-template-columns: 4fr 8fr; gap: clamp(40px, 5vw, 96px); }
+  .chapters { position: sticky; top: 120px; align-self: start; padding-top: 56px; }
+  .chapters a { display: grid; grid-template-columns: 4ch 1fr; gap: 10px; padding: 12px 0; border-top: 1px solid var(--rule);
+                color: var(--ink-3); text-decoration: none; font: 400 clamp(24px, 1.9vw, 34px)/1.1 var(--serif); transition: color .32s var(--ease); }
+  .chapters a .n { font: 500 12px var(--mono); letter-spacing: .08em; padding-top: 8px; }
+  .chapters a.on { color: var(--ink); }
+  .chapters a .by { grid-column: 2; font: 400 11.5px var(--mono); letter-spacing: .04em; color: var(--ink-3); margin-top: 2px; }
+  .chapters .case { margin-top: 26px; font: 400 13px/1.6 var(--mono); color: var(--ink-2); border-top: 1px solid var(--ink); padding-top: 14px; }
+  .station { min-height: 88vh; padding: 56px 0 72px; border-bottom: 1px solid var(--rule); scroll-margin-top: 100px; }
+  .station h2 { margin: 16px 0 22px; }
+  .station .lead { margin-bottom: 28px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 26px 0; }
+  .grid2 h3 { font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .grid2 p { margin: 0; font-size: 16.5px; color: var(--ink-2); }
+  .evidence { padding: 18px 20px; }
+  .evidence .label { margin-bottom: 10px; }
+  .ev { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 7px 0; border-top: 1px solid var(--rule); font: 400 13px/1.55 var(--mono); color: var(--ink-2); }
+  .ev:first-of-type { border-top: none; }
+  .ev .who { color: var(--ink); } .ev .who i { font-style: normal; color: var(--pen); }
+  .ev.call { padding-left: 18px; grid-template-columns: 132px 1fr; color: var(--ink-3); }
+  .tag { font: 500 10.5px var(--mono); padding: 1px 6px; border: 1px solid var(--rule); margin-right: 6px; color: var(--ink); white-space: nowrap; }
+  table.rules td:first-child { font: 500 12px var(--mono); color: var(--ink-3); width: 4ch; }
+  table.rules td.out { white-space: nowrap; font: 500 13px var(--mono); }
+  @media (max-width: 960px) { .story, .intro, .grid2 { grid-template-columns: 1fr; } .chapters { position: static; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <section class="intro">
+      <div>
+        <div class="label">How it decides</div>
+        <h1 style="margin-top:18px">A model proposes. Zetaris and a second model check. <em>Code</em> decides.</h1>
+      </div>
+      <p class="lead">Each role below is a step in one request. The panels show the lines it wrote to the trace in a real run, with the model or engine that did the work.</p>
+    </section>
+    <div class="story">
+      <aside class="chapters" id="chapters">
+        <a href="#retriever" data-s="retriever"><span class="n">01</span><span>Retriever</span><span class="by">Nemotron Embed · Rerank</span></a>
+        <a href="#memory" data-s="memory"><span class="n">02</span><span>Memory</span><span class="by">Meterless H-MEM</span></a>
+        <a href="#auditor" data-s="auditor"><span class="n">03</span><span>Auditor</span><span class="by">Zetaris</span></a>
+        <a href="#adjudicator" data-s="adjudicator"><span class="n">04</span><span>Adjudicator · Proposer</span><span class="by">Nemotron 3 Ultra · Nightshift</span></a>
+        <a href="#gate" data-s="gate"><span class="n">05</span><span>Gate</span><span class="by">Deterministic rules</span></a>
+        <a href="#critic" data-s="critic"><span class="n">06</span><span>Critic</span><span class="by">Zetaris schedule text · Ultra</span></a>
+        <a href="#importer" data-s="importer"><span class="n">07</span><span>Importer · Broker</span><span class="by">Human in the loop</span></a>
+        <div class="case" id="caseNote">Evidence from a recorded run.</div>
+      </aside>
+      <div>
+        <section class="station" id="retriever">
+          <div class="label">01 · Retriever</div>
+          <h2>Find the rulings an importer could have cited that day.</h2>
+          <p class="lead">The product description is embedded with Nemotron Embed and compared against 56,371 CBP ruling subjects. Only rulings issued before the date of the question count. The 20 nearest are re-ordered by Nemotron Rerank and the top six go forward.</p>
+          <div class="grid2">
+            <div><h3>Why it matters</h3><p>A precedent from after the question date would be hindsight. The evaluation applies the same cut-off, so no system sees a ruling issued after the items it is scored on.</p></div>
+            <div><h3>What it cannot do</h3><p>Choose a code. It only proposes candidates; product facts for each come from the ruling text on CBP's site.</p></div>
+          </div>
+          <div class="evidence sheet" data-role="Retriever"></div>
+        </section>
+        <section class="station" id="memory">
+          <div class="label">02 · Memory</div>
+          <h2>Remember what a broker signed and what the importer said.</h2>
+          <p class="lead">Broker sign-offs and the importer's answers are long-term memories in Meterless H-MEM, with provenance. For a similar product they are recalled and judged alongside the rulings, never trusted blindly.</p>
+          <div class="grid2">
+            <div><h3>Why it matters</h3><p>A broker's correction should hold for the next shipment of the same article, and a question answered once should not be asked again.</p></div>
+            <div><h3>What it cannot do</h3><p>Override a dead code. A remembered decision whose code is no longer in the schedule is dropped before judging; one that contradicts a living precedent sends the case to review.</p></div>
+          </div>
+          <div class="evidence sheet" data-role="Memory"></div>
+        </section>
+        <section class="station" id="auditor">
+          <div class="label">03 · Auditor</div>
+          <h2>Ask Zetaris whether each precedent is still alive.</h2>
+          <p class="lead">The schedule (HTS 2026 Rev 21), the rulings and their codes live in a Zetaris virtual layer. Two registered data-quality rules decide liveness: <span class="mono">code_in_schedule</span> and <span class="mono">parent_survives</span>. For every request, one query returns each precedent's revocation flag and the status of its codes.</p>
+          <div class="grid2">
+            <div><h3>Statuses</h3><p><span class="chip living">living</span> the code is in Rev 21 · <span class="chip split">split</span> its 8-digit parent survives under new codes · <span class="chip removed">removed</span> gone · <span class="chip revoked">revoked</span> the ruling itself no longer stands.</p></div>
+            <div><h3>Across all rulings</h3><p id="dqCounts">Of 75,870 ruling codes, 53,723 are living, 7,938 split and 14,209 removed.</p></div>
+          </div>
+          <div class="evidence sheet" data-role="Auditor"></div>
+        </section>
+        <section class="station" id="adjudicator">
+          <div class="label">04 · Adjudicator and Proposer</div>
+          <h2>Two calls at once: is it the same article, and which code?</h2>
+          <p class="lead">Nemotron 3 Ultra, routed through Meterless Nightshift, runs twice in parallel. The Adjudicator marks each precedent as the same article, a similar one or a different one, and writes the single question that would separate them. The Proposer picks one code, only from the codes the retrieved rulings cite, with a confidence.</p>
+          <div class="grid2">
+            <div><h3>Why a proposal, not a vote</h3><p>On the dev set, Ultra's pick among retrieved rulings was the strongest single signal. Asked for a code from memory, the same model named a code no longer in the schedule for over a third of products.</p></div>
+            <div><h3>Receipts</h3><p>Each call returns a Nightshift receipt naming the model that ran it. The verdict keeps both.</p></div>
+          </div>
+          <div class="evidence sheet" data-role="Adjudicator"></div>
+          <div class="evidence sheet" data-role="Proposer" style="margin-top:14px"></div>
+        </section>
+        <section class="station" id="gate">
+          <div class="label">05 · Gate</div>
+          <h2>The rules, in the order they are checked.</h2>
+          <p class="lead">Plain code with no model in it. The first rule that applies decides, and its name is the reason on the verdict.</p>
+          <table class="ledger rules" style="margin:10px 0 30px">
+            <tr><th>#</th><th>When</th><th>Verdict</th></tr>
+            <tr><td>1</td><td>No ruling was found at all</td><td class="out REFUSE">NO_PRECEDENT_FOUND</td></tr>
+            <tr><td>2</td><td>No retrieved ruling cites the proposed code</td><td class="out REVIEW">NO_PRECEDENT_FOR_PROPOSAL</td></tr>
+            <tr><td>3</td><td>The code was split in Rev 21</td><td class="out REVIEW">SPLIT_SUCCESSORS</td></tr>
+            <tr><td>4</td><td>The code is gone or its ruling revoked, but another living candidate exists</td><td class="out REVIEW">STALE_PROPOSAL</td></tr>
+            <tr><td>5</td><td>The code is gone or revoked, and nothing living remains</td><td class="out REFUSE">STALE_PRECEDENT</td></tr>
+            <tr><td>6</td><td>A broker's remembered decision says otherwise</td><td class="out REVIEW">MEMORY_CONFLICT</td></tr>
+            <tr><td>7</td><td>A standing ruling cites the code and it is living: the Critic reads it next</td><td class="out CLASSIFIED">LIVING_PRECEDENT</td></tr>
+            <tr><td>8</td><td>The Critic finds the product outside the code's Rev 21 text</td><td class="out REVIEW">SCHEDULE_TEXT_DISAGREES</td></tr>
+          </table>
+          <div class="evidence sheet" data-role="Gate"></div>
+        </section>
+        <section class="station" id="critic">
+          <div class="label">06 · Critic</div>
+          <h2>A living code can still mean something else now.</h2>
+          <p class="lead">In HTS 2026 Rev 21, 3004.90.92.35 reads "Containing tramadol". A 2023 ruling had used it for olanzapine, which now has its own line. The code survived the revision; its meaning moved. So before a code is given, Zetaris returns its full Rev 21 text, every level from the heading down, with the alternatives at each level, and Nemotron Ultra checks the product against it.</p>
+          <div class="grid2">
+            <div><h3>What it catches</h3><p>Renumbered statistical lines; a single-loudspeaker line given to a two-speaker product; training balls given a line for baseball equipment "except balls". When a missing fact decides it, the Critic writes the question. It also misses some, and sometimes rejects a right code: the evaluation counts both.</p></div>
+            <div><h3>How it is built</h3><p>One Zetaris query walks the schedule's indentation: the last line at each level above the code, and every sibling at each level. No text is hard-coded.</p></div>
+          </div>
+          <div class="evidence sheet" data-role="Critic"></div>
+        </section>
+        <section class="station" id="importer">
+          <div class="label">07 · Importer · Broker</div>
+          <h2>One question, then the whole loop again.</h2>
+          <p class="lead">On review, the importer gets the single question the Adjudicator wrote. The answer is stored in memory and the request runs again from the Retriever, with the answer in front of the Adjudicator. A licensed broker can sign off any code; the sign-off becomes memory for the next shipment.</p>
+          <div class="grid2">
+            <div><h3>Ledger</h3><p>Every live verdict is written to a Zetaris audit table. A rule, <span class="mono">classified_code_living</span>, re-screens past verdicts when the schedule changes.</p></div>
+            <div><h3>Wipe</h3><p>Memory can be wiped per importer. H-MEM's ledger keeps a record of each deletion.</p></div>
+          </div>
+          <div class="evidence sheet" data-role="Importer"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="/assets/app.js"></script>
+<script>
+const ROLES = new Set(["retrieve", "recall", "check_liveness", "judge", "propose", "decide", "schedule_text", "critique", "answer", "sign_off", "record", "error"]);
+
+function line(l) {
+  const role = ROLES.has(l.action);
+  const model = l.model ? `<span class="tag">${esc(l.model.replace(/nvidia\//g, ""))}</span>` : "";
+  const target = l.target_agent ? ` <i>→ ${esc(l.target_agent)}</i>` : "";
+  const text = role ? l.output_summary : l.output_summary.slice(0, 160) + (l.output_summary.length > 160 ? "…" : "");
+  return `<div class="ev ${role ? "" : "call"}"><span class="who">${role ? esc(l.action) + target : esc(l.action)}</span><span>${model}${esc(text)}</span></div>`;
+}
+
+async function evidence() {
+  let lines = [], note = "";
+  for (const name of ["question", "dead-code", "classified"]) {
+    try { const e = await api(`/api/examples/${name}`); lines = lines.concat(e.trace.map((l) => ({ ...l, from: e.input.product }))); note ||= e.input.product; } catch {}
+  }
+  document.querySelectorAll(".evidence").forEach((box) => {
+    const role = box.dataset.role;
+    const mine = lines.filter((l) => l.agent_name === role || (role === "Importer" && ["Importer", "Broker", "Ledger"].includes(l.agent_name))
+      || (role === "Critic" && l.action === "schedule_text"));
+    const first = mine.length ? mine.filter((l) => l.from === mine[0].from) : [];
+    box.innerHTML = first.length ? `<div class="label">In a recorded run · ${esc(first[0].from.slice(0, 70))}</div>` + first.slice(0, 7).map(line).join("")
+      : `<div class="empty">No recorded run yet for this role.</div>`;
+  });
+  if (note) $("caseNote").textContent = "Evidence panels: lines from recorded runs in output_examples/.";
+}
+
+const links = [...document.querySelectorAll("#chapters a")];
+const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+  if (e.isIntersecting) links.forEach((a) => a.classList.toggle("on", a.dataset.s === e.target.id));
+}), { rootMargin: "-45% 0px -50% 0px" });
+document.querySelectorAll(".station").forEach((s) => io.observe(s));
+evidence();
+</script>
+</body>
+</html>
