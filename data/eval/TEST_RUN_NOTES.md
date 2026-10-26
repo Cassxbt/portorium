@@ -1,0 +1,8 @@
+# Test run notes
+
+Written by hand alongside the machine-written `TEST_RUN.lock`, which is never edited.
+
+- **2026-10-26 ~16:20 UTC, first attempt aborted** (recorded in the lock): the request pacer treated NVIDIA timeouts as rate limits and throttled every worker; restarted on commit 274ea0f with the reason in the lock. No result had been read.
+- **2026-10-26 ~16:40 UTC, scope reduced to a seeded random 300 of the 684 test rulings.** NVIDIA's rate limit for our account held the run to about 0.7 rulings a minute (Nightshift receipts show one NVIDIA call per request; the 429s come from NVIDIA), so all 684 would have taken about 16 hours. The subset is `load_items("test", 300)`, seed 20261025, fixed in code since commit 8b3b501 (25 Oct), before any test run. No accuracy, coverage or verdict of any test item had been looked at when this was decided; only timing, retry and cache counts.
+- Predictions already made for 4 rulings outside the 300 were moved, unchanged, to `test_20261026T122742.outside_sample.jsonl`; 4 rulings inside the 300 keep theirs and the run resumed on the same commit (each resume is listed in the lock).
+- **2026-10-26 22:50 UTC, complete: 300 of 300 rulings scored by every system, 0 errors** (`test_20261026T184956.json`). The main pass ended at 21:36 UTC with 20 gate items failed on NVIDIA 429s (Nightshift returns them as HTTP 502); two resume passes on the same commit and prompt hash re-ran only those items (3 failed again, then 0 on one worker). Errors are rate-limit failures, never verdicts, so no item was re-run because of its result. The two earlier run files written at the end of each pass are partial snapshots and are not committed.
