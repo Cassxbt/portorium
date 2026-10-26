@@ -132,7 +132,7 @@ function exhibit(e) {
   const shown = v.precedents.filter((p) => p.match !== "none").slice(0, 3);
   const rows = shown.map((p) => {
     const dead = p.status && p.status !== "living";
-    const note = p.status === "split" ? `Split in Rev 21 into ${p.successors.length} codes: ${p.successors.slice(0, 3).map(fmt).join(", ")}${p.successors.length > 3 ? " …" : ""}`
+    const note = p.status === "split" ? `Gone from Rev 21. Its line ${p.code.slice(0, 4)}.${p.code.slice(4, 6)}.${p.code.slice(6, 8)} now has ${p.successors.length} codes: ${p.successors.slice(0, 3).map(fmt).join(", ")}${p.successors.length > 3 ? " …" : ""}`
       : p.status === "revoked" ? "Ruling revoked" : p.status === "removed" ? "Code no longer in the schedule" : "";
     return `<div class="prec"><span>${esc(p.ruling_number)}</span><span class="muted">${esc((p.ruling_date || "").slice(0, 4))}</span>` +
       `<span><span class="code ${dead ? "struck" : ""}">${fmt(p.code)}</span> <span class="chip ${p.match === "full" ? "living" : "split"}" style="margin-left:8px">${p.match === "full" ? "same article" : "similar"}</span></span>` +

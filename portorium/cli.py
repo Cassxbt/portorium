@@ -46,7 +46,8 @@ def show(v: Verdict) -> None:
         print(f"  {j.ruling_number:11s} {j.ruling_date or 'broker':10s}  {j.match:7s}  {fmt(j.code) if j.code else '-':13s} "
               f"{(j.status or ''):7s}{flag}  {j.fact[:70]}")
         if j.successors:
-            print(f"      now split into: {', '.join(fmt(c) for c in j.successors[:6])}")
+            print(f"      gone from Rev 21; its line {j.code[:4]}.{j.code[4:6]}.{j.code[6:8]} now has {len(j.successors)} codes: "
+                  f"{', '.join(fmt(c) for c in j.successors[:6])}{' ...' if len(j.successors) > 6 else ''}")
     for m in v.remembered:
         print(f"  remembered {m['memory_id']}: {m['question']} -> {m['answer']}")
     for r in v.receipts:

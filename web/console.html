@@ -134,7 +134,7 @@ function render(v) {
       <td class="m">${esc(p.kind === "memory" ? "broker " + p.ruling_number.slice(4) : p.ruling_number)}<div class="fact">${esc(p.ruling_date || "signed off")}</div></td>
       <td class="${p.match}">${p.match}</td>
       <td class="m">${code}</td>
-      <td>${p.status ? `<span class="chip ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${(p.successors || []).length ? `<div class="fact mono">now ${p.successors.slice(0, 3).map(fmt).join(", ")}${p.successors.length > 3 ? ` +${p.successors.length - 3}` : ""}</div>` : ""}</td>
+      <td>${p.status ? `<span class="chip ${p.status}">${p.status}</span>` : ""}${p.failed_rule ? `<div class="fact mono">${p.failed_rule}</div>` : ""}${(p.successors || []).length ? `<div class="fact mono">gone; ${esc(p.code.slice(0, 4))}.${esc(p.code.slice(4, 6))}.${esc(p.code.slice(6, 8))} now has ${p.successors.length} codes</div>` : ""}</td>
       <td>${esc(p.subject.replace(/^The tariff classification of (an? |the )?/i, ""))}<div class="fact">${esc(p.fact)}</div></td></tr>`;
   }).join("");
   $("precedents").className = "";
