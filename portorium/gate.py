@@ -150,7 +150,8 @@ class PrecedentGate:
                     entry = Precedent(f"MEM:{recall.memory_id}", "", f"broker {recall.broker}", [recall.code], [])
                     precedents.append(entry)
                     facts[entry.ruling_number] = recall.content
-                remembered = memory.recall_answers(product)
+                given = {tuple(a) for a in answers}
+                remembered = [r for r in memory.recall_answers(product) if (r[0], r[1]) not in given]
                 broker = [p.ruling_number for p in precedents if p.ruling_number.startswith("MEM:")]
                 trace.event("recall", product, f"{len(broker)} broker decision(s) passed on, {len(stale)} dropped as no longer "
                             f"living, {len(remembered)} earlier importer answer(s)", target_agent="Adjudicator")

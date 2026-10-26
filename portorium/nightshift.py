@@ -105,7 +105,8 @@ class Nightshift:
             last = f"HTTP {r.status_code}: {r.text[:300]}"
             if r.status_code not in RETRYABLE:
                 break
-            if r.status_code == 429:
+            # Nightshift reports NVIDIA's own rate limit as a 502 with nvidia_429 in the body.
+            if r.status_code == 429 or "nvidia_429" in r.text:
                 self.pacer.rejected()
         trace.event("chat", body["messages"][-1]["content"], last, model=body["model"], retry_count=attempt, status="error")
         raise NightshiftError(last)

@@ -25,10 +25,10 @@ def stored_facts(ruling_number: str) -> str | None:
     """The committed product description, or the one derived from the local full-text cache."""
     path = FACTS / f"{ruling_number}.txt"
     if path.exists():
-        return path.read_text()
+        return path.read_text(encoding="utf-8")
     raw = FULLTEXT / f"{ruling_number}.json"
     if raw.exists():
-        return save_facts(ruling_number, json.loads(raw.read_text()).get("text") or "")
+        return save_facts(ruling_number, json.loads(raw.read_text(encoding="utf-8")).get("text") or "")
     return None
 
 
@@ -46,7 +46,7 @@ def scrub(facts: str) -> str:
 def save_facts(ruling_number: str, text: str) -> str:
     facts = scrub(extract_facts(text))
     FACTS.mkdir(parents=True, exist_ok=True)
-    (FACTS / f"{ruling_number}.txt").write_text(facts)
+    (FACTS / f"{ruling_number}.txt").write_text(facts, encoding="utf-8")
     return facts
 
 
@@ -76,5 +76,5 @@ class RulingTexts:
         if r.status_code != 200:
             return None
         FULLTEXT.mkdir(parents=True, exist_ok=True)
-        (FULLTEXT / f"{ruling_number}.json").write_text(r.text)
+        (FULLTEXT / f"{ruling_number}.json").write_text(r.text, encoding="utf-8")
         return r.json().get("text")
