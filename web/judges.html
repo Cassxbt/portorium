@@ -48,9 +48,10 @@ SAMPLE_MODE=true portorium classify "Men's knitted polo shirt with short sleeves
 <span class="c"># http://127.0.0.1:8781</span></pre></div>
         <div class="step"><div><h3>Read a trace</h3><p>One JSON line per step: role, handoff, model, retries, status. Written as the run happens, never edited.</p></div>
           <pre class="cmd">ls logs/ && head -3 logs/trace-*.jsonl</pre></div>
-        <div class="step"><div><h3>Check the test set was run once</h3><p>The lock records the test file's hash, the commit and the prompt hash at the start of the only test run.</p></div>
-          <pre class="cmd">cat data/eval/TEST_RUN.lock
-shasum -a 256 data/eval/test.jsonl</pre></div>
+        <div class="step"><div><h3>Check how the test was run</h3><p>The lock records the test file's hash, the commit, the prompt hash and every resume; the notes explain the one aborted attempt and the seeded 300-ruling sample.</p></div>
+          <pre class="cmd">cat data/eval/TEST_RUN.lock data/eval/TEST_RUN_NOTES.md
+shasum -a 256 data/eval/test.jsonl
+python scripts/design_history.py   <span class="c"># the design history, offline</span></pre></div>
       </div>
     </section>
 

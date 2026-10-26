@@ -73,11 +73,13 @@ python3 run.py classify "Women's V-neck pullover, 100% cotton jersey knit fabric
 
 ```text
   trace Auditor.check_liveness -> Adjudicator success: 951484 6110202075 split; 951485 6110202075 split; 952370 REVOKED ...
-  trace Proposer.propose -> Gate [nemotron-3-ultra-550b-a55b] success: 6110202075 at confidence 100
+  trace Proposer.propose -> Gate [nvidia/nemotron-3-ultra-550b-a55b] success: 6110202075 at confidence 100
   trace Gate.decide -> Broker needs_review: REVIEW SPLIT_SUCCESSORS
 
 REVIEW  [SPLIT_SUCCESSORS]
   951485      1992-08-11  full     6110.20.2075  split   code_in_schedule  women's knit pullover, 100% cotton jersey knit fabric, V-neck, ...
+      gone from Rev 21; its line 6110.20.20 now has 15 codes: 6110.20.2005, 6110.20.2010, 6110.20.2015, ...
+  951484      1992-08-11  partial  6110.20.2075  split   code_in_schedule  women's knit pullover, 100% cotton jersey knit fabric, ...
       gone from Rev 21; its line 6110.20.20 now has 15 codes: 6110.20.2005, 6110.20.2010, 6110.20.2015, ...
   952370      1992-09-22  partial  6110.20.2065  revoked ruling_revoked  men's V-neck pullover, 100% cotton jersey knit, ...
 ```
@@ -96,19 +98,19 @@ Needs Python 3.12; with [uv](https://docs.astral.sh/uv/) installed, `run.py` fet
 
 **Method.** Items are CBP "Classification" rulings from 2026 that cite exactly one 10-digit code; that code is the answer. Every system sees the same product description with all tariff numbers, chapter references and ruling numbers removed (`portorium/leakage.py`, checked for every item by `tests/test_eval_inputs.py`). Precedent search returns only rulings issued before the split starts, and never the ruling itself or one it cites. Accuracy counts exact 10-digit matches on the items a system answers, with 95% Wilson intervals; the stale-code rate is the share of answers that are not a living line of HTS 2026 Rev 21, checked against the Zetaris schedule. The Proposer-alone, confidence-threshold and without-Critic rows come from the same calls on the same items as the gate, so each difference is one layer. Every system is scored on the same items. Tables are generated from the run files by `scripts/eval_table.py`.
 
-**Run once.** `data/eval/TEST_RUN.lock` records the test file's sha256, the commit and the hash of every prompt at the start of the test run. A first attempt was aborted before any result was read, because my request pacer throttled every worker after NVIDIA timeouts; the lock keeps that attempt, its reason and its item count (the reason text says 7 items, the lock's own count says 6; the count is right).
+**Run once, on a seeded sample.** `data/eval/TEST_RUN.lock` records the test file's sha256, the commit and the hash of every prompt when the test run started, and every resume. NVIDIA's rate limit held the run to under one ruling a minute, so it was scored on a seeded random **300 of the 684** test rulings: `load_items("test", 300)`, seed 20261025, fixed in code since 25 October, decided before any test result was read. A first attempt was aborted for a pacing bug, also before any result was read; the lock keeps it with its reason (its text says 7 items, its own count says 6; the count is right). Every step is written up in `data/eval/TEST_RUN_NOTES.md`.
 
 ### The number I corrected in public
 
 The first gate let the Adjudicator's "same article" judgement decide. On the dev set it lost to a plain confidence threshold on Nemotron Ultra's own pick, at the same coverage. I kept the runs and rebuilt the gate around what the data showed:
 
-| Dev design, 150 rulings | Coverage | Exact 10-digit accuracy | Confidence threshold, same coverage | Run file |
-|---|---|---|---|---|
-| v1: the Adjudicator's same-article judgement decides | 24.7% | 45.9% | 59.5% | `dev_20261026T053527.json` |
-| v2: a stricter definition of "same article" | 16.0% | 50.0% | 70.8% | `dev_20261026T055441.json` |
-| v3: Proposer + Zetaris liveness + Critic (offline replay on v2's stored calls) | 40.0% | 73.3% | 56% at 33% coverage, 44% at 50% | `dev_20261026T055441.proposer_critic.json` |
+| Dev design, 150 rulings | Coverage | Exact 10-digit accuracy | Confidence threshold, same coverage |
+|---|---|---|---|
+| v1: the Adjudicator's same-article judgement decides | 24.7% | 45.9% (17/37) | 59.5% |
+| v2: a stricter definition of "same article" | 16.0% | 50.0% (12/24) | 70.8% |
+| **v3: Proposer + Zetaris liveness + Critic** (replayed on v2's stored calls) | **40.0%** | **73.3% (44/60)** | 48.3% |
 
-The shipped gate is v3. Its dev and test numbers above come from full runs of the shipped code.
+`python scripts/design_history.py` reproduces all three rows from the files in `data/eval/history/`, with no service calls. The shipped gate is v3; the frozen test above is a full run of the shipped code.
 
 ## Architecture
 
