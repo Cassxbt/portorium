@@ -9,6 +9,7 @@ responses of NVIDIA, Nightshift and Zetaris and runs the gate's own logic on the
   python3 run.py --live                   live mode (needs .env, Nightshift and Zetaris; see the README)
 """
 import os
+import shutil
 import subprocess
 import sys
 import venv
@@ -23,7 +24,13 @@ PORT = 8781
 
 def main(args: list[str]) -> int:
     if sys.version_info < (3, 12):
-        print(f"Portorium needs Python 3.12 or newer; this is {sys.version.split()[0]}.")
+        uv = shutil.which("uv")
+        if uv:
+            # uv fetches a Python 3.12 if none is installed, then runs this same script with it.
+            return subprocess.run([uv, "run", "--no-project", "--python", "3.12", __file__, *args]).returncode
+        print(f"Portorium needs Python 3.12 or newer; this is {sys.version.split()[0]}.\n"
+              "Install it from python.org (or `brew install python@3.12`) and run `python3.12 run.py`, "
+              "or install uv (https://docs.astral.sh/uv/) and run `uv run --python 3.12 run.py`.")
         return 1
     python = BIN / ("python.exe" if os.name == "nt" else "python")
     if not python.exists():
