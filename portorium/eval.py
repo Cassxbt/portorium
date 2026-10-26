@@ -148,10 +148,10 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
              ("retrieval_ultra", lambda item: list(retrieval_pick(ns, gate, item))),
              ("precedent_gate", lambda item: list(gate_predictions(gate, item)))]
 
-    def one(item: Item) -> list[Prediction]:
+    def one(item: Item, names: set[str]) -> list[Prediction]:
         out = []
         for name, step in steps:
-            if name not in systems:
+            if name not in names:
                 continue
             try:
                 out.extend(step(item))
@@ -161,12 +161,11 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
 
     predictions = []
     if checkpoint and checkpoint.exists():
-        predictions = [Prediction(**json.loads(line)) for line in checkpoint.open()]
-    done_items = {p.ruling_number for p in predictions}
-    todo = [i for i in items if i.ruling_number not in done_items]
+        predictions = [p for line in checkpoint.open() if (p := Prediction(**json.loads(line))).system != "error"]
+    todo = pending(items, systems, predictions)
     print(f"{len(items) - len(todo)} items already done, {len(todo)} to run", flush=True)
     with ThreadPoolExecutor(workers) as pool:
-        futures = [pool.submit(one, item) for item in todo]
+        futures = [pool.submit(one, item, names) for item, names in todo]
         for done, future in enumerate(as_completed(futures), 1):
             preds = future.result()
             predictions.extend(preds)
@@ -176,6 +175,13 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
             if done % 10 == 0:
                 print(f"{done}/{len(todo)}", flush=True)
     return predictions
+
+
+def pending(items: list[Item], systems: set[str], predictions: list[Prediction]) -> list[tuple[Item, set[str]]]:
+    """Items with the systems still to run; a system that failed on an item is retried on restart."""
+    done = {(p.ruling_number, p.system) for p in predictions if p.system != "error"}
+    todo = [(i, {s for s in systems if (i.ruling_number, s) not in done}) for i in items]
+    return [(i, names) for i, names in todo if names]
 
 
 def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
