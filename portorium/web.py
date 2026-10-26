@@ -179,7 +179,12 @@ def example(name: str) -> dict:
 
 @app.get("/api/traces")
 def traces(limit: int = 30) -> list[dict]:
-    """Recent request traces; evaluation runs (trace-dev-*, trace-test-*) are thousands of lines and stay as files."""
+    """Recent request traces; evaluation runs (trace-dev-*, trace-test-*) are thousands of lines and stay as files.
+
+    Not listed in sample mode, which is the hosted mode: visitors would see each other's products. Each visitor
+    still opens their own trace by its id, and everyone sees the recorded examples."""
+    if not settings().live:
+        return []
     out = []
     for path in sorted(trace.LOGS.glob("trace-2*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True)[:limit]:
         lines = [json.loads(line) for line in path.open()]
