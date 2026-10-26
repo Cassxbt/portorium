@@ -17,3 +17,4 @@ data/eval/results/*.checkpoint.jsonl
 *.bak
 data/recordings/
 logs/
+data/cross/
