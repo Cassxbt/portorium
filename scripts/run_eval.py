@@ -15,7 +15,7 @@ from pathlib import Path
 from portorium.config import DATA, settings
 from portorium.eval import load_items, run, score, threshold_baseline
 from portorium.gate import PrecedentGate
-from portorium.index import PrecedentIndex
+from portorium.index import PrecedentIndex, index_dir
 from portorium.liveness import Liveness
 from portorium.nightshift import Nightshift
 from portorium.nvidia import Nvidia
@@ -50,7 +50,7 @@ def main() -> int:
     live = s.live
     run_tag = f"{args.split}-{time.strftime('%Y%m%dT%H%M%S')}"
     zetaris, nvidia, nightshift = Zetaris(s, live), Nvidia(s, live), Nightshift(s, live, run_tag=run_tag)
-    gate = PrecedentGate(PrecedentIndex(), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live), zetaris)
+    gate = PrecedentGate(PrecedentIndex(index_dir(live)), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live), zetaris)
     items = load_items(args.split, args.sample)
     systems = set(args.systems.split(","))
     print(f"{args.split}: {len(items)} items, systems {sorted(systems)}", flush=True)

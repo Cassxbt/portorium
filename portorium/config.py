@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 RECORDINGS = DATA / "recordings"
+SAMPLE = DATA / "sample"
 
 DEFAULT_TOKEN_FILE = Path.home() / "Library/Application Support/ai.meterless.nightshift.m1m4/runtime-token"
 
@@ -51,3 +52,10 @@ def settings() -> Settings:
         zetaris_org_id=os.environ.get("ZETARIS_ORG_ID", "1"),
         sample_mode=os.environ.get("SAMPLE_MODE", "").lower() in ("1", "true", "yes"),
     )
+
+
+def recordings(live: bool) -> Path:
+    """Live runs record locally; sample mode replays the committed bundle that scripts/build_sample.py writes."""
+    if live and os.environ.get("RECORD_SAMPLE") != "1":
+        return RECORDINGS
+    return SAMPLE / "recordings"

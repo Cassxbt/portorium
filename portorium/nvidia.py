@@ -9,7 +9,7 @@ import httpx
 import numpy as np
 
 from . import trace
-from .config import Settings
+from .config import Settings, recordings
 from .pacing import BACKOFF_SECONDS, NVIDIA_KEY
 from .recorder import Recorder
 
@@ -29,7 +29,7 @@ class Nvidia:
         self.settings = settings
         self.live = live
         self.pacer = NVIDIA_KEY
-        self.recorder = Recorder("nvidia")
+        self.recorder = Recorder("nvidia", recordings(live))
         self._http = httpx.Client(timeout=120)
 
     def embed(self, texts: list[str], input_type: str) -> np.ndarray:

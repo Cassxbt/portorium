@@ -21,7 +21,7 @@ from pydantic import BaseModel
 from . import audit, trace
 from .config import DATA, ROOT, settings
 from .gate import PrecedentGate
-from .index import PrecedentIndex
+from .index import PrecedentIndex, index_dir
 from .liveness import Liveness
 from .memory import BrokerMemory
 from .nightshift import Nightshift, NightshiftError
@@ -44,7 +44,7 @@ def _services() -> tuple[PrecedentGate, Zetaris]:
             _state["zetaris"] = zetaris
             with trace.role("Auditor"):
                 liveness = Liveness.from_zetaris(zetaris)
-            _state["gate"] = PrecedentGate(PrecedentIndex(), Nvidia(s, s.live), Nightshift(s, s.live),
+            _state["gate"] = PrecedentGate(PrecedentIndex(index_dir(s.live)), Nvidia(s, s.live), Nightshift(s, s.live),
                                            liveness, RulingTexts(s.live), zetaris)
             _state["live"] = s.live
         return _state["gate"], _state["zetaris"]

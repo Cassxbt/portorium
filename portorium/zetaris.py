@@ -11,7 +11,7 @@ import uuid
 import httpx
 
 from . import trace
-from .config import Settings
+from .config import Settings, recordings
 from .recorder import Recorder
 
 USL = "lightning.metastore.portorium.portorium"
@@ -29,7 +29,7 @@ class Zetaris:
     def __init__(self, settings: Settings, live: bool):
         self.settings = settings
         self.live = live
-        self.recorder = Recorder("zetaris")
+        self.recorder = Recorder("zetaris", recordings(live))
         self._http = httpx.Client(timeout=600)
         self._token: str | None = None
         self._renew_at = 0.0

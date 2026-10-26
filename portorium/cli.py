@@ -14,7 +14,7 @@ from pathlib import Path
 from . import audit, trace
 from .config import DATA, ROOT, settings
 from .gate import CLASSIFIED, REVIEW, PrecedentGate, Verdict
-from .index import PrecedentIndex
+from .index import PrecedentIndex, index_dir
 from .liveness import Liveness
 from .memory import BrokerMemory
 from .nightshift import Nightshift, NightshiftError
@@ -31,7 +31,7 @@ def build_gate() -> tuple[PrecedentGate, Zetaris]:
     zetaris = Zetaris(s, s.live)
     with trace.role("Auditor"):
         liveness = Liveness.from_zetaris(zetaris)
-    gate = PrecedentGate(PrecedentIndex(), Nvidia(s, s.live), Nightshift(s, s.live), liveness, RulingTexts(s.live), zetaris)
+    gate = PrecedentGate(PrecedentIndex(index_dir(s.live)), Nvidia(s, s.live), Nightshift(s, s.live), liveness, RulingTexts(s.live), zetaris)
     return gate, zetaris
 
 

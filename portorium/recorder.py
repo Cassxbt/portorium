@@ -35,7 +35,9 @@ class Recorder:
     def replay(self, request: dict) -> dict:
         response = self._load().get(self.key(request))
         if response is None:
-            raise MissingRecording(f"{self.path.name}: no recording for this request; run live once to record it")
+            raise MissingRecording(
+                f"{self.path.name}: no recording for this request. Sample mode replays the inputs listed in the README; "
+                "if you answered a question or signed off first, run `portorium forget` to reset memory, or run live.")
         return response
 
     def record(self, request: dict, response: dict) -> None:

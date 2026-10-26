@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import httpx
 
 from . import trace
-from .config import Settings
+from .config import Settings, recordings
 from .pacing import BACKOFF_SECONDS, NVIDIA_KEY
 from .recorder import Recorder
 
@@ -44,7 +44,7 @@ class Nightshift:
         self.live = live
         self.run_tag = run_tag
         self.pacer = NVIDIA_KEY
-        self.recorder = Recorder("nightshift")
+        self.recorder = Recorder("nightshift", recordings(live))
         self._http = httpx.Client(timeout=320)
 
     def chat(self, messages: list[dict], model: str = ULTRA, thinking: bool = False, max_tokens: int = 1024) -> Answer:

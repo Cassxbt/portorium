@@ -9,10 +9,15 @@ from pathlib import Path
 
 import numpy as np
 
-from .config import DATA
+from .config import DATA, SAMPLE
 from .nvidia import Nvidia
 
 INDEX = DATA / "index"
+
+
+def index_dir(live: bool) -> Path:
+    """The full index (scripts/build_index.py) for live runs; sample mode uses the committed subset."""
+    return INDEX if live else SAMPLE / "index"
 
 
 @dataclass
@@ -43,14 +48,9 @@ class PrecedentIndex:
                 exclude: set[str]) -> list[Precedent]:
         q = nvidia.embed([query], input_type="query")[0]
         scores = self.vectors @ q
-        scores[self.dates >= as_of] = -np.inf
         candidates = []
-        for i in np.argsort(-scores):
-            if not np.isfinite(scores[i]) or len(candidates) == k:
-                break
+        for i in self._candidates(scores, as_of, k, exclude):
             m = self.meta[i]
-            if m["ruling_number"] in exclude:
-                continue
             candidates.append(Precedent(m["ruling_number"], m["ruling_date"], m["subject"], m["codes"],
                                         m.get("related", []), float(scores[i])))
         if rerank_top and candidates:
@@ -60,3 +60,15 @@ class PrecedentIndex:
             candidates.sort(key=lambda c: -c.score)
             candidates = candidates[:rerank_top]
         return candidates
+
+    def _candidates(self, scores: np.ndarray, as_of: str, k: int, exclude: set[str]) -> list[int]:
+        """Rows of the k nearest rulings issued before as_of. The sort is stable so rulings with identical
+        subjects keep index order, which lets a subset index return the same candidates as the full one."""
+        scores = np.where(self.dates >= as_of, -np.inf, scores)
+        rows = []
+        for i in np.argsort(-scores, kind="stable"):
+            if not np.isfinite(scores[i]) or len(rows) == k:
+                break
+            if self.meta[i]["ruling_number"] not in exclude:
+                rows.append(int(i))
+        return rows
