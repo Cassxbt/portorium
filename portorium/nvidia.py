@@ -74,7 +74,8 @@ class Nvidia:
             last = f"HTTP {r.status_code}: {r.text[:300]}"
             if r.status_code not in RETRYABLE:
                 break
-            self.pacer.rejected()
+            if r.status_code == 429:
+                self.pacer.rejected()
         trace.event(_action(body), _asked(body), last, model=body["model"], retry_count=attempt, status="error")
         raise NvidiaError(last)
 

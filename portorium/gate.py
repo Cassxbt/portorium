@@ -184,10 +184,10 @@ class PrecedentGate:
                         status={CLASSIFIED: "success", REVIEW: "needs_review", REFUSE: "refused"}[verdict.decision],
                         rule=verdict.reason)
         if verdict.decision == CLASSIFIED and self.critic and self.zetaris:
-            verdict = self.critique(product, answers, verdict)
+            verdict = self.critique(product, answers, verdict, remembered)
         return verdict
 
-    def critique(self, product: str, answers, verdict: Verdict) -> Verdict:
+    def critique(self, product: str, answers, verdict: Verdict, remembered=()) -> Verdict:
         """Check a classification against its code's Rev 21 text; a mismatch becomes REVIEW."""
         code = verdict.code
         with trace.role("Auditor"):
@@ -196,6 +196,7 @@ class PrecedentGate:
             trace.event("schedule_text", code, " > ".join(r["description"] for r in path),
                         target_agent="Critic", alternatives=sum(r["kind"] == "alternative" for r in rows))
         lines = [f"PRODUCT: {product}"] + [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
+        lines += [f"IMPORTER ANSWERED EARLIER for a similar product (use only if it applies): {q} -> {a}" for q, a, _ in remembered]
         lines.append(f"PROPOSED: {code[:4]}.{code[4:6]}.{code[6:8]}.{code[8:]}")
         for r in path:
             lines.append(f"LEVEL {r['lvl']}: {r['htsno'] or ''} {r['description']}".replace("  ", " "))

@@ -104,3 +104,20 @@ def test_a_code_whose_schedule_text_does_not_fit_goes_to_review(tmp_path):
     assert (verdict.decision, verdict.reason, verdict.code) == ("REVIEW", "SCHEDULE_TEXT_DISAGREES", None)
     assert verdict.question == "Is it knitted?" and verdict.critique["code"] == "6110202079"
     assert verdict.proposal["code"] == "6110202079" and [r["role"] for r in verdict.receipts] == ["Adjudicator", "Proposer", "Critic"]
+
+
+def test_the_critic_reads_answers_remembered_from_an_earlier_request(tmp_path):
+    seen = []
+
+    class Recording(FakeNightshift):
+        def chat_json(self, messages, required, model):
+            if "fits" in required:
+                seen.append(messages[-1]["content"])
+            return super().chat_json(messages, required, model)
+
+    memory = BrokerMemory(tmp_path / "importer.json")
+    memory.remember_answer(PRODUCT, "What is the fibre?", "100% cotton")
+    gate = PrecedentGate(FakeIndex(), None, Recording(), LIVE, FakeTexts(), FakeZetaris())
+    with trace.Trace(directory=tmp_path, echo=None).bind():
+        gate.classify(PRODUCT, "2026-01-01", memory=memory)
+    assert "IMPORTER ANSWERED EARLIER for a similar product (use only if it applies): What is the fibre? -> 100% cotton" in seen[0]

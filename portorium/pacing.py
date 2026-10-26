@@ -5,11 +5,12 @@ import time
 class Pacer:
     """Spaces calls under a provider's rate cap, shared across threads.
 
-    The NVIDIA free tier's real cap is lower than its nominal one under long prompts, so the interval
-    adapts: each rejection widens it, each success narrows it back toward the floor.
+    The interval adapts to the provider's rate limit: each 429 widens it, each success narrows it back
+    toward the floor. Timeouts and server errors are retried by the caller but do not slow every other
+    request down, and the ceiling is low enough that one bad minute cannot stall a long run.
     """
 
-    def __init__(self, per_minute: int, ceiling_seconds: float = 20.0):
+    def __init__(self, per_minute: int, ceiling_seconds: float = 8.0):
         self.floor = 60.0 / per_minute
         self.ceiling = ceiling_seconds
         self.interval = self.floor
@@ -29,7 +30,7 @@ class Pacer:
 
     def succeeded(self) -> None:
         with self._lock:
-            self.interval = max(self.floor, self.interval * 0.97)
+            self.interval = max(self.floor, self.interval * 0.85)
 
 
 # Backoff for transient failures; the NVIDIA free-tier cap resets each minute, so the tail reaches past 60 s.

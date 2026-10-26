@@ -36,6 +36,8 @@ def main() -> int:
     ap.add_argument("--final", action="store_true")
     ap.add_argument("--resume", help="checkpoint file to continue")
     ap.add_argument("--workers", type=int, default=2, help="items in flight; the shared NVIDIA pacer caps the request rate")
+    ap.add_argument("--restart", metavar="REASON", help="abandon the locked test run and start it again; the reason, the "
+                    "abandoned run and its item count stay in the lock")
     args = ap.parse_args()
     if args.split == "test":
         if not args.final:
@@ -48,7 +50,14 @@ def main() -> int:
             same_run = args.resume and Path(args.resume).name == f"test_{lock['started']}.checkpoint.jsonl"
             changed = subprocess.run(["git", "diff", "--quiet", lock["git_commit"], "--", "portorium", "scripts/run_eval.py",
                                       ":!portorium/web.py", ":!portorium/cli.py"]).returncode != 0
-            if not same_run or changed or prompts_sha256() != lock["gate_prompt_sha256"]:
+            if args.restart:
+                old = RESULTS / f"test_{lock['started']}.checkpoint.jsonl"
+                done = len({json.loads(line)["ruling_number"] for line in old.open()}) if old.exists() else 0
+                if old.exists():
+                    old.rename(old.with_suffix(".aborted.jsonl"))
+                aborted = lock.pop("aborted", []) + [{**lock, "reason": args.restart, "items_with_predictions": done}]
+                LOCK.write_text(json.dumps({"aborted": aborted}))
+            elif not same_run or changed or prompts_sha256() != lock["gate_prompt_sha256"]:
                 print(f"test already run: {LOCK.read_text()}")
                 return 1
         if not settings().live:
@@ -70,15 +79,15 @@ def main() -> int:
     RESULTS.mkdir(parents=True, exist_ok=True)
     checkpoint = Path(args.resume) if args.resume else RESULTS / f"{args.split}_{started}.checkpoint.jsonl"
     print(f"checkpoint: {checkpoint}", flush=True)
-    if args.split == "test" and LOCK.exists():
-        lock = json.loads(LOCK.read_text())
+    lock = json.loads(LOCK.read_text()) if args.split == "test" and LOCK.exists() else {}
+    if args.split == "test" and "started" in lock:
         lock.setdefault("resumed", []).append(started)
         LOCK.write_text(json.dumps(lock))
     elif args.split == "test":
         digest = hashlib.sha256((DATA / "eval" / "test.jsonl").read_bytes()).hexdigest()
         commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit,
-                                    "gate_prompt_sha256": prompts_sha256()}))
+                                    "gate_prompt_sha256": prompts_sha256(), **lock}))
     predictions = run(gate, items, systems, workers=args.workers, checkpoint=checkpoint, tracer=tracer)
     # Every system is scored on the same items: an item where any system failed is left out for all of them.
     errors = [asdict(p) for p in predictions if p.system == "error"]
