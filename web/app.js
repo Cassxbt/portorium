@@ -23,7 +23,7 @@ const MENUS = [
     ["/limits", "Limits", "Where it stops, how often, and what it cannot see."],
   ], { href: "/how#critic", label: "The Critic", body: "In HTS 2026 Rev 21, <span class=\"code\">3004.90.92.35</span> means tramadol. A 2023 ruling used it for olanzapine. A living code can still mean something else." }],
   ["Proof", [
-    ["/evidence", "Evidence", "The gate against seven baselines on 2026 rulings, with 95% intervals."],
+    ["/evidence", "Evidence", "The gate against its baselines on 2026 rulings, with 95% intervals."],
     ["/traces", "Traces", "Replay any verdict line by line: roles, models, Zetaris queries."],
     ["/judges", "For judges", "Check every claim from a fresh clone in about five minutes."],
   ], { href: "/evidence", label: "Dead codes given", body: "Share of answers naming a code no longer in the schedule.", stat: true }],
@@ -67,6 +67,7 @@ function chrome() {
 function menuBehaviour() {
   const menus = [...document.querySelectorAll(".menu")];
   const set = (menu, open) => {
+    if (open && !menu.classList.contains("open")) menu.dataset.openedAt = Date.now();
     menu.classList.toggle("open", open);
     menu.querySelector("button").setAttribute("aria-expanded", open);
     if (open) { menus.filter((m) => m !== menu).forEach((m) => set(m, false)); loadStat(); }
@@ -74,7 +75,10 @@ function menuBehaviour() {
   const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
   menus.forEach((menu) => {
     let timer;
-    menu.querySelector("button").addEventListener("click", () => set(menu, !menu.classList.contains("open")));
+    menu.querySelector("button").addEventListener("click", () => {
+      const justOpened = Date.now() - Number(menu.dataset.openedAt || 0) < 600;
+      set(menu, justOpened || !menu.classList.contains("open"));
+    });
     if (fine) {
       menu.addEventListener("mouseenter", () => { clearTimeout(timer); timer = setTimeout(() => set(menu, true), 90); });
       menu.addEventListener("mouseleave", () => { clearTimeout(timer); timer = setTimeout(() => set(menu, false), 180); });

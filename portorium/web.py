@@ -45,6 +45,14 @@ _state: dict = {}
 
 
 def _services() -> tuple[PrecedentGate, Zetaris]:
+    try:
+        return _start()
+    except (MissingRecording, FileNotFoundError, NightshiftError, NvidiaError, ZetarisError) as e:
+        hint = " Sample mode needs the bundle in data/sample/ (scripts/build_sample.py)." if isinstance(e, (MissingRecording, FileNotFoundError)) else ""
+        raise HTTPException(503, f"Portorium could not start: {e}.{hint}") from e
+
+
+def _start() -> tuple[PrecedentGate, Zetaris]:
     with _lock:
         if not _state:
             s = settings()

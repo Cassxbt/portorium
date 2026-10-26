@@ -74,7 +74,7 @@
           <p class="lead">Broker sign-offs and the importer's answers are long-term memories in Meterless H-MEM, with provenance. For a similar product they are recalled and judged alongside the rulings, never trusted blindly.</p>
           <div class="grid2">
             <div><h3>Why it matters</h3><p>A broker's correction should hold for the next shipment of the same article, and a question answered once should not be asked again.</p></div>
-            <div><h3>What it cannot do</h3><p>Override a dead code. A remembered decision whose code is no longer in the schedule is dropped before judging; one that contradicts a living precedent sends the case to review.</p></div>
+            <div><h3>What it cannot do</h3><p>Override a dead code or the model's judgement. A remembered decision whose code is no longer in the schedule is dropped before judging; one judged the same article but naming a different code from the proposal sends the case to review.</p></div>
           </div>
           <div class="evidence sheet" data-role="Memory"></div>
         </section>
@@ -93,7 +93,7 @@
           <h2>Two calls at once: is it the same article, and which code?</h2>
           <p class="lead">Nemotron 3 Ultra, routed through Meterless Nightshift, runs twice in parallel. The Adjudicator marks each precedent as the same article, a similar one or a different one, and writes the single question that would separate them. The Proposer picks one code, only from the codes the retrieved rulings cite, with a confidence.</p>
           <div class="grid2">
-            <div><h3>Why a proposal, not a vote</h3><p>On the dev set, Ultra's pick among retrieved rulings was the strongest single signal. Asked for a code from memory, the same model named a code no longer in the schedule for over a third of products.</p></div>
+            <div><h3>Why a proposal, not a vote</h3><p>On the dev set, Ultra's pick among retrieved rulings was the strongest single signal, and asked for a code from memory the same model often named one that is no longer in the schedule. The Evidence page has the numbers.</p></div>
             <div><h3>Receipts</h3><p>Each call returns a Nightshift receipt naming the model that ran it. The verdict keeps both.</p></div>
           </div>
           <div class="evidence sheet" data-role="Adjudicator"></div>
@@ -129,7 +129,7 @@
         <section class="station" id="importer">
           <div class="label">07 · Importer · Broker</div>
           <h2>One question, then the whole loop again.</h2>
-          <p class="lead">On review, the importer gets the single question the Adjudicator wrote. The answer is stored in memory and the request runs again from the Retriever, with the answer in front of the Adjudicator. A licensed broker can sign off any code; the sign-off becomes memory for the next shipment.</p>
+          <p class="lead">On review, the importer gets one question: the Adjudicator's, or the Critic's when the schedule's wording needs a fact the description does not state. The answer is stored in memory and the request runs again from the Retriever, with the answer in front of the Adjudicator. A licensed broker can sign off any code; the sign-off becomes memory for the next shipment.</p>
           <div class="grid2">
             <div><h3>Ledger</h3><p>Every live verdict is written to a Zetaris audit table. A rule, <span class="mono">classified_code_living</span>, re-screens past verdicts when the schedule changes.</p></div>
             <div><h3>Wipe</h3><p>Memory can be wiped per importer. H-MEM's ledger keeps a record of each deletion.</p></div>

@@ -106,6 +106,7 @@ const SYSTEMS = [
 
 function draw(e) {
   const by = e.by, g = by.precedent_gate, zs = by.ultra_zero_shot, top = by.retrieval_top1, ct = by.confidence_threshold;
+  if (!g || !zs || !top) { $("heroStat").innerHTML = `<div class="empty">This run lacks the gate or a baseline; see the table.</div>`; return; }
   $("splitLabel").textContent = e.split === "test" ? `Frozen test set · ${e.items} CBP rulings from June 2026 on` : `Dev set · ${e.items} CBP rulings, January to May 2026`;
   $("file").textContent = `${e.file} · gate prompt ${e.gate_prompt_sha256 || "–"}`;
   $("heroStat").innerHTML = `
@@ -132,7 +133,7 @@ function draw(e) {
 
 async function load(split) {
   document.querySelectorAll("#tabs button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.s === split));
-  draw(await evaluation(split));
+  try { draw(await evaluation(split)); } catch (err) { $("heroStat").innerHTML = `<div class="empty">${esc(err.message)}</div>`; }
 }
 
 (async () => {
