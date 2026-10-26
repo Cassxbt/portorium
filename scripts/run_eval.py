@@ -35,6 +35,7 @@ def main() -> int:
     ap.add_argument("--systems", default=ALL)
     ap.add_argument("--final", action="store_true")
     ap.add_argument("--resume", help="checkpoint file to continue")
+    ap.add_argument("--workers", type=int, default=2, help="items in flight; the shared NVIDIA pacer caps the request rate")
     args = ap.parse_args()
     if args.split == "test":
         if not args.final:
@@ -65,7 +66,7 @@ def main() -> int:
                                     "gate_prompt_sha256": hashlib.sha256(SYSTEM.encode()).hexdigest()[:16]}))
     tracer = Trace(run_id=run_tag, echo=None)
     print(f"trace: {tracer.path}", flush=True)
-    predictions = run(gate, items, systems, checkpoint=checkpoint, tracer=tracer)
+    predictions = run(gate, items, systems, workers=args.workers, checkpoint=checkpoint, tracer=tracer)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
     if gate_preds and "retrieval_ultra" in systems:
         coverage = sum(bool(p.code) for p in gate_preds) / len(gate_preds)
