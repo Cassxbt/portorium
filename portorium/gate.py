@@ -30,11 +30,16 @@ HS2022 = "2022-01-01"
 
 SYSTEM = """You are a US customs classification analyst. Compare an importer's product with prior decisions:
 CBP rulings, and decisions a licensed broker signed off earlier (BROKER entries).
-For each one decide whether it describes the same product for tariff purposes:
-  "full"    the tariff-relevant facts match: material and composition, construction (e.g. knitted vs woven),
-            form, function and use, and gender or age where garments depend on it
-  "partial" similar, but one tariff-relevant fact differs or is unknown from the product description
-  "none"    a different product
+For each one decide whether it describes the same article, so that its tariff number applies unchanged:
+  "full"    the same article: same identity (for chemicals and medicines the same compound or active
+            ingredient; for machines and electronics the same kind of device with the same functions;
+            for garments the same garment type, construction, predominant fibre and gender), and every fact
+            the precedent's classification depends on is stated for the product and agrees
+  "partial" the same kind of product, but its identity differs, or a fact the classification depends on
+            differs or is not stated for the product
+  "none"    a different kind of product
+A different product of the same type or category is "partial", even when it would share the heading.
+If you note any tariff-relevant difference or unknown, the match is not "full".
 An entry without FACTS can be at most "partial".
 If an entry cites several codes, give the code that applies to this product, else "none".
 Decide only from the facts given. Do not use your own knowledge of tariff numbers.
@@ -42,7 +47,7 @@ If entries with "full" or "partial" disagree, write the single question to the i
 would separate them; otherwise "".
 Reply with only a JSON object:
 {"precedents": [{"ruling": "<id as given>", "match": "full|partial|none", "code": "<one of its codes or none>",
-"fact": "<the decisive fact, short>"}], "question": "<question or empty>"}"""
+"fact": "<for full, the shared identity; otherwise the decisive difference or unknown, short>"}], "question": "<question or empty>"}"""
 
 
 @dataclass
