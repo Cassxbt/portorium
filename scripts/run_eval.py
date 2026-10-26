@@ -42,8 +42,13 @@ def main() -> int:
             print("the test set runs once: pass --final")
             return 1
         if LOCK.exists():
-            print(f"test already run: {LOCK.read_text()}")
-            return 1
+            lock = json.loads(LOCK.read_text())
+            # The one test run may be resumed after a failure, on the same commit, never started again.
+            same_run = args.resume and Path(args.resume).name == f"test_{lock['started']}.checkpoint.jsonl"
+            commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+            if not same_run or commit != lock["git_commit"]:
+                print(f"test already run: {LOCK.read_text()}")
+                return 1
         if not settings().live:
             print("the frozen test run must be live, not sample mode")
             return 1
@@ -63,7 +68,11 @@ def main() -> int:
     RESULTS.mkdir(parents=True, exist_ok=True)
     checkpoint = Path(args.resume) if args.resume else RESULTS / f"{args.split}_{started}.checkpoint.jsonl"
     print(f"checkpoint: {checkpoint}", flush=True)
-    if args.split == "test":
+    if args.split == "test" and LOCK.exists():
+        lock = json.loads(LOCK.read_text())
+        lock.setdefault("resumed", []).append(started)
+        LOCK.write_text(json.dumps(lock))
+    elif args.split == "test":
         digest = hashlib.sha256((DATA / "eval" / "test.jsonl").read_bytes()).hexdigest()
         commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit,
