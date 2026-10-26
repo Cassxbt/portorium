@@ -1,0 +1,1 @@
+The item concerned is a non explosion proof electric motor. It is a single phase motor which is used to operate a Dedoes stackable paint mixing machine. This item operates on AC current and has a maximum output rating of 370 watts.

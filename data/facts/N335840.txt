@@ -1,0 +1,1 @@
+Based on the motor test specification sheet provided, the Motor has a maximum output of 1300 Watts. You state that the Motor will be used in blender applications.

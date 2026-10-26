@@ -1,0 +1,1 @@
+Per the attached flyer, the CAN-Climatic-Sensor, KS-CAN-03, enables “the measuring of the humidity and temperature in in-door and out-door area under defined operating condition.”Its humidity measurement accuracy is stated to be 2 percent and its temperature measurement accuracy is stated to be .5 degrees Kelvin.

@@ -1,0 +1,1 @@
+We miscalculated the decitex of the yarn. While we correctly stated that it exceeds 2,000, we should have stated that it exceeds 20,000.

@@ -1,0 +1,1 @@
+The item concerned is a crankshaft position sensor. In use, this sensor would be mounted on the crankshaft of a passenger vehicle. This assembly uses a magnetic element to sense the rotations per minute (RPM) of the crankshaft. That information is forwarded to the engine control unit (ECU) of the automobile for use in ignition timing control and injection fuel mass.
