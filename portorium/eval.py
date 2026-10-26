@@ -180,14 +180,23 @@ def run(gate: PrecedentGate, items: list[Item], systems: set[str], workers: int 
                     f.writelines(json.dumps(asdict(p)) + "\n" for p in preds)
             if done % 10 == 0:
                 print(f"{done}/{len(todo)}", flush=True)
-    return predictions
+    return latest(predictions)
+
+
+EMITS = {"retrieval_ultra": ("retrieval_ultra", "retrieval_top1"), "precedent_gate": ("precedent_gate", "gate_without_liveness")}
 
 
 def pending(items: list[Item], systems: set[str], predictions: list[Prediction]) -> list[tuple[Item, set[str]]]:
-    """Items with the systems still to run; a system that failed on an item is retried on restart."""
+    """Items with the steps still to run; a step that failed, or left one of its systems out, runs again."""
     done = {(p.ruling_number, p.system) for p in predictions if p.system != "error"}
-    todo = [(i, {s for s in systems if (i.ruling_number, s) not in done}) for i in items]
+    todo = [(i, {s for s in systems if any((i.ruling_number, e) not in done for e in EMITS.get(s, (s,)))}) for i in items]
     return [(i, names) for i, names in todo if names]
+
+
+def latest(predictions: list[Prediction]) -> list[Prediction]:
+    """One prediction per system and item, the last one written."""
+    return list({(p.system, p.ruling_number): p for p in predictions if p.system != "error"}.values()) + \
+        [p for p in predictions if p.system == "error"]
 
 
 def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:

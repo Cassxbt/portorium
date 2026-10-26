@@ -1,4 +1,5 @@
-"""Dev and test sets of CBP classification rulings, both after the Nemotron 3.5 post-training cutoff.
+"""Dev and test sets of CBP classification rulings, after the Nemotron pre-training cutoff (September 2025);
+the test set is also after the post-training cutoff (May 2026). Both per NVIDIA's cards for Nemotron 3 Ultra and 3.5 Lightning.
 
   dev   2026-01-01 .. 2026-05-31   tuning only
   test  2026-06-01 ..              run once, frozen

@@ -20,7 +20,7 @@ from portorium.liveness import Liveness
 from portorium.nightshift import Nightshift
 from portorium.nvidia import Nvidia
 from portorium.rulings import RulingTexts
-from portorium.trace import Trace
+from portorium.trace import Trace, role
 from portorium.zetaris import Zetaris
 
 ALL = "keyword_top1,ultra_zero_shot,lightning_zero_shot,retrieval_ultra,precedent_gate"
@@ -51,7 +51,11 @@ def main() -> int:
     live = s.live
     run_tag = f"{args.split}-{time.strftime('%Y%m%dT%H%M%S')}"
     zetaris, nvidia, nightshift = Zetaris(s, live), Nvidia(s, live), Nightshift(s, live, run_tag=run_tag)
-    gate = PrecedentGate(PrecedentIndex(index_dir(live)), nvidia, nightshift, Liveness.from_zetaris(zetaris), RulingTexts(live), zetaris)
+    tracer = Trace(run_id=run_tag)
+    print(f"trace: {tracer.path}", flush=True)
+    with tracer.bind("start-up: liveness cross-check"), role("Auditor"):
+        liveness = Liveness.from_zetaris(zetaris)
+    gate = PrecedentGate(PrecedentIndex(index_dir(live), live), nvidia, nightshift, liveness, RulingTexts(live), zetaris)
     items = load_items(args.split, args.sample)
     systems = set(args.systems.split(","))
     print(f"{args.split}: {len(items)} items, systems {sorted(systems)}", flush=True)
@@ -64,8 +68,6 @@ def main() -> int:
         commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
         LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit,
                                     "gate_prompt_sha256": hashlib.sha256(SYSTEM.encode()).hexdigest()[:16]}))
-    tracer = Trace(run_id=run_tag, echo=None)
-    print(f"trace: {tracer.path}", flush=True)
     predictions = run(gate, items, systems, workers=args.workers, checkpoint=checkpoint, tracer=tracer)
     gate_preds = [p for p in predictions if p.system == "precedent_gate"]
     if gate_preds and "retrieval_ultra" in systems:
