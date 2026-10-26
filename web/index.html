@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Portorium · Broker Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f3eee3'/%3E%3Ctext x='16' y='24' font-family='Georgia' font-weight='700' font-size='22' text-anchor='middle' fill='%231b1a17'%3EP%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -87,6 +88,18 @@
   .note { color: var(--ink-soft); font-size: 14px; margin-top: 14px; max-width: 920px; }
   .hide { display: none; }
   .err { color: var(--red); font: 14px var(--mono); margin-top: 12px; }
+  .trace { margin-top: 36px; border-top: 2px solid var(--ink); padding-top: 18px; }
+  .trace h2 span { font: 400 12px var(--mono); letter-spacing: 0; text-transform: none; margin-left: 10px; }
+  .step { display: grid; grid-template-columns: 74px 190px 1fr; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--rule);
+          font-size: 14px; opacity: 0; animation: rise .3s ease forwards; }
+  .step .t { font: 12px var(--mono); color: var(--ink-soft); padding-top: 2px; }
+  .step .who { font-weight: 600; } .step .who i { font-style: normal; font-weight: 400; color: var(--ink-soft); }
+  .step .what { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); word-break: break-word; }
+  .step .what b { color: var(--ink); font-weight: 600; margin-right: 6px; }
+  .step.call { padding: 3px 0 3px 26px; border-bottom: none; font-size: 13px; }
+  .step.call .who { font-weight: 400; color: var(--ink-soft); }
+  .chip { font: 600 11px var(--mono); padding: 1px 6px; border: 1px solid var(--rule); margin-right: 6px; color: var(--ink); white-space: nowrap; }
+  .s-success { color: var(--green); } .s-needs_review, .s-feedback, .s-retry { color: var(--amber); } .s-refused, .s-error { color: var(--red); }
 </style>
 </head>
 <body>
@@ -129,6 +142,10 @@
       <div>
         <h2>Precedents · CBP rulings issued before today</h2>
         <div id="precedents" class="empty">Nemotron retrieves the closest CBP rulings; Zetaris decides whether each code is still alive in the tariff schedule.</div>
+        <div class="trace hide" id="traceBox">
+          <h2>Reasoning trace<span id="traceFile"></span></h2>
+          <div id="trace"></div>
+        </div>
         <div class="panel">
           <div>
             <h2>Schedule watch · Zetaris</h2>
@@ -148,7 +165,7 @@
   <section id="evalView" class="hide">
     <h2 id="evalTitle">Evaluation</h2>
     <div id="evalTable" class="empty">No evaluation yet.</div>
-    <p class="note">Rulings issued after the Nemotron 3.5 training cutoff. Every system sees the same product description with all tariff numbers, chapter references and ruling numbers removed. Precedents are searched as of each ruling's date. Coverage is the share of items a system answers; accuracy is measured on the items it answers.</p>
+    <p class="note">Test: CBP rulings issued from 1 June 2026, after the Nemotron 3.5 post-training cutoff (May 2026, per NVIDIA's model cards). Dev: January to May 2026, after the September 2025 pre-training cutoff. Every system sees the same product description with all tariff numbers, chapter references and ruling numbers removed. Precedents are searched as of the start of each split, so no system sees a ruling issued after it. Coverage is the share of items a system answers; accuracy is measured on the items it answers.</p>
   </section>
 </main>
 
@@ -198,11 +215,35 @@ function render(v) {
   $("memory").textContent = [...recalled, ...answered].join("\n") || "nothing recalled";
 }
 
+const ROLES = new Set(["retrieve", "recall", "check_liveness", "judge", "decide", "answer", "sign_off", "record", "rescreen", "error"]);
+
+async function showTrace(id) {
+  if (!id) return;
+  try {
+    const lines = await api(`/api/trace/${id}`);
+    $("traceFile").textContent = `logs/trace-${id}.jsonl · ${lines.length} lines`;
+    $("trace").innerHTML = lines.map((l, i) => {
+      const role = ROLES.has(l.action);
+      const target = l.target_agent ? ` <i>→ ${esc(l.target_agent)}</i>` : "";
+      const model = l.model ? `<span class="chip">${esc(l.model.replace(/nvidia\//g, ""))}</span>` : "";
+      const said = role ? l.output_summary : l.output_summary.slice(0, 140) + (l.output_summary.length > 140 ? "…" : "");
+      const retry = l.retry_count ? `<span class="chip">retry ${l.retry_count}</span>` : "";
+      return `<div class="step ${role ? "" : "call"}" style="animation-delay:${Math.min(i, 40) * 25}ms">
+        <span class="t">${esc(l.timestamp.slice(14, 23))}</span>
+        <span class="who">${role ? esc(l.agent_name) + target : esc(l.action)}</span>
+        <span class="what"><b class="s-${esc(l.status)}">${role ? esc(l.action) : esc(l.status)}</b>${model}${retry}${esc(said)}</span></div>`;
+    }).join("");
+    $("traceBox").classList.remove("hide");
+  } catch (e) { $("traceFile").textContent = e.message; }
+}
+
 async function classify() {
   $("err").textContent = ""; $("go").disabled = $("reply").disabled = true;
   $("verdict").innerHTML = `<div class="empty">Searching precedents, checking liveness in Zetaris, asking Nemotron Ultra…</div>`;
   try {
-    render(await api("/api/classify", {product: $("product").value, importer: $("importer").value, answers}));
+    const v = await api("/api/classify", {product: $("product").value, importer: $("importer").value, answers});
+    render(v);
+    showTrace(v.trace);
   } catch (e) { $("err").textContent = e.message; }
   $("go").disabled = $("reply").disabled = false;
 }

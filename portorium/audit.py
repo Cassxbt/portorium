@@ -7,6 +7,7 @@
 import datetime
 import uuid
 
+from . import trace
 from .gate import Verdict
 from .zetaris import USL, Zetaris
 
@@ -28,6 +29,8 @@ def record(zetaris: Zetaris, verdict: Verdict, product: str, importer: str) -> s
               verdict.decision, verdict.reason, verdict.code or "", RELEASE, receipt.get("routed_model"),
               receipt.get("receipt_id")]
     zetaris.query(f"INSERT INTO portorium_files.verdict_log VALUES ({', '.join(_quote(v) for v in values)})")
+    trace.event("record", f"{verdict.decision} {verdict.reason} {verdict.code or ''}".strip(),
+                f"verdict {verdict_id} written to Zetaris audit.verdict_log, where classified_code_living re-screens it")
     return verdict_id
 
 
@@ -36,6 +39,10 @@ def rescreen(zetaris: Zetaris) -> dict:
     release = zetaris.query(f"SELECT name FROM {USL}.hts_release")
     living = zetaris.query(f"RUN DQ classified_code_living TABLE {AUDIT}.verdict_log")[0]
     stale = zetaris.query(f"SHOW DQ INVALID RECORD classified_code_living TABLE {AUDIT}.verdict_log")
+    trace.event("rescreen", "live USITC release and every recorded verdict",
+                f"release {release[0]['name'] if release else '?'} ({'changed' if release_rule['invalid_record'] != '0' else 'unchanged'}); "
+                f"{living['total_record']} verdicts checked, {len(stale)} classified with a code no longer in the schedule",
+                status="success" if not stale else "needs_review")
     return {"release": release[0]["name"] if release else None,
             "release_changed": release_rule["invalid_record"] != "0",
             "verdicts_checked": living["total_record"], "stale_verdicts": stale}
