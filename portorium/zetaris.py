@@ -5,6 +5,7 @@ fail the registered rules and acts on the answer, rather than re-implementing th
 """
 import base64
 import json
+import threading
 import time
 import uuid
 
@@ -33,6 +34,7 @@ class Zetaris:
         self._http = httpx.Client(timeout=600)
         self._token: str | None = None
         self._renew_at = 0.0
+        self._session_lock = threading.Lock()
 
     def query(self, sql: str, limit: int = 1000) -> list[dict]:
         """Run one statement (no trailing semicolon) and return rows as dicts of strings."""
@@ -63,9 +65,12 @@ class Zetaris:
         return self.query(f"SHOW DQ INVALID RECORD {rule} TABLE {USL}.{table}", limit=limit)
 
     def _login(self) -> str:
-        r = self._http.post(f"{self.settings.zetaris_url}/api/auth/login",
-                            json={"username": self.settings.zetaris_username, "password": self.settings.zetaris_password},
-                            headers={"X-Request-ID": str(uuid.uuid4())})
+        try:
+            r = self._http.post(f"{self.settings.zetaris_url}/api/auth/login",
+                                json={"username": self.settings.zetaris_username, "password": self.settings.zetaris_password},
+                                headers={"X-Request-ID": str(uuid.uuid4())})
+        except httpx.HTTPError as e:
+            raise ZetarisError(f"login: {type(e).__name__}: {e}") from e
         if r.status_code != 200:
             raise ZetarisError(f"login failed: HTTP {r.status_code}")
         token = r.json()["idToken"]
@@ -74,15 +79,29 @@ class Zetaris:
         self._renew_at = time.monotonic() + claims["exp"] - claims["iat"] - RENEW_MARGIN_SECONDS
         return token
 
-    def _run(self, request: dict) -> dict:
-        for attempt in range(2):
+    def _session(self) -> str:
+        with self._session_lock:
             if not self._token or time.monotonic() >= self._renew_at:
                 self._token = self._login()
-            r = self._http.post(f"{self.settings.zetaris_url}/api/proxy/sql-editor/sqls/run-query", json=request,
-                                headers={"Authorization": f"Bearer {self._token}", "X-Org-ID": self.settings.zetaris_org_id,
-                                         "X-Request-ID": str(uuid.uuid4())})
-            if attempt == 0 and (r.status_code == 401 or (r.status_code == 400 and _json(r) == EXPIRED)):
+            return self._token
+
+    def _expire(self, token: str) -> None:
+        """Drop a token the server rejected, unless another thread has already replaced it."""
+        with self._session_lock:
+            if self._token == token:
                 self._token = None
+
+    def _run(self, request: dict) -> dict:
+        for attempt in range(2):
+            token = self._session()
+            try:
+                r = self._http.post(f"{self.settings.zetaris_url}/api/proxy/sql-editor/sqls/run-query", json=request,
+                                    headers={"Authorization": f"Bearer {token}", "X-Org-ID": self.settings.zetaris_org_id,
+                                             "X-Request-ID": str(uuid.uuid4())})
+            except httpx.HTTPError as e:
+                raise ZetarisError(f"{type(e).__name__}: {e}") from e
+            if attempt == 0 and (r.status_code == 401 or (r.status_code == 400 and _json(r) == EXPIRED)):
+                self._expire(token)
                 continue
             if r.status_code != 200:
                 raise ZetarisError(f"HTTP {r.status_code}: {r.text[:400]}")

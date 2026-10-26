@@ -4,7 +4,7 @@ import json
 import httpx
 
 from portorium.config import Settings
-from portorium.zetaris import Zetaris
+from portorium.zetaris import Zetaris, ZetarisError
 
 SETTINGS = Settings("", "", "", "http://zetaris", "user", "pass", "1", sample_mode=False)
 
@@ -69,3 +69,17 @@ def test_a_sql_error_is_raised_without_a_second_login():
     else:
         raise AssertionError("expected a ZetarisError")
     assert server.logins == 1
+
+
+def test_a_dropped_connection_is_a_zetaris_error():
+    def refuse(request):
+        raise httpx.ConnectError("Connection refused")
+
+    zetaris = Zetaris(SETTINGS, live=True)
+    zetaris._http = httpx.Client(transport=httpx.MockTransport(refuse))
+    try:
+        zetaris.query("SELECT 1")
+    except ZetarisError as e:
+        assert "ConnectError" in str(e)
+    else:
+        raise AssertionError("expected a ZetarisError")
