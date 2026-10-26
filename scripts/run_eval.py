@@ -43,10 +43,12 @@ def main() -> int:
             return 1
         if LOCK.exists():
             lock = json.loads(LOCK.read_text())
-            # The one test run may be resumed after a failure, on the same commit, never started again.
+            # The one test run may be resumed after a failure, never started again, and only while nothing that
+            # makes a prediction has changed since the locked commit (the site and the CLI may).
             same_run = args.resume and Path(args.resume).name == f"test_{lock['started']}.checkpoint.jsonl"
-            commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
-            if not same_run or commit != lock["git_commit"]:
+            changed = subprocess.run(["git", "diff", "--quiet", lock["git_commit"], "--", "portorium", "scripts/run_eval.py",
+                                      ":!portorium/web.py", ":!portorium/cli.py"]).returncode != 0
+            if not same_run or changed or prompts_sha256() != lock["gate_prompt_sha256"]:
                 print(f"test already run: {LOCK.read_text()}")
                 return 1
         if not settings().live:
