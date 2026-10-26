@@ -57,12 +57,12 @@ def _start() -> tuple[PrecedentGate, Zetaris]:
         if not _state:
             s = settings()
             zetaris = Zetaris(s, s.live)
-            _state["zetaris"] = zetaris
             with trace.Trace().bind("start-up: liveness cross-check"), trace.role("Auditor"):
                 liveness = Liveness.from_zetaris(zetaris)
-            _state["gate"] = PrecedentGate(PrecedentIndex(index_dir(s.live), s.live), Nvidia(s, s.live), Nightshift(s, s.live),
-                                           liveness, RulingTexts(s.live), zetaris)
-            _state["live"] = s.live
+            gate = PrecedentGate(PrecedentIndex(index_dir(s.live), s.live), Nvidia(s, s.live), Nightshift(s, s.live),
+                                 liveness, RulingTexts(s.live), zetaris)
+            # Only a complete start-up is kept, so a failed one is simply tried again on the next request.
+            _state.update(zetaris=zetaris, gate=gate, live=s.live)
         return _state["gate"], _state["zetaris"]
 
 
