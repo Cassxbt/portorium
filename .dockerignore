@@ -1,0 +1,13 @@
+.git
+.venv
+.env
+.env.*
+logs
+data/index
+data/cross
+data/fulltext
+data/recordings
+data/memory
+data/build
+data/eval/results/*.checkpoint*.jsonl
+**/__pycache__

@@ -110,6 +110,13 @@ async function status() {
   try {
     const s = await api("/api/status");
     const d = s.dq.code_in_schedule || {};
+    // In sample mode each visitor gets their own memory, so one person's answers never change what the next one sees.
+    if (!s.live && $("importer").value === "demo") {
+      let id = null;
+      try { id = localStorage.getItem("portorium-visitor"); } catch {}
+      if (!id) { id = "visitor-" + Math.random().toString(36).slice(2, 8); try { localStorage.setItem("portorium-visitor", id); } catch {} }
+      $("importer").value = id;
+    }
     $("status").innerHTML = `<span>mode <b>${s.live ? "live" : "sample · recorded responses"}</b></span><span>precedents <b>${s.precedents.toLocaleString()}</b></span>` +
       `<span>Zetaris code_in_schedule <b>${Number(d.valid_record).toLocaleString()}</b> living · <b>${Number(d.invalid_record).toLocaleString()}</b> not in Rev 21</span>`;
   } catch (e) { $("status").textContent = `status unavailable: ${e.message}`; }
