@@ -69,15 +69,16 @@ def main() -> int:
         LOCK.write_text(json.dumps({"started": started, "test_jsonl_sha256": digest, "git_commit": commit,
                                     "gate_prompt_sha256": prompts_sha256()}))
     predictions = run(gate, items, systems, workers=args.workers, checkpoint=checkpoint, tracer=tracer)
-    gate_preds = [p for p in predictions if p.system == "precedent_gate"]
-    if gate_preds and any(p.system == "retrieval_ultra" for p in predictions):
-        coverage = sum(bool(p.code) for p in gate_preds) / len(gate_preds)
-        predictions += threshold_baseline(predictions, coverage)
     # Every system is scored on the same items: an item where any system failed is left out for all of them.
     errors = [asdict(p) for p in predictions if p.system == "error"]
     failed = {e["ruling_number"] for e in errors}
     scored = [i for i in items if i.ruling_number not in failed]
-    table = score([p for p in predictions if p.system != "error" and p.ruling_number not in failed], scored, gate.liveness)
+    kept = [p for p in predictions if p.system != "error" and p.ruling_number not in failed]
+    gate_preds = [p for p in kept if p.system == "precedent_gate"]
+    if gate_preds and any(p.system == "retrieval_ultra" for p in kept):
+        kept += threshold_baseline(kept, sum(bool(p.code) for p in gate_preds) / len(gate_preds))
+    table = score(kept, scored, gate.liveness)
+    predictions = kept + [p for p in predictions if p.system == "error"]
     RESULTS.mkdir(parents=True, exist_ok=True)
     out = RESULTS / f"{args.split}_{started}.json"
     prompt = prompts_sha256()
