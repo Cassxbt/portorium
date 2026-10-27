@@ -12,7 +12,9 @@
 """
 import datetime
 import json
+import os
 import re
+import secrets
 import threading
 from pathlib import Path
 
@@ -47,7 +49,7 @@ _state: dict = {}
 def _services() -> tuple[PrecedentGate, Zetaris]:
     try:
         return _start()
-    except (MissingRecording, FileNotFoundError, NightshiftError, NvidiaError, ZetarisError) as e:
+    except (MissingRecording, FileNotFoundError, NightshiftError, NvidiaError, ZetarisError, RuntimeError) as e:
         hint = " Sample mode needs the bundle in data/sample/ (scripts/build_sample.py)." if isinstance(e, (MissingRecording, FileNotFoundError)) else ""
         raise HTTPException(503, f"Portorium could not start: {e}.{hint}") from e
 
@@ -56,18 +58,36 @@ def _start() -> tuple[PrecedentGate, Zetaris]:
     with _lock:
         if not _state:
             s = settings()
+            s.check()
             zetaris = Zetaris(s, s.live)
             with trace.Trace().bind("start-up: liveness cross-check"), trace.role("Auditor"):
                 liveness = Liveness.from_zetaris(zetaris)
             gate = PrecedentGate(PrecedentIndex(index_dir(s.live), s.live), Nvidia(s, s.live), Nightshift(s, s.live),
                                  liveness, RulingTexts(s.live), zetaris)
+            gate.release_current = audit.ReleaseCheck(zetaris)
             # Only a complete start-up is kept, so a failed one is simply tried again on the next request.
             _state.update(zetaris=zetaris, gate=gate, live=s.live)
         return _state["gate"], _state["zetaris"]
 
 
 def _memory(importer: str) -> BrokerMemory:
-    return BrokerMemory(DATA / "memory" / f"{Path(importer).name or 'demo'}.json")
+    return BrokerMemory(DATA / "memory" / f"{importer}.json")
+
+
+def may_write(importer: str, broker: bool, token: str, live: bool, expected: str) -> None:
+    """Who may change an importer's memory. The hosted sample is public, so a visitor writes only their own
+    visitor namespace; live, an importer's answers are theirs to give, but a sign-off or a wipe is a broker's act
+    and needs the BROKER_TOKEN the operator set."""
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", importer):
+        raise HTTPException(400, "importer must be letters, digits, '-' or '_'")
+    if not live and not importer.startswith("visitor-"):
+        raise HTTPException(403, "the hosted sample keeps each visitor's memory apart: use your visitor-… namespace")
+    if live and broker and not (expected and secrets.compare_digest(token, expected)):
+        raise HTTPException(403, "broker sign-off and wipe need the BROKER_TOKEN set for this deployment")
+
+
+def _may_write(importer: str, broker: bool, token: str = "") -> None:
+    may_write(importer, broker, token, settings().live, os.environ.get("BROKER_TOKEN", ""))
 
 
 class ClassifyRequest(BaseModel):
@@ -83,15 +103,21 @@ class ConfirmRequest(BaseModel):
     broker: str
     importer: str = "demo"
     note: str = ""
+    broker_token: str = ""
 
 
 class ForgetRequest(BaseModel):
     importer: str = "demo"
+    broker_token: str = ""
 
 
 @app.post("/api/classify")
 def classify(req: ClassifyRequest) -> dict:
     gate, zetaris = _services()
+    if req.answers:
+        _may_write(req.importer, broker=False)
+    elif not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.importer):
+        raise HTTPException(400, "importer must be letters, digits, '-' or '_'")
     as_of = req.as_of or datetime.date.today().isoformat()
     run = trace.Trace()
     try:
@@ -117,6 +143,7 @@ def confirm(req: ConfirmRequest) -> dict:
     code = req.code.replace(".", "")
     if not (code.isdigit() and len(code) == 10):
         raise HTTPException(400, "code must be 10 digits")
+    _may_write(req.importer, broker=True, token=req.broker_token)
     run = trace.Trace()
     with run.bind(req.product), trace.role("Broker"):
         trace.event("sign_off", req.product, f"HTS {code} signed off by {req.broker}", target_agent="Memory")
@@ -126,6 +153,7 @@ def confirm(req: ConfirmRequest) -> dict:
 
 @app.post("/api/forget")
 def forget(req: ForgetRequest) -> dict:
+    _may_write(req.importer, broker=True, token=req.broker_token)
     run = trace.Trace()
     with run.bind(), trace.role("Broker"):
         _memory(req.importer).forget_all(reason="broker requested wipe")

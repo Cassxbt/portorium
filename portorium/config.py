@@ -34,8 +34,18 @@ class Settings:
     @property
     def live(self) -> bool:
         """Sample mode runs the real gate on recorded service responses; live mode needs every service."""
-        return not self.sample_mode and all(
-            (self.nvidia_api_key, self.nightshift_token, self.zetaris_username, self.zetaris_password))
+        return not self.sample_mode and all(self._credentials().values())
+
+    def _credentials(self) -> dict[str, str]:
+        return {"NVIDIA_API_KEY": self.nvidia_api_key, "NIGHTSHIFT token (NIGHTSHIFT_TOKEN_FILE)": self.nightshift_token,
+                "ZETARIS_USERNAME": self.zetaris_username, "ZETARIS_PASSWORD": self.zetaris_password}
+
+    def check(self) -> None:
+        """No credentials means sample mode; some but not all means a live set-up that is incomplete, which
+        must fail rather than quietly replay recordings."""
+        missing = [name for name, value in self._credentials().items() if not value]
+        if not self.sample_mode and 0 < len(missing) < len(self._credentials()):
+            raise RuntimeError(f"live mode is missing {', '.join(missing)}; set them, or SAMPLE_MODE=true to replay")
 
 
 def settings() -> Settings:

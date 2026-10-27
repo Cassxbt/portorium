@@ -10,7 +10,7 @@ codes; a mismatch stops the gate rather than letting two definitions of "living"
 """
 from dataclasses import dataclass, field
 
-from .zetaris import USL, Zetaris
+from .zetaris import USL, Zetaris, ZetarisError
 
 LIVING, SPLIT, REMOVED, REVOKED = "living", "split", "removed", "revoked"
 RULES = ("code_in_schedule", "parent_survives")
@@ -72,9 +72,25 @@ def precedent_rows(zetaris: Zetaris, ruling_numbers: list[str]) -> dict[str, dic
         WHERE r.ruling_number IN ({ids})""", limit=1000)
     out: dict[str, dict] = {}
     for r in rows:
-        entry = out.setdefault(r["ruling_number"], {"date": r["ruling_date"], "revoked": r["revoked"] == "true", "codes": {}})
+        try:
+            revoked = revoked_flag(r["revoked"])
+        except ValueError as e:
+            raise ZetarisError(str(e)) from e
+        entry = out.setdefault(r["ruling_number"], {"date": r["ruling_date"], "revoked": revoked, "codes": {}})
         entry["codes"][r["hts10"]] = r["status"]
     return out
+
+
+def revoked_flag(value) -> bool:
+    """Zetaris returns booleans as text today; a changed adapter must not quietly turn a revocation into False."""
+    if isinstance(value, bool):
+        return value
+    text = "" if value is None else str(value).strip().lower()
+    if text in ("true", "t", "1", "yes"):
+        return True
+    if text in ("false", "f", "0", "no", ""):
+        return False
+    raise ValueError(f"unrecognised revoked flag {value!r}")
 
 
 def schedule_text(zetaris: Zetaris, code: str) -> list[dict]:

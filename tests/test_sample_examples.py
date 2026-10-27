@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from portorium.config import DATA, ROOT
 
-ORDER = ["classified", "dead-code", "question", "question-answered", "question-remembered"]
+ORDER = ["classified", "dead-code", "question", "question-answered", "question-remembered", "question-variant"]
 
 
 def test_sample_bundle_replays_every_example(monkeypatch):
@@ -12,7 +12,7 @@ def test_sample_bundle_replays_every_example(monkeypatch):
     monkeypatch.setenv("SAMPLE_MODE", "true")
     from portorium import web
 
-    importer = "replay-test"
+    importer = "visitor-replaytest"
     memory = DATA / "memory" / f"{importer}.json"
     memory.unlink(missing_ok=True)
     try:

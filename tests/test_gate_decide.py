@@ -119,3 +119,40 @@ def test_zetaris_status_per_decision_overrides_the_startup_snapshot():
 def test_a_precedent_judged_a_different_product_does_not_carry_the_proposal():
     assert decide(judged("N1", "none", "6110202079", LIVING)).reason == "NO_PRECEDENT_FOR_PROPOSAL"
     assert decide(judged("MEM:mem-7", "partial", "6110202079", LIVING, MEMORY)).reason == "NO_PRECEDENT_FOR_PROPOSAL"
+
+
+ZETARIS = object()
+
+
+def statuses_with_zetaris(proposed, precedents, rows):
+    return PrecedentGate(None, None, None, LIVE, zetaris=ZETARIS)._statuses(proposed, list(precedents), rows)
+
+
+def test_a_ruling_zetaris_returned_no_row_for_cannot_classify():
+    p = judged("N1", "full", "6110202079", LIVING)
+    v = decide(p, statuses=statuses_with_zetaris("6110202079", [p], {}))
+    assert (v.decision, v.reason, v.code) == (REVIEW, "EVIDENCE_MISSING", None)
+
+
+def test_a_zetaris_row_without_the_proposed_code_cannot_classify():
+    p = judged("N1", "full", "6110202079", LIVING)
+    rows = {"N1": {"date": "2024-01-01", "revoked": False, "codes": {"6110202075": LIVING}}}
+    assert decide(p, statuses=statuses_with_zetaris("6110202079", [p], rows)).reason == "EVIDENCE_MISSING"
+
+
+def test_a_ruling_the_adjudicator_matched_to_another_of_its_codes_does_not_carry_the_proposal():
+    p = JudgedPrecedent("N1", "2024-01-01", "subject", ["6110202079", "6110202075"], "full", "6110202075", "fact", LIVING)
+    assert decide(p).reason == "NO_PRECEDENT_FOR_PROPOSAL"
+
+
+def test_an_unresolved_multi_article_ruling_does_not_carry_the_proposal():
+    p = JudgedPrecedent("N1", "2024-01-01", "subject", ["6110202079", "6110202075"], "full", None, "fact", None, unresolved=True)
+    assert decide(p).reason == "NO_PRECEDENT_FOR_PROPOSAL"
+
+
+def test_zetaris_revocation_flags_parse_whatever_their_type():
+    from portorium.liveness import revoked_flag
+    assert [revoked_flag(v) for v in (True, "true", "TRUE", "1", False, "false", "0", None, "")] == [True] * 4 + [False] * 5
+    import pytest
+    with pytest.raises(ValueError):
+        revoked_flag("maybe")

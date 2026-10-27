@@ -7,10 +7,10 @@ Each line is written by the code that did the work, at the moment it did it: the
 import contextvars
 import datetime
 import json
+import secrets
 import sys
 import threading
 import time
-import uuid
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -25,7 +25,7 @@ _role: contextvars.ContextVar[str] = contextvars.ContextVar("role", default="por
 
 class Trace:
     def __init__(self, run_id: str | None = None, directory: Path = LOGS, echo=sys.stdout):
-        self.run_id = run_id or f"{time.strftime('%Y%m%dT%H%M%S', time.gmtime())}-{uuid.uuid4().hex[:6]}"
+        self.run_id = run_id or f"{time.strftime('%Y%m%dT%H%M%S', time.gmtime())}-{secrets.token_hex(8)}"
         directory.mkdir(parents=True, exist_ok=True)
         self.path = directory / f"trace-{self.run_id}.jsonl"
         self.echo = echo

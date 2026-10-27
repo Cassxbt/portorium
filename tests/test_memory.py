@@ -31,14 +31,32 @@ def test_memory_survives_a_restart(tmp_path):
     assert [r.code for r in BrokerMemory(path).recall(PRODUCT)] == ["6110202079"]
 
 
-def test_an_importer_answer_is_recalled_for_a_similar_product(tmp_path):
-    memory = BrokerMemory(tmp_path / "importer.json")
-    memory.remember_answer(PRODUCT, "Is the fabric knitted or woven?", "Knitted, jersey construction")
-    facts = memory.recall_answers("girls' pullover sweater, 70% cotton 30% nylon")
-    assert facts and facts[0][1] == "Knitted, jersey construction"
 
 
 def test_answers_and_code_decisions_are_kept_apart(tmp_path):
     memory = BrokerMemory(tmp_path / "importer.json")
     memory.remember_answer(PRODUCT, "Is the fabric knitted or woven?", "Knitted")
     assert memory.recall(PRODUCT) == []
+
+
+def test_an_importer_answer_is_reused_only_for_the_same_product(tmp_path):
+    memory = BrokerMemory(tmp_path / "importer.json")
+    memory.remember_answer("Men's knitted polo shirt, three-button placket", "What is the fibre?", "100% cotton jersey knit")
+    assert [a for _, a, _ in memory.recall_answers("men's knitted polo shirt,  three-button placket ")] == ["100% cotton jersey knit"]
+    assert memory.recall_answers("Men's knitted polo shirt, three-button placket, 100% polyester") == []
+
+
+def test_two_handles_on_one_importer_keep_both_writes(tmp_path):
+    first, second = BrokerMemory(tmp_path / "importer.json"), BrokerMemory(tmp_path / "importer.json")
+    first.remember(PRODUCT, "6110202079", broker="broker-1")
+    second.remember("portable Bluetooth party speaker, two drivers", "8518220000", broker="broker-2")
+    assert sorted(r.code for r in BrokerMemory(tmp_path / "importer.json").recall(PRODUCT)
+                  + BrokerMemory(tmp_path / "importer.json").recall("portable Bluetooth party speaker, two drivers")) \
+        == ["6110202079", "8518220000"]
+
+
+def test_asking_memory_writes_nothing(tmp_path):
+    memory = BrokerMemory(tmp_path / "importer.json")
+    memory.recall(PRODUCT)
+    memory.recall_answers(PRODUCT)
+    assert not (tmp_path / "importer.json").exists()

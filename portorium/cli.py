@@ -28,10 +28,12 @@ MEMORY = DATA / "memory"
 
 def build_gate() -> tuple[PrecedentGate, Zetaris]:
     s = settings()
+    s.check()
     zetaris = Zetaris(s, s.live)
     with trace.role("Auditor"):
         liveness = Liveness.from_zetaris(zetaris)
     gate = PrecedentGate(PrecedentIndex(index_dir(s.live), s.live), Nvidia(s, s.live), Nightshift(s, s.live), liveness, RulingTexts(s.live), zetaris)
+    gate.release_current = audit.ReleaseCheck(zetaris)
     return gate, zetaris
 
 
@@ -100,6 +102,7 @@ def forget(args) -> int:
 def rescreen(args) -> int:
     """Zetaris re-checks the live USITC release and every past CLASSIFIED verdict."""
     s = settings()
+    s.check()
     with trace.role("Auditor"):
         r = audit.rescreen(Zetaris(s, s.live))
     print(f"live HTS release {r['release']} ({'CHANGED' if r['release_changed'] else 'unchanged'}); "

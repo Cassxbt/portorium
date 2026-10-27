@@ -9,6 +9,7 @@ trace to output_examples/: real outputs of this run, which the site displays and
 """
 import json
 import os
+import secrets
 import subprocess
 import sys
 
@@ -38,6 +39,8 @@ def main() -> int:
     (DATA / "memory" / f"{IMPORTER}.json").unlink(missing_ok=True)
     for directory in ("input_examples", "output_examples"):
         (ROOT / directory).mkdir(exist_ok=True)
+    # The walkthrough wipes its own memory at the end, a broker's act, so it holds a one-off token for it.
+    token = os.environ.setdefault("BROKER_TOKEN", secrets.token_hex(16))
     client = TestClient(web.app)
 
     def classify(name: str, title: str, product: str, answers: list) -> dict:
@@ -58,8 +61,9 @@ def main() -> int:
         if answer and v["question"]:
             classify(f"{name}-answered", "The importer's answer, then the whole loop again", product, [[v["question"], answer]])
             classify(f"{name}-remembered", "The answer recalled from memory on the next request", product, [])
+            classify(f"{name}-variant", "A different product does not inherit that answer", f"{product}, 100% polyester", [])
     client.get("/api/rescreen").raise_for_status()
-    client.post("/api/forget", json={"importer": IMPORTER}).raise_for_status()
+    client.post("/api/forget", json={"importer": IMPORTER, "broker_token": token}).raise_for_status()
     (DATA / "memory" / f"{IMPORTER}.json").unlink(missing_ok=True)
 
     used = set()

@@ -32,7 +32,8 @@ class FakeNightshift:
         if "code" in required:
             return {"code": "6110.20.2079", "confidence": 90}, Answer("{}", {"routed_model": model, "receipt_id": "rcpt_3"})
         if "fits" in required:
-            return ({"fits": self.fits, "line": "" if self.fits else "6110.20.20", "reason": "r", "question": "" if self.fits else "Is it knitted?"},
+            return ({"fits": self.fits, "line": "" if self.fits else "6110.20.20", "reason": "r", "question": "" if self.fits else "Is it knitted?",
+                     "facts": [{"fact": "knitted pullover", "quote": "pullover sweater, knitted"}]},
                     Answer("{}", {"routed_model": model, "receipt_id": "rcpt_2"}))
         rows = [{"ruling": "N111111", "match": "full", "code": "6110202079", "fact": "knitted"}]
         return {"precedents": rows, "question": ""}, Answer("{}", {"routed_model": model, "receipt_id": "rcpt_1"})

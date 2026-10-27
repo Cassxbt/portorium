@@ -31,6 +31,8 @@ from .zetaris import Zetaris
 CLASSIFIED, REVIEW, REFUSE = "CLASSIFIED", "REVIEW", "REFUSE"
 MATCHES = ("full", "partial", "none")
 RULING, MEMORY = "ruling", "memory"
+# A precedent Zetaris returned no evidence for in this request.
+UNVERIFIED = "unverified"
 HS2022 = "2022-01-01"
 
 SYSTEM = """You are a US customs classification analyst. Compare an importer's product with prior decisions:
@@ -65,10 +67,16 @@ above it. Under each level you also get the alternatives: the other lines at tha
 covers only goods that none of its alternatives at that level cover.
 Decide whether the product falls within every level of the proposed path rather than within an alternative.
 Judge only from the product facts and the schedule text given. If placing the product needs a fact that is not
-stated, and an alternative would apply depending on it, the product does not fit: ask for that fact.
+stated, and an alternative would apply depending on it, the product does not fit: ask for that fact. Never infer
+a fact from what such a product usually is: material, fibre content, percentages, power, size, weight, use and
+how it is made count only when the importer's words state them.
+List every fact that places the product on the proposed line rather than an alternative, at any level, each with
+the importer's exact words that state it, copied from PRODUCT or an IMPORTER ANSWERED line. Code checks every
+quote against those words; a fit with an unquoted fact is sent back as a question.
 Reply with only a JSON object:
 {"fits": true or false, "line": "<the first level that does not fit, or empty>", "reason": "<short>",
-"question": "<when a missing fact decides it, the one question to the importer; otherwise empty>"}"""
+"question": "<when a missing fact decides it, the one question to the importer; otherwise empty>",
+"facts": [{"fact": "<a fact the line depends on>", "quote": "<the importer's exact words stating it>"}]}"""
 
 
 @dataclass
@@ -131,11 +139,15 @@ class PrecedentGate:
         """critic: a classification must also fit the code's current schedule text (needs Zetaris)."""
         self.index, self.nvidia, self.nightshift, self.liveness = index, nvidia, nightshift, liveness
         self.texts, self.zetaris, self.model, self.top, self.critic = texts, zetaris, model, top, critic
+        # Whether USITC still publishes the release the schedule snapshot came from; the web app wires it to Zetaris.
+        self.release_current = lambda: True
 
     def classify(self, product: str, as_of: str, answers: list[tuple[str, str]] = (),
                  exclude: set[str] = frozenset(), memory: BrokerMemory | None = None) -> Verdict:
         with trace.role("Retriever"):
-            precedents = self.index.search(self.nvidia, product, as_of, exclude=exclude)[: self.top]
+            # An answer can be the fact that decides the line, so it shapes the search as well as the judgement.
+            query = " ".join([product + "."] + [f"{q} {a}" for q, a in answers]) if answers else product
+            precedents = self.index.search(self.nvidia, query, as_of, exclude=exclude)[: self.top]
             facts = {p.ruling_number: f for p in precedents if self.texts and (f := self.texts.facts(p.ruling_number))}
             trace.event("retrieve", product, f"{len(precedents)} rulings issued before {as_of}, {len(facts)} with product facts: "
                         + ", ".join(p.ruling_number for p in precedents), target_agent="Adjudicator")
@@ -186,6 +198,12 @@ class PrecedentGate:
                         rule=verdict.reason)
         if verdict.decision == CLASSIFIED and self.critic and self.zetaris:
             verdict = self.critique(product, answers, verdict, remembered)
+        return self.current(verdict)
+
+    def current(self, verdict: Verdict) -> Verdict:
+        """A code is checked against one loaded revision; once USITC publishes a newer one, it is no longer current."""
+        if verdict.decision == CLASSIFIED and not self.release_current():
+            return self._withhold(verdict, "SCHEDULE_OUTDATED", "USITC publishes a newer schedule than the loaded snapshot")
         return verdict
 
     def critique(self, product: str, answers, verdict: Verdict, remembered=()) -> Verdict:
@@ -196,6 +214,10 @@ class PrecedentGate:
             path = [r for r in rows if r["kind"] == "path"]
             trace.event("schedule_text", code, " > ".join(r["description"] for r in path),
                         target_agent="Critic", alternatives=sum(r["kind"] == "alternative" for r in rows))
+        leaf = re.sub(r"\D", "", (path[-1]["htsno"] or "") if path else "")
+        if len(leaf) < 8 or not code.startswith(leaf):
+            verdict.critique = {"code": code, "fits": None}
+            return self._withhold(verdict, "EVIDENCE_MISSING", f"no complete Rev 21 path ending at {code}")
         lines = [f"PRODUCT: {product}"] + [f"IMPORTER ANSWERED: {q} -> {a}" for q, a in answers]
         lines += [f"IMPORTER ANSWERED EARLIER for a similar product (use only if it applies): {q} -> {a}" for q, a, _ in remembered]
         lines.append(f"PROPOSED: {code[:4]}.{code[4:6]}.{code[6:8]}.{code[8:]}")
@@ -213,12 +235,29 @@ class PrecedentGate:
             trace.event("critique", f"{code} for {product}", ("fits" if fits else f"does not fit at {data.get('line') or '?'}")
                         + f": {data.get('reason') or ''}", target_agent="Gate", model=answer.routed_model or self.model,
                         status="success" if fits else "needs_revision", receipt_id=answer.receipt.get("receipt_id"))
+        facts = [f for f in data["facts"] if isinstance(f, dict)] if isinstance(data.get("facts"), list) else []
+        stated = _plain(" ".join([product] + [_said(q, a) for q, a in answers] + [_said(q, a) for q, a, _ in remembered]))
+        unquoted = [f for f in facts if not _quoted(f, stated)]
         critique = {"code": code, "fits": fits, "line": str(data.get("line") or ""), "reason": str(data.get("reason") or ""),
+                    "facts": [{"fact": str(f.get("fact") or ""), "quote": str(f.get("quote") or ""),
+                               "stated": f not in unquoted} for f in facts],
                     "receipt_id": answer.receipt.get("receipt_id"), "routed_model": answer.routed_model}
         receipts = verdict.receipts + [{"role": "Critic", "routed_model": answer.routed_model,
                                         "receipt_id": answer.receipt.get("receipt_id"), "from_cache": answer.receipt.get("from_cache")}]
+        if fits and (unquoted or not facts):
+            # The model said it fits; code checks it said so on the importer's words, not on what such products usually are.
+            missing = str((unquoted or [{}])[0].get("fact") or "the facts that place it on this line")
+            with trace.role("Gate"):
+                trace.event("check_quotes", f"{len(facts)} fact(s) quoted for {code}",
+                            f"not in the importer's words: {missing}", target_agent="Importer", status="needs_review",
+                            rule="FACT_NOT_STATED")
+            return Verdict(REVIEW, "FACT_NOT_STATED", None, verdict.precedents,
+                           str(data.get("question") or "") or f"Can you confirm {missing}?", receipts, verdict.dq,
+                           verdict.remembered, critique, verdict.proposal)
         if fits:
             verdict.critique, verdict.receipts = critique, receipts
+            if isinstance(self.nightshift, Nightshift) and any(not r["routed_model"] or not r["receipt_id"] for r in receipts):
+                return self._withhold(verdict, "EVIDENCE_MISSING", "a model call has no Nightshift receipt naming its routed model")
             return verdict
         with trace.role("Gate"):
             revised = Verdict(REVIEW, "SCHEDULE_TEXT_DISAGREES", None, verdict.precedents, str(data.get("question") or ""),
@@ -226,6 +265,13 @@ class PrecedentGate:
             trace.event("decide", f"{code} does not fit its Rev 21 text", "REVIEW SCHEDULE_TEXT_DISAGREES",
                         target_agent="Importer" if revised.question else "Broker", status="needs_review", rule=revised.reason)
         return revised
+
+    def _withhold(self, verdict: Verdict, reason: str, why: str) -> Verdict:
+        """A classification whose evidence is incomplete or out of date goes to a broker; it never stands on what was not checked."""
+        with trace.role("Gate"):
+            trace.event("decide", why, f"REVIEW {reason}", target_agent="Broker", status="needs_review", rule=reason)
+        return Verdict(REVIEW, reason, None, verdict.precedents, "", verdict.receipts, verdict.dq,
+                       verdict.remembered, verdict.critique, verdict.proposal)
 
     def _judge_traced(self, product, precedents, answers, facts, rows, remembered):
         with trace.role("Adjudicator"):
@@ -267,11 +313,17 @@ class PrecedentGate:
             # A ruling counts only if judged the same or a similar article; a remembered broker decision only if the same.
             if not code or code not in j.codes or j.match not in (("full",) if j.kind == MEMORY else ("full", "partial")):
                 continue
+            # A ruling on several articles supports the proposal only if the Adjudicator matched this product to this code.
+            if j.code != code:
+                continue
             row = rows.get(j.ruling_number)
             if j.kind == RULING and ((row and row["revoked"]) or j.status == REVOKED):
                 out[j.ruling_number] = REVOKED
+            elif j.kind == RULING and self.zetaris:
+                # This request's Zetaris answer is the evidence; the startup snapshot cannot stand in for a missing row.
+                out[j.ruling_number] = (row or {}).get("codes", {}).get(code) or UNVERIFIED
             else:
-                out[j.ruling_number] = (row or {}).get("codes", {}).get(code) or self.liveness.status(code)
+                out[j.ruling_number] = self.liveness.status(code)
         return out
 
     def judge(self, product: str, precedents: list[Precedent], answers, facts: dict[str, str],
@@ -347,6 +399,8 @@ class PrecedentGate:
             return verdict(REVIEW, "NO_PRECEDENT_FOR_PROPOSAL", ask=question)
         living = [j for j in citing if statuses[j.ruling_number] == LIVING]
         if not living:
+            if UNVERIFIED in statuses.values():
+                return verdict(REVIEW, "EVIDENCE_MISSING")
             if SPLIT in statuses.values():
                 return verdict(REVIEW, "SPLIT_SUCCESSORS")
             if any(j.code and j.status == LIVING and j.match != "none" for j in judged):
@@ -355,6 +409,28 @@ class PrecedentGate:
         if {j.code for j in judged if j.kind == MEMORY and j.match == "full" and j.code} - {proposal.code}:
             return verdict(REVIEW, "MEMORY_CONFLICT", ask=question)
         return verdict(CLASSIFIED, "BROKER_MEMORY" if all(j.kind == MEMORY for j in living) else "LIVING_PRECEDENT", proposal.code)
+
+
+def _plain(text: str) -> str:
+    """Words for quote matching: case, punctuation and spacing do not count; digits and % do."""
+    return " ".join(re.sub(r"[^\w%]+", " ", text.lower()).split())
+
+
+AFFIRMATIVE = {"yes", "y", "yes it is", "yes it does", "correct", "that is correct", "true", "yep"}
+
+
+def _said(question: str, answer: str) -> str:
+    """What the importer stated: their answer, and the question too when the answer is a plain yes to it."""
+    return f"{question} {answer}" if _plain(answer) in AFFIRMATIVE else answer
+
+
+def _quoted(fact: dict, stated: str) -> bool:
+    """A fact counts only if its quote is the importer's own words, as whole words, carrying every number the fact uses."""
+    quote = fact.get("quote")
+    if not isinstance(quote, str) or len(_plain(quote)) < 3 or f" {_plain(quote)} " not in f" {stated} ":
+        return False
+    words = _plain(quote).split()
+    return all(token in words for token in _plain(str(fact.get("fact") or "")).split() if any(ch.isdigit() for ch in token))
 
 
 def _broker_names(precedents: list[Precedent]) -> dict[str, str]:
