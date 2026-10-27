@@ -13,11 +13,9 @@ def test_an_importer_name_must_be_a_plain_identifier():
         assert e.value.status_code == 400
 
 
-def test_the_hosted_sample_lets_visitors_write_only_their_own_memory():
+def test_the_sample_needs_no_token_to_write_memory():
     may_write("visitor-ab12cd", broker=True, token="", live=False, expected="")
-    with pytest.raises(HTTPException) as e:
-        may_write("demo", broker=False, token="", live=False, expected="")
-    assert e.value.status_code == 403
+    may_write("demo", broker=False, token="", live=False, expected="")
 
 
 def test_live_broker_actions_need_the_configured_token():
@@ -34,8 +32,11 @@ def test_a_trace_id_cannot_be_guessed_from_its_time(tmp_path):
     assert len(suffix) == 16
 
 
-def test_the_hosted_sample_refuses_a_sign_off_into_the_shared_namespace(monkeypatch):
+def test_the_run_endpoint_takes_an_input_example_as_it_is(monkeypatch):
+    import json
+    from portorium.config import ROOT
     monkeypatch.setenv("SAMPLE_MODE", "true")
     from portorium import web
-    r = TestClient(web.app).post("/api/confirm", json={"product": "x", "code": "8518220000", "broker": "b", "importer": "demo"})
-    assert r.status_code == 403
+    body = json.loads((ROOT / "input_examples" / "classified.json").read_text())
+    r = TestClient(web.app).post("/run", json=body)
+    assert r.status_code == 200 and r.json()["decision"]

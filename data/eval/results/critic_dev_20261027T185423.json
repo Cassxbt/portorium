@@ -1,0 +1,3268 @@
+{
+ "split": "dev",
+ "source": "data/eval/history/v3_critic_on_v2_calls.json",
+ "items": 150,
+ "reached_critic": 103,
+ "errors": 5,
+ "classified": 31,
+ "coverage": 0.207,
+ "right": 24,
+ "acc10_covered": 0.774,
+ "acc10_ci95": [
+  0.602,
+  0.886
+ ],
+ "removed_right": 24,
+ "removed_wrong": 43,
+ "removed_by_reason": {
+  "SCHEDULE_TEXT_DISAGREES": 48,
+  "FACT_NOT_STATED": 19
+ },
+ "gate_prompt_sha256": "5842ad91d71b5244",
+ "critic_prompt": "You check a proposed US tariff classification against the words of the schedule, HTS 2026 Revision 21.\nYou get the importer's product, any answers the importer gave, and the proposed 10-digit line with every level\nabove it. Under each level you also get the alternatives: the other lines at that level. A line reading \"Other\"\ncovers only goods that none of its alternatives at that level cover.\nDecide whether the product falls within every level of the proposed path rather than within an alternative.\nJudge only from the product facts and the schedule text given. If placing the product needs a fact that is not\nstated, and an alternative would apply depending on it, the product does not fit: ask for that fact.\nList the facts that place the product on the proposed line rather than an alternative, each with the importer's\nexact words that state it, copied from PRODUCT or an IMPORTER ANSWERED line. Code checks every quote against\nthose words.\nReply with only a JSON object:\n{\"fits\": true or false, \"line\": \"<the first level that does not fit, or empty>\", \"reason\": \"<short>\",\n\"question\": \"<when a missing fact decides it, the one question to the importer; otherwise empty>\",\n\"facts\": [{\"fact\": \"<a fact the line depends on>\", \"quote\": \"<the importer's exact words stating it>\"}]}",
+ "results": [
+  {
+   "ruling_number": "H321679",
+   "code": "4202924500",
+   "answer": "4202923131",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Are the hamper tote bags designed to carry personal belongings during travel, shopping, sport, or similar activities (like the enumerated containers in heading 4202), or are they primarily laundry/storage hampers with carrying handles? Please describe the construction, closure, handles/straps, and intended use.",
+   "critique": {
+    "code": "4202924500",
+    "fits": false,
+    "line": "4202.92.45.00",
+    "reason": "The product is described only as \"hamper tote bags\". The HTS heading 4202 lists specific container types (e.g., traveling bags, handbags, shopping bags, sports bags, tool bags) and \"similar containers\". The importer's words do not state facts showing the bags are similar to the enumerated containers\u2014such as being designed to carry personal effects during travel, shopping, or sport\u2014rather than being laundry/storage hampers with tote handles. Without facts on design, intended use, or construction that align with the heading\u2019s exemplars, classification under 4202 is not supported.",
+    "facts": [],
+    "receipt_id": "rcpt_req_vyuolurj",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N352351",
+   "code": "3913905000",
+   "answer": "3907995050",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3913905000",
+    "fits": false,
+    "line": "3913.90",
+    "reason": "The product is a blend of a synthetic polymer (PBS) with starch and additives, not a natural polymer or a modified natural polymer as required by heading 3913.",
+    "facts": [
+     {
+      "fact": "product is a polybutylene succinate (PBS) - corn starch composite material",
+      "quote": "polybutylene succinate (PBS) - corn starch composite material",
+      "stated": true
+     },
+     {
+      "fact": "PBS is sourced from Chinese origin",
+      "quote": "Chinese origin PBS is shipped to Taiwan",
+      "stated": true
+     },
+     {
+      "fact": "corn starch is Taiwanese origin",
+      "quote": "Taiwanese origin corn starch",
+      "stated": true
+     },
+     {
+      "fact": "product is made by melt extrusion blending PBS with starch and additive mixtures",
+      "quote": "Three feeders are positioned over the feed hopper of the extruder. Feeder 1 is loaded with Chinese PBS, Feeder 2 is loaded with Powder Mixture 1 and Feeder 3 is loaded with Powder Mixture 2... The extruded melt strand is strung up to ride through the shallow water trough to be cooled for cutting.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_kjyqun8n",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N356812",
+   "code": "8516606000",
+   "answer": "8516790000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm electric skillet with heating element and removable temperature probe for domestic use?",
+   "critique": {
+    "code": "8516606000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an electric skillet/griddle with a heating element and temperature probe for domestic cooking use. It is an electrothermic appliance of a kind used for domestic purposes (8516). It is not a water heater, space heater, hairdressing apparatus, flatiron, microwave oven, or heating resistor (8516.10-8516.80 alternatives). It falls under 8516.60 as a cooking appliance (griller/roaster/hot plate type). It is not a cooking stove, range, or oven (8516.60.40), so it classifies under the residual 8516.60.60.",
+    "facts": [
+     {
+      "fact": "electric skillet with heating element and removable temperature probe for domestic use",
+      "quote": "electric skillet from China ... round electric skillet with sloped sides designed for domestic use ... removable temperature probe and heating element",
+      "stated": false
+     },
+     {
+      "fact": "cooking appliance with non-stick cooking surface, side-handles, feet/base, and glass lid",
+      "quote": "stainless non-stick cooking surface with two side-handles ... feet/base, and a glass lid",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_kyrayssk",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N356971",
+   "code": "2309909500",
+   "answer": "3823192000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "2309909500",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a preparation of a kind used in animal feeding (rumen bypass fat supplement for livestock), not dog/cat food for retail sale, not mixed feeds or mixed feed ingredients, not containing milk/milk derivatives, not containing egg, and not a vitamin B12-based preparation for supplementing animal feed. It falls within the residual 'Other' category at each level.",
+    "facts": [
+     {
+      "fact": "described as a palm fatty acid distillate with elevated palmitic fatty acids which is suitable for use as a rumen bypass fat",
+      "quote": "described as a palm fatty acid distillate with elevated palmitic fatty acids which is suitable for use as a rumen bypass fat",
+      "stated": true
+     },
+     {
+      "fact": "produced from freshly produced palm fatty acid distillates which also contained naturally found phytonutrients which may proffer additional benefits to livestock",
+      "quote": "produced from freshly produced palm fatty acid distillates which also contained naturally found phytonutrients which may proffer additional benefits to livestock",
+      "stated": true
+     },
+     {
+      "fact": "in the form of a light brown micro-prill, approximately 300\u2013500 microns in size",
+      "quote": "in the form of a light brown micro-prill, approximately 300\u2013500 microns in size",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_g00ynhug",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357069",
+   "code": "8543708500",
+   "answer": "9018907560",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8543708500",
+    "fits": true,
+    "line": "",
+    "reason": "The Lenire\u00ae Tinnitus Treatment Device is a non-invasive bimodal neuromodulation device specifically designed to deliver electrical stimulation to the tongue (trigeminal nerve pathway) and auditory stimulation via headphones for the adaptation and relief of tinnitus. The Controller manages the timing, intensity, and synchronization of the electrical pulses delivered by the Tongue Tip, which consists of a slim, flexible probe with integrated electrodes. This constitutes an electrical machine having an individual function (tinnitus treatment via electrical nerve stimulation) not specified elsewhere in Chapter 85. It is not a particle accelerator, signal generator, electroplating/electrolysis/electrophoresis apparatus, electronic cigarette, physical vapor deposition apparatus, synchro/transducer/flight data recorder, defroster/demister for aircraft, telegraphic/telephonic connection article, electric luminescent lamp, microwave amplifier, translation/dictionary machine, video game controller, portable electronic reader, digital signal processing apparatus for sound mixing, portable interactive electronic education device for children, touch-sensitive data input device without display, or plasma cleaner machine. Therefore, it falls under 8543.70.85.00 as an electrical machine for electrical nerve stimulation.",
+    "facts": [
+     {
+      "fact": "non-invasive bimodal neuromodulation device specifically designed for the adaptation and relief of tinnitus",
+      "quote": "non-invasive bimodal neuromodulation device specifically designed for the adaptation and relief of tinnitus",
+      "stated": true
+     },
+     {
+      "fact": "combines auditory and trigeminal nerve stimulation to alleviate symptoms associated with tinnitus",
+      "quote": "combines auditory and trigeminal nerve stimulation to alleviate symptoms associated with tinnitus",
+      "stated": true
+     },
+     {
+      "fact": "Tongue Tip is an intra-oral stimulation device designed to deliver mild electrical pulses to the tongue, activating neural pathways to the brain",
+      "quote": "Tongue Tip is an intra-oral stimulation device designed to deliver mild electrical pulses to the tongue, activating neural pathways to the brain",
+      "stated": true
+     },
+     {
+      "fact": "Tongue Tip consists of a slim, flexible probe with integrated electrodes",
+      "quote": "slim, flexible probe with integrated electrodes",
+      "stated": true
+     },
+     {
+      "fact": "Controller manages the timing, intensity, and synchronization of electrical pulses delivered by the Tongue Tip",
+      "quote": "coordinates the system's bimodal neuromodulation by managing the timing, intensity, and synchronization of auditory stimulation (via Bluetooth headphones) with transmucosal tongue stimulation (via the Tongue Tip)",
+      "stated": true
+     },
+     {
+      "fact": "prescription-only and must be fitted and configured by a suitably qualified audiologist or physician",
+      "quote": "prescription-only and must be fitted and configured by a suitably qualified audiologist or physician",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_3ac74feo",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357206",
+   "code": "3214100020",
+   "answer": "3214100020",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "3214100020",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a silicone-based sealing compound used to form flexible, oil-resistant gaskets in industrial and engine applications, which classifies as a mastic (not a caulking compound or painters' filling) under heading 3214. The subheading 3214.10.00.20 covers 'Other' mastics, which includes these industrial flange sealants.",
+    "facts": [
+     {
+      "fact": "products are silicone-based, non-corrosive sealing compounds",
+      "quote": "The products are silicone-based, non-corrosive sealing compounds",
+      "stated": true
+     },
+     {
+      "fact": "used to form flexible, oil-resistant gaskets between metal surfaces in engines and industrial equipment",
+      "quote": "They are used to form flexible, oil-resistant gaskets between metal surfaces in engines and industrial equipment",
+      "stated": true
+     },
+     {
+      "fact": "not designed for use as consumer adhesives and not intended for household or retail consumer applications",
+      "quote": "These products are not designed for use as consumer adhesives and are not intended for household or retail consumer applications",
+      "stated": true
+     },
+     {
+      "fact": "principal use is in industrial maintenance, repair, and overhaul (MRO) operations",
+      "quote": "Their principal use is in industrial maintenance, repair, and overhaul (MRO) operations, including automotive engines, agricultural machinery, and industrial equipment",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_ey0o0xdn",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357223",
+   "code": "3824999397",
+   "answer": "3824999397",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3824999397",
+    "fits": false,
+    "line": "3824",
+    "reason": "The product is a set of finished ice packs \u2014 sealed pouches containing gel, with a coated multi-layer exterior made of nylon, aluminum and mylar \u2014 sold at retail as a 10-pack for use in coolers and lunch bags. This is a manufactured article, not a chemical product or preparation of the chemical or allied industries. Heading 3824 covers chemical preparations not elsewhere specified or included; it does not cover finished articles of plastics or textiles that incorporate a chemical gel.",
+    "facts": [
+     {
+      "fact": "The product is a set of finished ice packs (4 small, 4 large, 2 mats) sold at retail as a 10-pack for use in coolers and lunch bags.",
+      "quote": "The product under consideration is the Titan Pro Ice Pack Set ( item # 1985292). The set is sold for retail as a 10 pack which includes 4 small ice packs (6.75\u201d x 7\u201d), 4 large ice packs (9.75\u201d x 10.25)and 2 ice mats(10.2\" X 18.5\"). They are generally used in coolers but can also be wrapped around bottles as they are foldable.",
+      "stated": true
+     },
+     {
+      "fact": "Each ice pack is a sealed article with a coated, multi-layer exterior made of nylon, aluminum and mylar, containing a non-toxic gel.",
+      "quote": "Each ice pack is also puncture resistant, has a coated, multi-layer exterior and uses a non-toxic Deep Freeze\u2122 Performance Gel for long lasting cold. The exterior is made of nylon, aluminum and mylar.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_93dzd8ba",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357282",
+   "code": "3305900000",
+   "answer": "3305900000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "What is the specific function or use of this product (e.g., shampoo, conditioner, hair mask, styling gel, hair spray, permanent wave solution)?",
+   "critique": {
+    "code": "3305900000",
+    "fits": false,
+    "line": "3305.90.00.00",
+    "reason": "The provided product name and packaging details do not establish the product's function. It could be a shampoo (3305.10), permanent waving/straightening preparation (3305.20), hair lacquer (3305.30), or another hair preparation (3305.90). Classification requires knowing the specific use.",
+    "facts": [
+     {
+      "fact": "product is named Dr. Melaxin Bondex Hair Clinic Treatment 250ml",
+      "quote": "Dr. Melaxin Bondex Hair Clinic Treatment 250ml",
+      "stated": true
+     },
+     {
+      "fact": "packaged for retail sale in an 8.45 fluid ounce (250ml) plastic container",
+      "quote": "packaged for retail sale in an 8.45 fluid ounce (250ml) plastic container",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_egc0cd73",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357315",
+   "code": "9403992080",
+   "answer": "9403910080",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "9403992080",
+    "fits": false,
+    "line": "9403.99.20",
+    "reason": "The components are made of MDF (wood). Heading 9403.91.00 provides for parts of wood. The proposed path (9403.99.20) covers parts of cane, osier, bamboo or similar materials, or of rubber or plastics \u2014 not wood.",
+    "facts": [
+     {
+      "fact": "The items are Medium Density Fiberboard (MDF) wooden cabinet door and wooden cabinet drawer components.",
+      "quote": "Medium Density Fiberboard (MDF) wooden cabinet door and wooden cabinet drawer components",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_08h8tk35",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357425",
+   "code": "8544429090",
+   "answer": "8544429090",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm insulated electric conductors fitted with connectors?",
+   "critique": {
+    "code": "8544429090",
+    "fits": true,
+    "line": "",
+    "reason": "Both cables are insulated electric conductors fitted with connectors (9-POS, cylindrical breakaway, multi-pin, and cylindrical quick disconnect) for a voltage not exceeding 1,000 V. They are not winding wire, coaxial cable, ignition wiring sets, high-voltage conductors, or optical fiber cables. They are fitted with connectors, so they fall under 8544.42. They are not fitted with modular telephone connectors (RJ-type), nor are they of a kind used for telecommunications (they transmit power and audio signals for aviation headset operation). They are not extension cords as defined in statistical note 7. Therefore, they are classified under 8544.42.90.90.",
+    "facts": [
+     {
+      "fact": "insulated electric conductors fitted with connectors",
+      "quote": "comprised of a length of insulated conductor terminated at one end with a 9-POS connector and a cylindrical breakaway connector at the other... terminated with multi-pin connectors... terminated with a cylindrical quick disconnect connector",
+      "stated": false
+     },
+     {
+      "fact": "voltage not exceeding 1,000 V",
+      "quote": "The cable transmits power and audio signals from the control box to the headset",
+      "stated": false
+     },
+     {
+      "fact": "not winding wire, coaxial cable, ignition wiring sets, high-voltage conductors, or optical fiber cables",
+      "quote": "insulated conductor terminated at one end with a 9-POS connector and a cylindrical breakaway connector... split into two at one end and terminated with multi-pin connectors... cylindrical quick disconnect connector",
+      "stated": false
+     },
+     {
+      "fact": "fitted with connectors",
+      "quote": "terminated at one end with a 9-POS connector and a cylindrical breakaway connector at the other... terminated with multi-pin connectors... terminated with a cylindrical quick disconnect connector",
+      "stated": false
+     },
+     {
+      "fact": "not fitted with modular telephone connectors",
+      "quote": "9-POS connector... cylindrical breakaway connector... multi-pin connectors... cylindrical quick disconnect connector",
+      "stated": false
+     },
+     {
+      "fact": "not of a kind used for telecommunications",
+      "quote": "The cable transmits power and audio signals from the control box to the headset, allowing the pilot to hear air traffic control as well as utilize the in-aircraft intercom system, with active noise cancellation",
+      "stated": true
+     },
+     {
+      "fact": "not extension cords as defined in statistical note 7",
+      "quote": "specifically designed for use with the Zulu aviation headset... meant to connect the headset to the control box... meant to connect each earcup to the control box",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_aznml587",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357431",
+   "code": "7306613000",
+   "answer": "7306405040",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "7306613000",
+    "fits": false,
+    "line": "7306.61",
+    "reason": "The product is described as having a circular cross section, but heading 7306.61 covers tubes and pipes of square or rectangular cross section only.",
+    "facts": [
+     {
+      "fact": "The products are welded stainless steel pipes with a circular cross section.",
+      "quote": "welded stainless steel pipes with a circular cross section",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_0c3l1ehy",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357461",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a child's ninja costume set consisting of a hooded tunic, leggings, belt, arm sleeves, leg ties, and face mask. This is clearly a festive/carnival/entertainment article (costume) for dress-up play, not a Christmas article, magic trick, practical joke article, confetti, party favor, or noisemaker.",
+    "facts": [
+     {
+      "fact": "The product is a child size costume identified as 'Ninja Girl' consisting of multiple components (hooded top/tunic, leggings, belt, arm sleeves, leg ties, face mask)",
+      "quote": "child size costume identified as Ninja Girl, item number 3021-144, which consists of a hooded top which you refer to as a tunic, leggings, a belt, arm sleeves, leg ties, and a face mask",
+      "stated": true
+     },
+     {
+      "fact": "The product is imported from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_6grcwb3n",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357464",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an adult costume (festive/entertainment article), not Christmas-specific, not a magic trick or practical joke article, and not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "adult size costume",
+      "quote": "adult size costume",
+      "stated": true
+     },
+     {
+      "fact": "identified as Playful Pirate",
+      "quote": "identified as Playful Pirate",
+      "stated": true
+     },
+     {
+      "fact": "consists of a long-sleeved pullover dress, foam corset and hat",
+      "quote": "consists of a long-sleeved pullover dress, foam corset and hat",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_f4f4o6fx",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357467",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an adult Renaissance Peasant Blouse costume intended for festive/carnival/entertainment dress-up wear, which falls under 'Other' festive articles at 9505.90.60.00. It is not a Christmas article (9505.10), magic trick/practical joke article (9505.90.20), or confetti/party favor/noisemaker (9505.90.40).",
+    "facts": [
+     {
+      "fact": "The product is an adult size costume identified as 'Renaissance Peasant Blouse' for dress-up wear",
+      "quote": "adult size costume identified as Renaissance Peasant Blouse, item number 5020-019 in cream color",
+      "stated": true
+     },
+     {
+      "fact": "The product is imported from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_zvldsy3p",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357470",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an adult Samurai Warrior costume consisting of multiple components (tunic, chest armor, rope waist tie, foam helmet with removable accessory, wrist cuffs, belt with tabard). This is clearly a festive/carnival/entertainment article (costume) for dress-up/entertainment, not a Christmas article, magic trick, practical joke article, confetti, party favor, or noisemaker.",
+    "facts": [
+     {
+      "fact": "adult size costume identified as Samurai Warrior",
+      "quote": "adult size costume identified as Samurai Warrior, item number 5020-043",
+      "stated": true
+     },
+     {
+      "fact": "consists of a long length pullover top (tunic), chest armor, rope waist tie, foam helmet with removable accessory, wrist cuffs, and belt with tabard",
+      "quote": "consists of a long length pullover top which you refer to as a tunic, chest armor, rope waist tie, foam helmet with removable accessory, wrist cuffs, and belt with tabard",
+      "stated": true
+     },
+     {
+      "fact": "imported from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_e3pl4782",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357482",
+   "code": "6104432020",
+   "answer": "9505906000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Do you want separate classifications for each costume? If so, please confirm you will submit one request per costume.",
+   "critique": {
+    "code": "6104432020",
+    "fits": false,
+    "line": "LEVEL 1",
+    "reason": "The second costume (Bunny Costume, item number OEM26-0855) is a short-sleeved pullover dress AND a headpiece with ears; it is not solely a dress. A ruling covering both costumes cannot be classified under a single 'Dresses' subheading.",
+    "facts": [
+     {
+      "fact": "Two distinct costumes are described: Storybook Mermaid (CS27-0131) and Bunny Costume (OEM26-0855).",
+      "quote": "The first costume is identified as Storybook Mermaid, item number CS27-0131... The second costume is identified as Bunny Costume, item number OEM26-0855, which consists of a short-sleeved pullover dress and headpiece with ears.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_pk0m10i7",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357574",
+   "code": "8544493080",
+   "answer": "8544493080",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm voltage not exceeding 1,000 V?",
+   "critique": {
+    "code": "8544493080",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an insulated electric conductor (LAN cable) for voltage not exceeding 1,000 V, not winding wire, coaxial cable, ignition wiring sets, high-voltage conductors, or optical fiber cables. It is not fitted with connectors, so it falls under 8544.49. Its voltage rating (300 V) exceeds 80 V, placing it in the 'Other' category at level 3. It is of copper, and its voltage does not exceed 600 V, so it falls under 8544.49.30.80.",
+    "facts": [
+     {
+      "fact": "insulated electric conductor",
+      "quote": "insulated with polyethylene and protected with an outer jacket",
+      "stated": true
+     },
+     {
+      "fact": "voltage not exceeding 1,000 V",
+      "quote": "rated for a maximum DC voltage of 300 V",
+      "stated": false
+     },
+     {
+      "fact": "not winding wire",
+      "quote": "Local Area Network (LAN) cable... specifically designed for Ethernet and related network applications for data transmission",
+      "stated": false
+     },
+     {
+      "fact": "not coaxial cable",
+      "quote": "U/UTP CAT 5e CMR Riser 4 pair Solid LAN Cable... constructed of four twisted pairs of solid copper wires",
+      "stated": false
+     },
+     {
+      "fact": "not ignition wiring sets",
+      "quote": "indoor communications cable... for data transmission in various industries and installations",
+      "stated": false
+     },
+     {
+      "fact": "not high-voltage conductors (>1,000 V)",
+      "quote": "rated for a maximum DC voltage of 300 V",
+      "stated": false
+     },
+     {
+      "fact": "not optical fiber cables",
+      "quote": "four twisted pairs of solid copper wires",
+      "stated": true
+     },
+     {
+      "fact": "not fitted with connectors",
+      "quote": "cables are not fitted with connectors",
+      "stated": true
+     },
+     {
+      "fact": "voltage exceeding 80 V",
+      "quote": "rated for a maximum DC voltage of 300 V",
+      "stated": false
+     },
+     {
+      "fact": "of copper",
+      "quote": "four twisted pairs of solid copper wires",
+      "stated": true
+     },
+     {
+      "fact": "voltage not exceeding 600 V",
+      "quote": "rated for a maximum DC voltage of 300 V",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_setotq5n",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357946",
+   "code": "8421210000",
+   "answer": "8421210000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8421210000",
+    "fits": true,
+    "line": "",
+    "reason": "The FlavaFil Filter is a water filtration device whose core function is purifying water via an electro-adsorptive cartridge that reduces contaminants. It therefore falls within filtering or purifying machinery and apparatus for liquids (8421.21) and specifically for filtering or purifying water (8421.21.00.00). The additional flavor-infusion and delivery components do not alter the primary water-purifying function.",
+    "facts": [
+     {
+      "fact": "The device is a water filtration system designed to transform standard water bottles into hydration stations that purify water.",
+      "quote": "The item under consideration is described as the FlavaFil Filter, which is an all-in-one, universal, and modular straw system designed to transform standard water bottles into advanced, customizable hydration stations.",
+      "stated": true
+     },
+     {
+      "fact": "It uses electro-adsorptive filtration technology to reduce contaminants such as lead, chlorine, and microplastics.",
+      "quote": "Featuring a two-stage process, it combines an electro-adsorptive filtration technology, capable of reducing contaminants like lead, chlorine, and microplastics",
+      "stated": true
+     },
+     {
+      "fact": "The water filtration cartridge performs the sole water-purifying function of the finished product.",
+      "quote": "This cartridge contains the filtration media and performs the sole water-purifying function of the finished product.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_8ncr9npj",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N357964",
+   "code": "8501314000",
+   "answer": "9031808085",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8501314000",
+    "fits": false,
+    "line": "8501",
+    "reason": "The product is a complete dynamometer testing apparatus \u2014 an assembly of motors, gearboxes, torque transducers, controllers, sensors, base, and safety cover \u2014 not an electric motor or generator per se. Heading 8501 covers electric motors and generators as individual machines. A system that incorporates motors as sub-components to perform a testing function is excluded from 8501 and would fall elsewhere (e.g., heading 9031 for measuring/checking instruments).",
+    "facts": [
+     {
+      "fact": "The item is a specialized testing apparatus (dynamometer) for development and evaluation of e-bike mid-drive units.",
+      "quote": "an electric motor dynamometer, which is a specialized testing apparatus designed for the development and evaluation of e-bike mid-drive units",
+      "stated": true
+     },
+     {
+      "fact": "It contains two internal permanent magnet test motors, each coupled to planetary gearboxes, connected via flexible shaft couplings to two torque transducers.",
+      "quote": "precisely configured with two internal permanent magnet test motors, each coupled to planetary gearboxes. These gearboxes are connected via flexible shaft couplings to two torque transducers",
+      "stated": true
+     },
+     {
+      "fact": "All components are mounted on a shared extruded aluminum base, secured to a table, and controlled by dedicated motor controllers (inverters) that manage speed and torque.",
+      "quote": "All components are mounted on a shared extruded aluminum base, secured to a table, and are controlled by dedicated motor controllers (inverters) that manage speed and torque.",
+      "stated": true
+     },
+     {
+      "fact": "Integrated sensors measure torque output, motor speed, power consumption, and efficiency.",
+      "quote": "Integrated sensors measure crucial parameters such as torque output, motor speed, power consumption, and effic",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_56izvo6l",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358036",
+   "code": "7324900000",
+   "answer": "8302500000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "7324900000",
+    "fits": false,
+    "line": "7324.90.00.00",
+    "reason": "The products are bathroom storage racks and baskets (soap savers, shower baskets, corner baskets) made of steel wire with bamboo inserts and suction cups, not sanitary ware such as sinks, wash basins, baths, or parts thereof.",
+    "facts": [
+     {
+      "fact": "articles are bathroom storage racks and baskets for soap and shower items",
+      "quote": "metal and bamboo suction cup metal soap saver ... metal and bamboo suction shower basket ... metal and bamboo suction cup corner basket",
+      "stated": false
+     },
+     {
+      "fact": "made of steel wire with bamboo inserts and TPE suction cups",
+      "quote": "made of steel wire and includes a bamboo insert in the bottom ... includes one suction cup made of thermoplastic elastomer (TPE) ... includes two TPE suction cups",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_0p9lpt5v",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358088",
+   "code": "4201006000",
+   "answer": "4201006000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "4201006000",
+    "fits": false,
+    "line": "4201.00",
+    "reason": "Pet costume is for dress-up/entertainment, not saddlery or harness equipment for animal control, restraint, or work.",
+    "facts": [
+     {
+      "fact": "product is a pet costume identified as the Derpy",
+      "quote": "Item , referred to as the Derpy, is a pet costume",
+      "stated": true
+     },
+     {
+      "fact": "made of 100% polyester with foam lining on the headpiece",
+      "quote": "made of 100% polyester with a foam lining on the headpiece",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_b6al82pb",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358121",
+   "code": "8537109160",
+   "answer": "8537109170",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8537109160",
+    "fits": false,
+    "line": "8537.10.91.60",
+    "reason": "The Multi-Axis Controller is a hand-operated joystick input device that transmits control signals to the lift truck's control system. It is not itself a programmable controller (a device that executes stored programs to control machines/processes). At the 8537.10.91 subheading level, the product falls under 'Other' (8537.10.91.70) because it is not a switchgear assembly, numerical control for machine tools, programmable controller, or panel/distribution board.",
+    "facts": [
+     {
+      "fact": "hand-operated joystick with handle, switches, Hall Effect position sensor, control PCBA, and electrical connector",
+      "quote": "injection molded joystick handle with various electrical switches at the top. Within the joystick base is a control printed circuit board assembly (PCBA), a Hall Effect position sensor, and an electrical connector",
+      "stated": true
+     },
+     {
+      "fact": "sends electrical signals that control various functions on the lift truck when user moves the joystick",
+      "quote": "When the user moves the joystick, the sensor and control board send electrical signals that control various functions on the lift truck",
+      "stated": true
+     },
+     {
+      "fact": "installed within the lift truck via wired connection",
+      "quote": "the assembly is installed within the lift truck via wired connection",
+      "stated": true
+     },
+     {
+      "fact": "specifically designed for use with various fork trucks",
+      "quote": "specifically designed for use with various fork trucks",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_q0a6qoij",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358156",
+   "code": "3406000000",
+   "answer": "9405504000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The candles are hand-poured and hand-painted wax with wicks.?",
+   "critique": {
+    "code": "3406000000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a wax candle with wicks, hand-poured and hand-painted, which constitutes a candle under HTS 3406. The inclusion of a steel stand packaged with the candle for retail sale does not change the essential character of the merchandise, which remains a candle, tapers and the like.",
+    "facts": [
+     {
+      "fact": "Each Flatyz candle consists of a wax candle and a steel candle stand/holder packaged together ready for retail sale.",
+      "quote": "Each Flatyz candle consists of a wax candle and a steel candle stand/holder packaged together ready for retail sale.",
+      "stated": true
+     },
+     {
+      "fact": "The candles are hand-poured and hand-painted wax with wicks.",
+      "quote": "You state that each Flatyz candle is hand-poured and hand-painted in Lithuania... The candle is painted with the image of Van Gogh's Starry Night with two wicks atop.",
+      "stated": false
+     },
+     {
+      "fact": "The candles are designed to illuminate the surrounding area when placed on a flat surface.",
+      "quote": "The Flatyz candles can be placed on any flat surface to illuminate the surrounding area.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_l7qppsvh",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358186",
+   "code": "3004909220",
+   "answer": "3004909225",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3004909220",
+    "fits": false,
+    "line": "3004.90.92.20",
+    "reason": "The proposed 10-digit line 3004.90.92.20 requires the product to contain amiodarone or its salts. The importer's description states the product contains Rivaroxaban, which is a factor Xa inhibitor, not amiodarone.",
+    "facts": [
+     {
+      "fact": "Product contains Rivaroxaban as the active ingredient",
+      "quote": "Rivaroxaban, imported in 2.5 mg tablets, is a direct oral anticoagulant in the drug class of factor Xa inhibitors.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_3jqdf4dp",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358235",
+   "code": "9506996080",
+   "answer": "9506996080",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The products are not articles and equipment for general physical exercise, gymnastics or athletics (9506.91), nor are they specific to archery, badminton, baseball, football/soccer/polo, ice-hockey/field-hockey, lacrosse, lawn-tennis, skeet, sleds, snowshoes, swimming pools, or nets.?",
+   "critique": {
+    "code": "9506996080",
+    "fits": true,
+    "line": "",
+    "reason": "The athletic groin protectors are sports protective equipment not specifically enumerated in any of the named sport subheadings (archery, badminton, baseball, football/soccer/polo, ice-hockey/field-hockey, lacrosse, lawn-tennis, skeet, sleds, snowshoes, swimming pools, or nets). They are properly classified under the residual 'Other' provision of 9506.99.60.80.",
+    "facts": [
+     {
+      "fact": "The products are athletic groin protectors (protective cups) worn during sports activities to shield the genital area from impact injuries.",
+      "quote": "The products are worn during sports activities to shield the genital area from impact injuries.",
+      "stated": true
+     },
+     {
+      "fact": "The protectors are composed of a rigid plastic shell with an attached soft lining and soft edge frame, combined with an elastic cord set used to fasten the protection device to an athletic support garment.",
+      "quote": "The groin protectors are composed of a rigid plastic shell with an attached soft lining and soft edge frame, combined with an elastic cord set used to fasten the protection device to an athletic support garment.",
+      "stated": true
+     },
+     {
+      "fact": "The products are not articles and equipment for general physical exercise, gymnastics or athletics (9506.91), nor are they specific to archery, badminton, baseball, football/soccer/polo, ice-hockey/field-hockey, lacrosse, lawn-tennis, skeet, sleds, snowshoes, swimming pools, or nets.",
+      "quote": "Photographs and descriptions of four athletic groin protectors (protective cups) were submitted with your inquiry. The 'AERO Collection,' consists of four athletic groin protectors sized and shaped to fit an athlete's age and gender.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_ojwm0mts",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358275",
+   "code": "6702903500",
+   "answer": "6702903500",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "6702903500",
+    "fits": true,
+    "line": "",
+    "reason": "Product is artificial flower petals (parts of artificial flowers) made of polyester fabric, a man-made fiber, not plastics or feathers.",
+    "facts": [
+     {
+      "fact": "product is artificial flower petals (parts of artificial flowers)",
+      "quote": "artificial flower petals",
+      "stated": true
+     },
+     {
+      "fact": "made of polyester fabric",
+      "quote": "made of polyester fabric",
+      "stated": true
+     },
+     {
+      "fact": "polyester is a man-made fiber",
+      "quote": "made of polyester fabric",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_j9jltkl1",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358304",
+   "code": "8518210000",
+   "answer": "8518220000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8518210000",
+    "fits": false,
+    "line": "8518.21.00.00",
+    "reason": "The product contains two speaker modules, each incorporating two speakers. This constitutes multiple loudspeakers mounted in the same enclosure, falling under 8518.22.00.00 rather than 8518.21.00.00 (single loudspeaker).",
+    "facts": [
+     {
+      "fact": "Both models of speaker system consist of a wireless transmitter/charging base that connects to a television set, and an amplified wireless speaker module",
+      "quote": "Both models of speaker system consist of a wireless transmitter/charging base that connects to a television set, and an amplified wireless speaker module",
+      "stated": true
+     },
+     {
+      "fact": "The speaker modules incorporate two speakers",
+      "quote": "The speaker modules incorporate two speakers",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_6k63qmih",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358306",
+   "code": "8436800090",
+   "answer": "8436800090",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the RIC2Discover System regarded, for tariff purposes, as a single integrated machine for livestock management, or should the feed-weigh troughs and water-weigh troughs be classified separately under their respective functions?",
+   "critique": {
+    "code": "8436800090",
+    "fits": false,
+    "line": "8436.80.00",
+    "reason": "The product description covers both feed-weigh troughs and water-weigh troughs. The schedule text at this level lists alternatives that partition machinery by function (feed preparation, poultry-keeping, forestry, barn/barnyard, crop preparation, bee-keeping). Because the system includes equipment for watering as well as feeding, it cannot be definitively placed under 'Other machinery' without knowing whether HTSUS practice treats combination feed-and-water livestock equipment as falling within the 'Other' basket or under a more specific provision (e.g., a barn/barnyard machine for watering, or a separate heading). The missing functional characterization decides the classification.",
+    "facts": [
+     {
+      "fact": "The system includes 18 stainless steel feed-weigh troughs with RFID gates.",
+      "quote": "18 stainless steel feed-weigh troughs with RFID gates.",
+      "stated": true
+     },
+     {
+      "fact": "The system includes 2 water-weigh troughs.",
+      "quote": "2 water-weigh troughs.",
+      "stated": true
+     },
+     {
+      "fact": "The system records feed and water intake per animal using RFID identification and integrated weighing technology.",
+      "quote": "It also records the feed and water intake per animal using RFID identification and integrated weighing technology.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_asjmr3ov",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358307",
+   "code": "3401190000",
+   "answer": "3401190000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the cleaning solution a soap or a detergent (i.e., does it meet the chemical definition of soap \u2014 fatty acid salts \u2014 or of an organic surface\u2011active washing/cleaning preparation)?",
+   "critique": {
+    "code": "3401190000",
+    "fits": false,
+    "line": "3401",
+    "reason": "The cleaning solution contains isopropyl alcohol and a surfactant but is not described as soap or detergent, so the wipes are not 'impregnated, coated or covered with soap or detergent' as heading 3401 requires.",
+    "facts": [
+     {
+      "fact": "basesheet is tissue paper made from wood pulp cellulose",
+      "quote": "basesheet of tissue paper made from wood pulp cellulose",
+      "stated": true
+     },
+     {
+      "fact": "cleaning solution is a mixture of water, isopropyl alcohol, and other chemicals including a surfactant",
+      "quote": "cleaning solution, which is a mixture of water, isopropyl alcohol, and other chemicals including a surfactant",
+      "stated": true
+     },
+     {
+      "fact": "wipes are pre\u2011moistened and used to clean lenses, goggles, scopes, CDs, DVDs",
+      "quote": "pre-moistened lens cleaning wipes ... used by consumers to clean prescription eyeglass lenses, sports goggles, sunglasses, scopes, CD's, DVD's, etc.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_8ys9sjy8",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358387",
+   "code": "6307909891",
+   "answer": "6307909891",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The article is a foldable handheld fan made of 100% cotton woven digital printed fabric with a wooden frame (Cupressus funebris) and a metal rivet.?",
+   "critique": {
+    "code": "6307909891",
+    "fits": true,
+    "line": "",
+    "reason": "The hand fan is a made-up textile article (cotton fabric) not covered by any of the specific subheadings at levels 1\u20134 (cleaning cloths, lifejackets, labels, cords/tassels, lacings, surgical drapes/towels, pet toys, wall banners, national flags, face masks, towels, or furniture movers\u2019 pads). It therefore falls to the residual \u2018Other\u2019 at each successive level, ending at 6307.90.98.91.",
+    "facts": [
+     {
+      "fact": "The article is a foldable handheld fan made of 100% cotton woven digital printed fabric with a wooden frame (Cupressus funebris) and a metal rivet.",
+      "quote": "The handheld fan consists of two components: a body composed of 100 percent cotton woven digital printed fabric and a frame of ribs/sticks composed of wood (Cupressus funebris). The folded fabric is glued to the ribs of the wood frame on one side. The wood frames are held together by a metal rivet at the bottom of the fan.",
+      "stated": false
+     },
+     {
+      "fact": "It is intended to be waved back and forth to provide a cool stream of airflow to a person's face.",
+      "quote": "a foldable fan intended to be used by waving it back and forth to provide a cool stream of airflow to a person's face",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_49yxr6qs",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358452",
+   "code": "8527212525",
+   "answer": "8527214080",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The receiver is combined with sound reproducing apparatus (USB input for connection to portable devices, can read and playback sound directly from a USB memory device; Bluetooth connectivity).?",
+   "critique": {
+    "code": "8527212525",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a radiobroadcast receiver (AM/FM tuner) not capable of operating without external power, of a kind used in motor vehicles (after-market car stereo), combined with sound reproducing apparatus (USB playback, Bluetooth audio streaming), and does not incorporate an optical disc player or recorder, nor is it described as capable of receiving and decoding digital radio data system signals.",
+    "facts": [
+     {
+      "fact": "The merchandise is an audio media receiver with an AM and FM tuner.",
+      "quote": "audio media receiver with an AM and FM tuner",
+      "stated": true
+     },
+     {
+      "fact": "The receiver is used in motor vehicles.",
+      "quote": "used in motor vehicles",
+      "stated": true
+     },
+     {
+      "fact": "The receiver is not capable of operating without an external source of power (after-market product designed to replace a standard car stereo).",
+      "quote": "after-market product designed to replace a standard car stereo in a motor vehicle",
+      "stated": true
+     },
+     {
+      "fact": "The receiver is combined with sound reproducing apparatus (USB input for connection to portable devices, can read and playback sound directly from a USB memory device; Bluetooth connectivity).",
+      "quote": "USB input for easy connection to portable devices, including smartphones, MP3 players, or USB drives, and can read and playback sound directly from a USB memory device. Moreover, this radio receiver ... has Bluetooth connectivity",
+      "stated": false
+     },
+     {
+      "fact": "The receiver does not incorporate an optical disc (including compact disc) player or recorder.",
+      "quote": "",
+      "stated": false
+     },
+     {
+      "fact": "The receiver is not described as capable of receiving and decoding digital radio data system signals.",
+      "quote": "",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_p1vt4zlt",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358456",
+   "code": "3305100000",
+   "answer": "3307900000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm Item 1 is a liquid shampoo formulated for dogs, used to cleanse and moisturize the coat and skin, packaged for retail sale in a 400 mL bottle?",
+   "critique": {
+    "code": "3305100000",
+    "fits": true,
+    "line": "",
+    "reason": "All three items are liquid shampoos formulated for dogs, packaged for retail sale in 400 mL bottles, and described as used to cleanse the coat. The proposed classification 3305.10.00.00 (Shampoos) covers shampoos regardless of the species they are formulated for, and none of the alternative headings (permanent waving/straightening preparations, hair lacquers, or other hair preparations) apply to these cleansing shampoo products.",
+    "facts": [
+     {
+      "fact": "Item 1 is a liquid shampoo formulated for dogs, used to cleanse and moisturize the coat and skin, packaged for retail sale in a 400 mL bottle",
+      "quote": "Everyonce Pore Purification Deep Cleansing & Moisture Shampoo for dogs in a fresh apple aqua scent is packaged for retail sale in a 400 mL bottle. It is described as a liquid shampoo formulated for dogs, used to cleanse and moisturize the coat and skin.",
+      "stated": false
+     },
+     {
+      "fact": "Item 2 is a liquid shampoo formulated for dogs, used to cleanse the coat while conditioning and providing volume, packaged for retail sale in a 400 mL bottle",
+      "quote": "Everyonce Nutrient-Rich Volume & Nourishing Shampoo for dogs in a soft white floral scent is packaged for retail sale in a 400 mL bottle. It is described as a liquid shampoo formulated for dogs, used to cleanse the coat while conditioning and providing volume.",
+      "stated": false
+     },
+     {
+      "fact": "Item 3 is a liquid shampoo formulated for dogs with sensitive skin, used for gentle cleansing, packaged for retail sale in a 400 mL bottle",
+      "quote": "Everyonce 1 \u2013 Minute Relief Soothing & Mild Shampoo for dogs in a natural bergamot scent is packaged for retail sale in a 400 mL bottle. It is described as a liquid shampoo formulated for dogs with sensitive skin, used for gentle cleansing.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_keyoffkx",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358516",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a non-functional decorative item depicting a spooky potion bottle with spider venom labeling, marketed and sold as an eerie decoration for Halloween. This is a festive/entertainment article for Halloween festivities, not a Christmas article, magic trick, practical joke article, confetti, party favor, or noisemaker.",
+    "facts": [
+     {
+      "fact": "Halloween decoration depicting a spooky potion bottle containing spider venom",
+      "quote": "Halloween Decorative Potion Bottle, item number , which consists of a decoration depicting a spooky potion bottle containing spider venom",
+      "stated": true
+     },
+     {
+      "fact": "not functional and does not open",
+      "quote": "The bottle decoration is not functional and does not open",
+      "stated": true
+     },
+     {
+      "fact": "marketed and sold as an eerie decoration for Halloween",
+      "quote": "The item will be marketed and sold as an eerie decoration for Halloween",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_ryk9hkl1",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358581",
+   "code": "8708998180",
+   "answer": "8703900100",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the Blue Phoenix Swift chassis imported as a part or accessory for a motor vehicle classified under headings 8701 to 8705? If so, identify the specific motor vehicle and its heading.",
+   "critique": {
+    "code": "8708998180",
+    "fits": false,
+    "line": "8708",
+    "reason": "The product is a racing go-kart chassis without an engine and tires, imported in kit form. Heading 8708 covers parts and accessories of motor vehicles of headings 8701 to 8705. The importer's description does not state that this chassis is a part or accessory for a motor vehicle classified under headings 8701-8705. A racing go-kart chassis without an engine is not a motor vehicle and may be classified elsewhere (e.g., heading 9506 as articles for sport). Since the product is presented as a complete chassis kit for a racing go-kart, not as a part for a motor vehicle of 8701-8705, the classification at heading 8708 is not supported.",
+    "facts": [
+     {
+      "fact": "Product is a racing go-kart chassis without engine and tires, imported in kit form",
+      "quote": "Racing Go Kart chassis without an engine and tires from the Czech Republic.. The item under consideration has been identified as the \"Blue Phoenix Swift,\" a racing go-kart chassis imported in kit form without an engine or tires.",
+      "stated": true
+     },
+     {
+      "fact": "Chassis designed for various power plants (175cc two stroke, 100cc two stroke, 125cc two stroke, 196cc 4 stroke, or electric motor) installed by user",
+      "quote": "You state that the Blue Phoenix Swift is designed to have either a 175cc two stroke, 100cc two stroke, 125cc two stroke, 196cc 4 stroke, or an electric motor installed as a prime mover.",
+      "stated": true
+     },
+     {
+      "fact": "Chassis made from chrome-molybdenum (Cr-Mo) steel tubes; outer body plastic components made in Italy, rest in Czech Republic",
+      "quote": "The tubular Blue Phoenix chassis is made from chrome-molybdenum (Cr-Mo) steel tubes... except for the outer body plastic components like fenders, fender bumpers and fairings that are made in Italy, the rest of the components including the chassis are made in the Czech Republic.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_rxg22fi5",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358621",
+   "code": "8903120060",
+   "answer": "8903120060",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8903120060",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an inflatable watercraft (kayak/stand up paddle board) for pleasure or sports, not designed for use with a motor, weighing 25 lbs (\u224811.3 kg) which is under 100 kg, and valued at $267.45 which is not over $500, placing it under 8903.12.00.60.",
+    "facts": [
+     {
+      "fact": "inflatable kayak/stand up paddle board",
+      "quote": "inflatable kayak/stand up paddle board (Item 1985278)",
+      "stated": true
+     },
+     {
+      "fact": "constructed of 36-gage polyvinyl chloride (PVC)",
+      "quote": "constructed of 36-gage polyvinyl chloride (PVC)",
+      "stated": true
+     },
+     {
+      "fact": "not designed for use with a motor",
+      "quote": "watercraft can be used as both a kayak and stand up paddle board",
+      "stated": true
+     },
+     {
+      "fact": "net weight approximately 25 pounds",
+      "quote": "The net weight of the watercraft is approximately 25 pounds.",
+      "stated": true
+     },
+     {
+      "fact": "cost $267.45 per unit",
+      "quote": "The cost of the inflatable kayak/stand up paddle board is $267.45 per unit.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_10tfcrrd",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358644",
+   "code": "8413309030",
+   "answer": "8481809050",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8413309030",
+    "fits": false,
+    "line": "8413.30",
+    "reason": "A fuel injector is not a pump; it is a precision nozzle/valve assembly that meters and atomizes fuel delivered by a separate high-pressure pump. Heading 8413 covers pumps for liquids and liquid elevators (and parts thereof). The product description states the injector is activated by a high-pressure pulse of fuel supplied by a fuel injection pump, confirming it is downstream of the pump and not itself a pump.",
+    "facts": [
+     {
+      "fact": "The item is a fuel injector that consists of a housing encasing a spring, a plunger-like mechanism, and other components.",
+      "quote": "The fuel injector consists of a housing that encases a spring, a plunger-like mechanism, and other components.",
+      "stated": true
+     },
+     {
+      "fact": "It is activated by a high-pressure pulse of fuel supplied by a fuel injection pump.",
+      "quote": "Once activated by a high-pressure pulse of fuel supplied by a fuel injection pump, the tension of the internal spring is overcome to spray a controlled mist into the cylinder head of a vehicle.",
+      "stated": true
+     },
+     {
+      "fact": "It is constructed primarily of steel and used in marine diesel engines.",
+      "quote": "The fuel injector is constructed primarily of steel and is used in marine diesel engines.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_0saugoi6",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358696",
+   "code": "3924104000",
+   "answer": "3926400090",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Are the sculptures intended to be used as tableware or kitchenware (e.g., for serving, preparing, or consuming food or drink), or are they purely decorative art objects?",
+   "critique": {
+    "code": "3924104000",
+    "fits": false,
+    "line": "3924.10",
+    "reason": "The product is described as decorative melting art sculptures resembling melting ice pops, not as tableware or kitchenware. No facts indicate a tableware or kitchenware function.",
+    "facts": [
+     {
+      "fact": "product is melting art sculptures resembling melting ice pops",
+      "quote": "melting art sculptures which resemble melting ice pops",
+      "stated": true
+     },
+     {
+      "fact": "sold commercially",
+      "quote": "sold commercially",
+      "stated": true
+     },
+     {
+      "fact": "created in Canada from components sourced from United States or Canada",
+      "quote": "components used to make these sculptures are sourced from either the United States or Canada. The sculptures will be created in Canada.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_xnbkm6z5",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358735",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an adult costume (festive/entertainment article) consisting of a duster coat, latex chest piece, latex hands, rope belt, hat and mask. It is not a Christmas article, magic trick/practical joke article, or confetti/party favor/noisemaker.",
+    "facts": [
+     {
+      "fact": "adult size costume identified as Monster Scarecrow",
+      "quote": "adult size costume identified as Monster Scarecrow, item number 5126-085",
+      "stated": true
+     },
+     {
+      "fact": "consists of a duster coat, latex chest piece, latex hands, rope belt, hat and mask",
+      "quote": "consists of a duster coat, latex chest piece, latex hands, rope belt, hat and mask",
+      "stated": true
+     },
+     {
+      "fact": "imported from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_xh4m2ja3",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358745",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an adult costume (festive/entertainment article) consisting of multiple components (tunic, pants, belt with shoulder strap, hooded shoulder cape, gauntlets, and artificial elf ears). It is not a Christmas article, magic trick/practical joke article, or confetti/party favor/noisemaker.",
+    "facts": [
+     {
+      "fact": "adult size costume identified as Elven Archer",
+      "quote": "adult size costume identified as Elven Archer, item number 5126-045",
+      "stated": true
+     },
+     {
+      "fact": "consists of a long-sleeved, thigh-length pullover top (tunic), pull-on pants, belt with shoulder strap, hooded shoulder cape, gauntlets and pair of artificial elf ears",
+      "quote": "consists of a long-sleeved, thigh-length pullover top which you refer to as a tunic, pull-on pants, belt with shoulder strap, hooded shoulder cape, gauntlets and pair of artificial elf ears",
+      "stated": true
+     },
+     {
+      "fact": "imported from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_9nteznhx",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N358898",
+   "code": "8544429090",
+   "answer": "8544200000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm voltage not exceeding 1,000 V?",
+   "critique": {
+    "code": "8544429090",
+    "fits": true,
+    "line": "",
+    "reason": "The product is an insulated electric conductor for voltage not exceeding 1,000 V, fitted with connectors (Fakra and BNC). It is not winding wire, coaxial cable, ignition wiring sets, high-voltage conductors, or optical fiber cables. It is not fitted with modular telephone connectors, nor is it of a kind used for telecommunications (it transmits video signals from cameras to recording/display equipment in commercial vehicles). It is not an extension cord as defined in statistical note 7. Therefore, it classifies under 8544.42.90.90.",
+    "facts": [
+     {
+      "fact": "insulated electric conductor",
+      "quote": "multiple insulated copper coaxial conductors bundled together",
+      "stated": true
+     },
+     {
+      "fact": "voltage not exceeding 1,000 V",
+      "quote": "passive multi-channel video signal harness assembly",
+      "stated": false
+     },
+     {
+      "fact": "not winding wire",
+      "quote": "wiring harness assembly... functions solely as a signal transmission apparatus",
+      "stated": false
+     },
+     {
+      "fact": "not coaxial cable",
+      "quote": "multiple insulated copper coaxial conductors bundled together and fitted with Fakra-type connectors on one end and BNC connectors on the other end",
+      "stated": true
+     },
+     {
+      "fact": "not ignition wiring sets",
+      "quote": "designed for installation in commercial vehicle recording and display systems... connects external cameras to the in-vehicle recording and display equipment",
+      "stated": false
+     },
+     {
+      "fact": "not high-voltage conductors (>1,000 V)",
+      "quote": "passive multi-channel video signal harness assembly",
+      "stated": false
+     },
+     {
+      "fact": "not optical fiber cables",
+      "quote": "insulated copper coaxial conductors",
+      "stated": true
+     },
+     {
+      "fact": "fitted with connectors",
+      "quote": "fitted with Fakra-type connectors on one end and BNC connectors on the other end",
+      "stated": true
+     },
+     {
+      "fact": "not fitted with modular telephone connectors",
+      "quote": "Fakra-type connectors on one end and BNC connectors on the other end",
+      "stated": true
+     },
+     {
+      "fact": "not of a kind used for telecommunications",
+      "quote": "connects external cameras to the in-vehicle recording and display equipment, allowing multiple cameras to be connected and viewed within the vehicle",
+      "stated": true
+     },
+     {
+      "fact": "not extension cords as defined in statistical note 7",
+      "quote": "wiring harness assembly... designed for installation in commercial vehicle recording and display systems",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_fe8inej6",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359001",
+   "code": "8421210000",
+   "answer": "8421210000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Does the system incorporate any mechanical filtration or physical purification components (e.g., filter elements, membranes, centrifugal separators) in addition to the electrochemical reactors, and if so, are those components integral to the purification function or merely ancillary?",
+   "critique": {
+    "code": "8421210000",
+    "fits": false,
+    "line": "8421.21.00.00",
+    "reason": "The product purifies water by electrochemical oxidation/reduction and in-situ oxidant generation, not by 'filtering or purifying machinery and apparatus' of the mechanical/physical type contemplated in heading 8421. The schedule text for 8421 and its subheadings describes equipment that separates or removes contaminants by filtration, centrifugal force, or analogous physical purification; it does not cover electrochemical reactor systems that transform contaminants chemically. Because the merchandise is an electrochemical water purification system rather than a filter or purifier of the kind classified in 8421, it cannot be placed in 8421.21.00.00 without a determination of whether such electrochemical treatment apparatus falls within the 'Other' category (8421.29.00) or outside heading 8421 entirely.",
+    "facts": [
+     {
+      "fact": "The system purifies water by applying direct current to anode and cathode surfaces in reactor vessels, inducing electrochemical reactions that oxidize/reduce pollutants and generate oxidants such as hydrogen peroxide or hydroxyl radicals.",
+      "quote": "In operation, a direct current (DC) is applied to the reactors, which contain anode and cathode surfaces. The applied current induces electrochemical reactions on these surfaces that oxidize and/or reduce pollutants in the feed water. The system may also generate oxidants (such as hydrogen peroxide or hydroxyl radicals) that further react with contaminants.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_fir516et",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359032",
+   "error": "NightshiftError: no valid JSON from nvidia/nemotron-3-ultra-550b-a55b: {\n  \"fits\": true,\n  \"line\": \"\",\n  \"reason\": \"The Roxia Tower Press TP16 is a fully automatic, vertical pressure filter designed for high-performance solid-liquid separation in mining, minerals, and ch"
+  },
+  {
+   "ruling_number": "N359056",
+   "code": "4911913000",
+   "answer": "4911914040",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the permanently mounted photograph (excluding the wooden frame) a lithograph on paper or paperboard that is over 0.51 mm in thickness?",
+   "critique": {
+    "code": "4911913000",
+    "fits": false,
+    "line": "4911.91.30.00",
+    "reason": "The product consists of digitally printed photographs permanently mounted in wooden frames. Subheading 4911.91.30 covers only 'Lithographs on paper or paperboard... Over 0.51 mm in thickness.' The wooden frame makes the article more than a lithograph on paper/paperboard, and no facts were provided showing the mounted photograph alone (without the frame) is a lithograph on paper/paperboard over 0.51 mm thick.",
+    "facts": [
+     {
+      "fact": "The product is a digitally printed photograph.",
+      "quote": "digitally printed photographs",
+      "stated": true
+     },
+     {
+      "fact": "The photograph is permanently mounted in a wooden picture frame.",
+      "quote": "permanently mounted in wooden picture frames",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_6qzzi2yn",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359058",
+   "code": "2933394100",
+   "answer": "2926904300",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Does Etripamil contain an unfused pyridine ring (whether or not hydrogenated) in its chemical structure?",
+   "critique": {
+    "code": "2933394100",
+    "fits": false,
+    "line": "2933.39.41.00",
+    "reason": "The proposed path requires the product to contain an unfused pyridine ring (whether or not hydrogenated) in its chemical structure. Etripamil is explicitly described as a 'non-dihydropyridine calcium-channel blocker,' meaning its structure does not contain a pyridine or dihydropyridine ring. No fact establishes an unfused pyridine ring in its structure.",
+    "facts": [
+     {
+      "fact": "Etripamil is a non-dihydropyridine calcium-channel blocker",
+      "quote": "Etripamil is a non-dihydropyridine calcium-channel blocker.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_yto5uzjn",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359070",
+   "code": "8518908100",
+   "answer": "8518908100",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8518908100",
+    "fits": true,
+    "line": "",
+    "reason": "The faceted cups are components of an aviation headset (headphones with microphone), which falls under heading 8518. As parts of the headset, they are classifiable under subheading 8518.90 (Parts). They are not parts of line telephone handsets or repeaters, so 8518.90.81.00 (Other) applies rather than 8518.90.60.00 (printed circuit assemblies) or the line telephone/repeater parts provision.",
+    "facts": [
+     {
+      "fact": "Items are faceted ear cups for Lightspeed's Zulu 3 aviation headset",
+      "quote": "Both components are faceted ear cups for Lightspeed's Zulu 3 aviation headset",
+      "stated": true
+     },
+     {
+      "fact": "Left and right faceted cup assemblies composed of dome shaped magnesium housing",
+      "quote": "The left and right faceted cup assemblies are both composed of a dome shaped magnesium housing",
+      "stated": true
+     },
+     {
+      "fact": "Design allows for active and passive noise reduction by creating physical barrier and seal to isolate and block external noise and facilitate the active noise reduction function of the headset",
+      "quote": "This design allows for active and passive noise reduction by creating a physical barrier and seal to isolate and block external noise and facilitate the active noise reduction function of the headset",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_e03i5ykp",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359071",
+   "code": "8518908100",
+   "answer": "8518908100",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Do the sub-assemblies incorporate any microphone, loudspeaker, headphone/earphone driver, amplifier, or other electro-acoustic component? If so, describe each such component and its function in the sub-assembly.",
+   "critique": {
+    "code": "8518908100",
+    "fits": false,
+    "line": "LEVEL 0: 8518 Microphones and stands therefor; loudspeakers, whether or not mounted in their enclosures; headphones and earphones, whether or not combined with a microphone, and sets consisting of a microphone and one or more loudspeakers; audio-frequency electric amplifiers; electric sound amplifier sets; parts thereof:",
+    "reason": "The goods are structural magnesium components (an inner housing and a badge) for an aviation headset. They contain no microphone, loudspeaker, headphone/earphone driver, amplifier, or other electro-acoustic element, and are not parts of any such article.",
+    "facts": [
+     {
+      "fact": "Sub-Assy, Cup, Left is a dome-shaped inner magnesium housing that provides passive noise reduction and facilitates active noise cancellation by creating a physical barrier and seal.",
+      "quote": "The left ear cup sub assembly is composed of a dome-shaped inner magnesium housing. This design allows for passive noise reduction by creating a physical barrier to isolate and block external noise and facilitate the active noise cancellation function of the headset.",
+      "stated": true
+     },
+     {
+      "fact": "Sub-Assy, Badge, Right is a magnesium badge that provides structural support, reinforces the ear cup structure, maintains a tight seal, reduces unwanted vibrations/resonance, and creates a shielding effect against electromagnetic interference.",
+      "quote": "The badge is made from magnesium and assists with structural support by helping reinforce the ear cup's structure, which is important for maintaining a tight seal around the ear and is considered critical for both passive and active noise cancellation. The badge also helps reduce unwanted vibrations or resonance in the ear cup, as well as creates a shielding effect against electromagnetic interference.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_bfm2m5yw",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359221",
+   "code": "8704310120",
+   "answer": "8704310140",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "What is the gross vehicle weight (G.V.W.) of the 1990 Honda Acty truck, VIN HA4-1031253, in metric tons?",
+   "critique": {
+    "code": "8704310120",
+    "fits": false,
+    "line": "8704.31.01.20",
+    "reason": "G.V.W. (gross vehicle weight) of the 1990 Honda Acty truck is not provided; classification at the 10-digit level requires knowing whether G.V.W. exceeds 2.5 metric tons.",
+    "facts": [
+     {
+      "fact": "vehicle is a 1990 Honda Acty truck, a KEI truck with enclosed cab and open rear cargo area",
+      "quote": "The item under consideration has been identified as a 1990 Honda Acty truck, VIN HA4-1031253, from Japan. The Honda Acty is a KEI truck, shaped like a small pickup with an enclosed cab and open rear cargo area.",
+      "stated": true
+     },
+     {
+      "fact": "equipped with a 545 cc spark-ignition internal combustion engine",
+      "quote": "It is equipped with a 545 cubic centimeter (cc) spark-ignition internal combustion engine.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_w8c0gkli",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359248",
+   "code": "8421210000",
+   "answer": "8421210000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8421210000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a robotic pool skimmer that continuously collects floating debris (leaves, insects, dust) from the water surface using a roller brush and anti-spill baffle, storing waste in a removable filter basket. This constitutes filtering or purifying machinery and apparatus for liquids (water). The alternative 'Oil or fuel filters for internal combustion engines' (8421.23) does not apply as the product is not for engines. The alternative 'For filtering or purifying beverages other than water' (8421.22) does not apply as it treats pool water, not beverages. The residual 'Other' (8421.29) does not apply because the specific provision for water applies.",
+    "facts": [
+     {
+      "fact": "The item is a robotic pool skimmer designed for automatic pool maintenance that continuously collects floating debris such as leaves, insects, and dust from the water surface.",
+      "quote": "The item under consideration is described as a robotic pool skimmer, which is a solar-powered surface cleaning robot designed for automatic pool maintenance. The skimmer is capable of continuously collecting floating debris such as leaves, insects, and dust from the water surface, reducing manual skimming efforts while keeping the pool clean.",
+      "stated": true
+     },
+     {
+      "fact": "It captures and secures debris via a roller brush and anti-spill baffle structure, storing collected waste in a filter basket that is easily removed for rinsing and cleaning.",
+      "quote": "Its roller brush and anti-spill baffle structure capture and secure debris, preventing it from escaping during turns or when approaching pool edges. Collected waste is stored in a filter basket, which is easily removed after use for rinsing and cleaning.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_fyx6tjzh",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359252",
+   "code": "9021100090",
+   "answer": "9021100090",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "9021100090",
+    "fits": false,
+    "line": "9021.10.00",
+    "reason": "Rollators are mobility aids for walking assistance, not orthopedic or fracture appliances. They are classified under heading 8713 (invalid carriages) rather than heading 9021.",
+    "facts": [
+     {
+      "fact": "Products are rollators (foldable walking aids with seats, brakes, and wheels) for mobility assistance",
+      "quote": "Item # VOCIC Z12, Lightweight Foldable Rollator Walker, is a foldable rollator... Item # VOCIC Z35, PackGo Rollator, is an ultra-compact, lightweight, foldable rollator.",
+      "stated": false
+     },
+     {
+      "fact": "Maximum load capacity of 330 lb (Z12) and 300 lb (Z35)",
+      "quote": "The maximum load capacity is 330 lb... The maximum load capacity is 300 lb.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_jtbh72o6",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359291",
+   "code": "8518908100",
+   "answer": "8504409580",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8518908100",
+    "fits": false,
+    "line": "LEVEL 0",
+    "reason": "The battery charger is an accessory for an aviation headset but is not a part of the headphones, microphone, or amplifier covered by heading 8518. It lacks the essential character of those articles and is instead a battery charging apparatus for lithium-ion batteries, which falls under heading 8504 or 8507.",
+    "facts": [
+     {
+      "fact": "The product is a standalone battery charger for a lithium-ion battery used in Lightspeed Delta Zulu aviation headsets",
+      "quote": "a standalone battery charger for the lithium-ion battery exclusively used in Lightspeed Delta Zulu aviation headsets",
+      "stated": true
+     },
+     {
+      "fact": "The battery is not imported with the charger",
+      "quote": "We note that the lithium-ion battery is not imported with the subject battery charger",
+      "stated": true
+     },
+     {
+      "fact": "The charger contains PCBA for charging control, sub-PCBA for indicator status and battery interface, USB-C port, indicator lights, and a plastic housing designed to fit the battery",
+      "quote": "comprised of a main Printed Circuit Board Assembly (PCBA) responsible for battery charging control, a sub-PCBA that manages indicator status and facilitates battery interface, and a USB-C port for charging cables",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_m8i25hx5",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359300",
+   "code": "3004909235",
+   "answer": "3004909246",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3004909235",
+    "fits": false,
+    "line": "3004.90.92.35",
+    "reason": "The proposed 10-digit line 3004.90.92.35 specifically requires the product to contain tramadol. The product contains clozapine, which is an atypical antipsychotic, not tramadol.",
+    "facts": [
+     {
+      "fact": "Product contains clozapine as the active ingredient",
+      "quote": "Clozapine, imported in 25 mg, 50 mg, 100 mg, and 200 mg tablets, is an atypical antipsychotic.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_4sj1lf8b",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359447",
+   "code": "3004909220",
+   "answer": "3004909225",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3004909220",
+    "fits": false,
+    "line": "3004.90.92.20",
+    "reason": "The proposed 10-digit line 3004.90.92.20 requires the product to contain amiodarone or its salts. The importer's description states the product contains Riociguat, which is a soluble guanylate cyclase (sGC) stimulator, not amiodarone.",
+    "facts": [
+     {
+      "fact": "Product contains Riociguat as the active ingredient",
+      "quote": "Riociguat Tablets in dosage form... Riociguat, imported in 0.5 mg, 1 mg, 1.5 mg, 2 mg, and 2.5 mg, is a guanylate cyclase (sGC) stimulator.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_o88y4bkx",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359472",
+   "code": "9405994090",
+   "answer": "8530900000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9405994090",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a stainless steel housing for an in-roadway LED warning light that signals pedestrians to motorists; this complete device is a luminaire/lighting fitting of heading 9405. Its housing is therefore a part of a 9405 article. It is not made of glass (excludes 9405.91) nor plastics (excludes 9405.92). It is not of brass (excludes 9405.99.20) nor a cast-iron or aluminum lamppost/base (excludes 9405.99.40.10 and .20). It falls under residual 9405.99.40.90.",
+    "facts": [
+     {
+      "fact": "The article is a stainless steel housing for a light-up pedestrian crosswalk marker (LightStar\u2122 Plus with SMPL\u2122 in roadway warning light) that will be fitted with flashing amber LED and non-flashing white LED lights.",
+      "quote": "stainless steel housing used for a light up pedestrian crosswalk marker (Part Number: M12 Housing, Part Description: M12 Housing v121724-3). This stainless steel housing is part of the LightStar\u2122 Plus with SMPL\u2122 in roadway warning light. This article will be fitted with flashing amber LED and non-flashing white LED lights.",
+      "stated": true
+     },
+     {
+      "fact": "The complete device is a signaling device used to signal the presence of a pedestrian to approaching motorists, mounted within a crosswalk in the roadway.",
+      "quote": "This signaling device is used to signal the presence of a pedestrian to approaching motorists. This device will be mounted within a crosswalk in the roadway.",
+      "stated": true
+     },
+     {
+      "fact": "The housing is made of stainless steel.",
+      "quote": "stainless steel housing",
+      "stated": true
+     },
+     {
+      "fact": "The housing is not made of glass.",
+      "quote": "stainless steel housing",
+      "stated": true
+     },
+     {
+      "fact": "The housing is not made of plastics.",
+      "quote": "stainless steel housing",
+      "stated": true
+     },
+     {
+      "fact": "The housing is not made of brass.",
+      "quote": "stainless steel housing",
+      "stated": true
+     },
+     {
+      "fact": "The housing is not a lamppost or base for a lamppost of cast iron or aluminum.",
+      "quote": "stainless steel housing used for a light up pedestrian crosswalk marker",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_d8597xr7",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359482",
+   "error": "ZetarisError: RemoteProtocolError: Server disconnected without sending a response."
+  },
+  {
+   "ruling_number": "N359501",
+   "code": "9031808085",
+   "answer": "9031808085",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The CISC RAIN Xplorer Inline 100 performs real-time testing of RAIN RFID tags, including reading, writing, encoding, and sensitivity measurements, at high throughput rates.?",
+   "critique": {
+    "code": "9031808085",
+    "fits": true,
+    "line": "",
+    "reason": "Both devices are measuring/checking instruments that operate by generating and analyzing RF signals in the UHF band (700 MHz\u20131.2 GHz and 800\u20131000 MHz). They are not balancing machines (9031.10), test benches (9031.20), optical instruments (9031.41/9031.49), or electron beam microscopes (9031.80.40). They are not equipment for testing internal combustion engines. They fall within 9031.80.80.85 as other measuring or checking instruments, appliances and machines.",
+    "facts": [
+     {
+      "fact": "The CISC RFID Xplorer is a compact, high-precision UHF RFID test and measurement instrument used for performance and conformance testing of UHF RFID readers and tags.",
+      "quote": "The first item under consideration is described as the CISC RFID Xplorer, which is a compact, high-precision Ultra High Frequency (UHF) Radio-frequency identification (RFID) test and measurement instrument. It is used for performance and conformance testing of UHF RFID readers and tags",
+      "stated": true
+     },
+     {
+      "fact": "The CISC RFID Xplorer measures tag sensitivity, communication range, backscatter power, tag radiation patterns, and conformance parameters.",
+      "quote": "The device measures tag sensitivity, communication range, backscatter power, tag radiation patterns, and conformance parameters, offering modes for tag performance, reader testing, and RF signal analysis.",
+      "stated": true
+     },
+     {
+      "fact": "The CISC RFID Xplorer generates controlled RF test signals and evaluates RFID responses; it is not a communication device.",
+      "quote": "This product is not a communication device; instead, it generates controlled RF test signals and evaluates RFID responses for laboratory, engineering, and certification use.",
+      "stated": true
+     },
+     {
+      "fact": "The CISC RAIN Xplorer Inline 100 is a high-speed UHF RFID testing device designed for automated production lines manufacturing RAIN RFID inlays and labels.",
+      "quote": "The second item under consideration is described as the CISC RAIN Xplorer Inline 100, which is a high-speed UHF RFID testing device designed for automated production lines manufacturing RAIN RFID inlays and labels.",
+      "stated": true
+     },
+     {
+      "fact": "The CISC RAIN Xplorer Inline 100 performs real-time testing of RAIN RFID tags, including reading, writing, encoding, and sensitivity measurements, at high throughput rates.",
+      "quote": "It performs real-time testing of RAIN RFID tags, including reading, writing, encoding, and sensitivity measurements, at high throughput rates.",
+      "stated": false
+     },
+     {
+      "fact": "Both devices operate in the UHF band (approximately 700 MHz to 1.2 GHz for the RFID Xplorer; approximately 800\u20131000 MHz for the RAIN Xplorer Inline 100).",
+      "quote": "operating from approximately 700 MHz to 1.2 GHz... Operating in the UHF band (approximately 800\u20131000 MHz)",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_bb1i0kd7",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359529",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is a stuffed textile decoration depicting a black cat, marketed and sold exclusively as a Halloween decoration. This is a festive/entertainment article for Halloween, not a Christmas article, magic trick/practical joke article, or confetti/party favor/noisemaker.",
+    "facts": [
+     {
+      "fact": "stuffed textile decoration depicting a black cat with an arched back",
+      "quote": "a stuffed textile decoration depicting a black cat with an arched back",
+      "stated": true
+     },
+     {
+      "fact": "made of black man-made faux fur with embroidered eyes",
+      "quote": "made of black man-made faux fur with embroidered eyes",
+      "stated": true
+     },
+     {
+      "fact": "will be marketed and sold exclusively as a Halloween decoration",
+      "quote": "The item will be marketed sold exclusively as a Halloween decoration.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_5c9nalf5",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359532",
+   "code": "7324900000",
+   "answer": "7323999080",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "7324900000",
+    "fits": false,
+    "line": "7324",
+    "reason": "The product is a step-operated trash can (foot-pedal waste bin) made primarily of iron/steel with plastic inner parts. HTS 7324 covers 'Sanitary ware and parts thereof, of iron or steel.' A trash can is not sanitary ware; sanitary ware refers to plumbing fixtures such as sinks, wash basins, baths, bidets, water closet pans, urinals, and similar fixed installations for personal hygiene. A portable waste receptacle, even if used in a bathroom, does not fall within this heading.",
+    "facts": [
+     {
+      "fact": "The product is a step-operated trash can (foot-pedal operated waste bin) for household use.",
+      "quote": "The first product under consideration is a step-operated trash can. It is a foot-pedal operated waste bin... It is designed for household use.",
+      "stated": false
+     },
+     {
+      "fact": "The body, lid, and pedal are made of powder coated iron sheet metal.",
+      "quote": "made of powder coated iron sheet metal for the body, lid, and pedal",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_73p2996z",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359594",
+   "code": "8703230190",
+   "answer": "8703240190",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8703230190",
+    "fits": false,
+    "line": "8703.23.01",
+    "reason": "The vehicle's engine displacement is 5,344 cc, which exceeds the 3,000 cc upper limit of heading 8703.23. It belongs in 8703.24.01 (cylinder capacity exceeding 3,000 cc).",
+    "facts": [
+     {
+      "fact": "5.3L (5,344 cc) 60\u00b0 V12, aluminum block and heads 4-speed manual transmission Spark-Ignition Internal Combustion (Gas) engine",
+      "quote": "5.3L (5,344 cc) 60\u00b0 V12, aluminum block and heads 4-speed manual transmission Spark-Ignition Internal Combustion (Gas) engine",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_32kxme0o",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359637",
+   "code": "8703240190",
+   "answer": "8703240190",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The engine has a cylinder capacity of 5.7L (5,700 cc), exceeding 3,000 cc.?",
+   "critique": {
+    "code": "8703240190",
+    "fits": true,
+    "line": "",
+    "reason": "The product fits all levels of the proposed classification 8703.24.01.90.",
+    "facts": [
+     {
+      "fact": "The vehicle is a 2003 Ferrari 575 Maranello, identified as a motor car principally designed for the transport of persons.",
+      "quote": "2003 Ferrari 575 Maranello from Italy. The item under consideration has been identified as a 2003 Ferrari 575 Maranello, VIN ZFFBV55A84013XXXX.",
+      "stated": true
+     },
+     {
+      "fact": "The vehicle is equipped with a spark-ignition internal combustion piston engine (gas-powered).",
+      "quote": "The vehicle is equipped with a 5.7L gas-powered spark-ignition internal combustion engine.",
+      "stated": true
+     },
+     {
+      "fact": "The engine has a cylinder capacity of 5.7L (5,700 cc), exceeding 3,000 cc.",
+      "quote": "The vehicle is equipped with a 5.7L gas-powered spark-ignition internal combustion engine.",
+      "stated": false
+     },
+     {
+      "fact": "The vehicle is not an ambulance, hearse, prison van, or motor home.",
+      "quote": "2003 Ferrari 575 Maranello from Italy.",
+      "stated": true
+     },
+     {
+      "fact": "The vehicle is used, having been registered and titled in the United States in 2004 and remaining there until approximately 2010.",
+      "quote": "The car was registered and titled in the United States in 2004, remained until approximately 2010, when the car was sold to a Canadian citizen who moved the car to Canada.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_nwq0gw79",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359641",
+   "code": "7607201000",
+   "answer": "7607205000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The product contains an aluminum foil layer with a thickness not exceeding 0.2 mm.?",
+   "critique": {
+    "code": "7607201000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a backed aluminum foil laminate with a PET backing and a protective/topcoat surface that constitutes a decorative effect. It meets all requirements of the proposed classification path.",
+    "facts": [
+     {
+      "fact": "The product contains an aluminum foil layer with a thickness not exceeding 0.2 mm.",
+      "quote": "a 0.08 mm layer of aluminum foil",
+      "stated": false
+     },
+     {
+      "fact": "The aluminum foil is backed with a plastic material (PET film).",
+      "quote": "a 0.125 mm layer of Polyethylene Terephthalate (PET) Film",
+      "stated": true
+     },
+     {
+      "fact": "The aluminum foil is bonded to the PET backing via an adhesive layer.",
+      "quote": "The adhesive is used to bond the aluminum layer to the PET layer.",
+      "stated": true
+     },
+     {
+      "fact": "The product has a surface layer (topcoat) that provides a decorative effect, specifically authentic metallic reflectivity and light diffusion.",
+      "quote": "The principal use of the aluminum foil layer is to deliver the visual and tactile characteristics of real metal, including authentic metallic reflectivity and light diffusion.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_kfem476p",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359705",
+   "code": "6702903500",
+   "answer": "8306290000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "What is the weight and/or value breakdown of each component material (iron wire, steel wire, plastic, polyester, polyfoam, pinecone, rattan) in the decorative wire pumpkin?",
+   "critique": {
+    "code": "6702903500",
+    "fits": false,
+    "line": "6702.90.35.00",
+    "reason": "The essential character of the composite good is not established as man-made fibers. The product contains multiple materials (iron wire, steel wire, plastic, polyester, polyfoam, pinecone, rattan) and the importer has not provided the relative weights or values of each component to determine which material imparts essential character under GRI 3(b).",
+    "facts": [
+     {
+      "fact": "product is a decorative wire pumpkin consisting of iron wire frame, steel wire stem, and artificial foliage arrangement attached to the bottom center",
+      "quote": "It consists of eight pieces of iron wire that form the structure of a pumpkin and an additional steel wire that ends in a spring-like shape represents the stem at the top. An arrangement of autumn artificial foliage made of plastic, polyester, polyfoam, pinecone, and rattan is attached to the bottom center of the wire frame.",
+      "stated": true
+     },
+     {
+      "fact": "product is considered a composite good composed of different components",
+      "quote": "The decorative wire pumpkin is composed of different components (base metal, plastic, polyester, polyfoam, pinecone, and rattan) and is considered a composite good.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_abavnceu",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359715",
+   "code": "0511993060",
+   "answer": "0511910090",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "0511993060",
+    "fits": true,
+    "line": "",
+    "reason": "The merchandise consists of 100% dried crustacean eggs (animal products) unfit for human consumption, classified under heading 0511. It is not bovine semen (0511.10.00) nor products of fish/crustaceans/molluscs/dead animals of Chapter 3 (0511.91.00). It is chiefly used as food for animals (live feed for ornamental fish and aquatic animals), placing it in 0511.99.30 rather than the alternative subheadings (parings/waste, horsehair, natural sponges, or other). At the statistical level, it is not Antarctic krill, so it falls under 0511.99.30.60.",
+    "facts": [
+     {
+      "fact": "The merchandise consists of 100 percent dried crustacean eggs, including fairy shrimp eggs, moina eggs, or daphnia eggs, with no additives or preservatives.",
+      "quote": "The subject merchandise consists of 100 percent dried crustacean eggs, including fairy shrimp eggs, moina eggs, or daphnia eggs, with no additives or preservatives.",
+      "stated": true
+     },
+     {
+      "fact": "The product is not intended for human consumption or use in the food industry.",
+      "quote": "The product is not intended for human consumption or use in the food industry.",
+      "stated": true
+     },
+     {
+      "fact": "After hatching, the larvae may be fed with microalgae, such as chlorella, to support growth until they reach a suitable size for use as live feed for small ornamental fish and other aquatic animals.",
+      "quote": "After hatching, the larvae may be fed with microalgae, such as chlorella, to support growth until they reach a suitable size for use as live feed for small ornamental fish and other aquatic animals.",
+      "stated": true
+     },
+     {
+      "fact": "Upon importation into the United States, the merchandise is sold directly to consumers through retail channels, including online marketplaces such as Amazon.",
+      "quote": "Upon importation into the United States, the merchandise is sold directly to consumers through retail channels, including online marketplaces such as Amazon.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_6fq4xi5g",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359738",
+   "error": "NightshiftError: no valid JSON from nvidia/nemotron-3-ultra-550b-a55b: {\"fits\": true, \"line\": \"\", \"reason\": \"The product is a cast-aluminum skillet used for frying and cooking on a stove top, which is a table or kitchen household article of aluminum, not a pot scourer or"
+  },
+  {
+   "ruling_number": "N359763",
+   "code": "8525894000",
+   "answer": "8525893000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8525894000",
+    "fits": false,
+    "line": "8525.89.40.00",
+    "reason": "The product is described as a camera module that captures video images and transmits them to a gateway for processing and recording, and it 'cannot record images.' Heading 8525.89.40.00 covers 'Digital still image video cameras,' which are cameras capable of recording still images (and often video). Since the product cannot record images, it does not fall within this subheading. The correct classification would likely be under 8525.89.50 (Other television cameras, digital cameras and video camera recorders) for television cameras not elsewhere specified.",
+    "facts": [
+     {
+      "fact": "camera module captures video images and transmits them to the connected gateway for processing and recording",
+      "quote": "This camera module captures video images and transmits them to the connected gateway for processing and recording.",
+      "stated": true
+     },
+     {
+      "fact": "the subject camera cannot record images",
+      "quote": "The subject camera cannot record images.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_3qqvh1cm",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359779",
+   "code": "9401790015",
+   "answer": "9401790015",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm Item 1 has a collapsible steel metal frame?",
+   "critique": {
+    "code": "9401790015",
+    "fits": true,
+    "line": "",
+    "reason": "Both seats are collapsible metal-framed seats (steel and aluminum) with textile seating/backing materials, designed for outdoor use and portable storage. They are not upholstered, not household, and not any of the specified children's seats at LEVEL 3. The 'Other' at LEVEL 6 is appropriate as they are outdoor seats with textile seating/backing that are not classified as 'Household'.",
+    "facts": [
+     {
+      "fact": "Item 1 has a collapsible steel metal frame",
+      "quote": "a pair of collapsible steel metal frame seats",
+      "stated": false
+     },
+     {
+      "fact": "Item 1 seating and backing materials are polyester textile fabric",
+      "quote": "The seat foundations, backrests, armrests, cupholders, and the storage compartment are constructed of polyester textile fabric and polyester textile seating and backing materials.",
+      "stated": false
+     },
+     {
+      "fact": "Item 1 is designed for outdoor use and portable storage",
+      "quote": "The seats, the storage compartment, and the umbrella are designed to be placed on the floor or ground and used by the occupants for protection from the outdoor elements while sitting. The seats, the storage compartment, and the umbrella will collapse, and are designed for storage and transport in a carrying bag.",
+      "stated": false
+     },
+     {
+      "fact": "Item 2 has a collapsible aluminum metal frame",
+      "quote": "a collapsible aluminum metal frame seat",
+      "stated": false
+     },
+     {
+      "fact": "Item 2 seating and backing materials are textile",
+      "quote": "The seat foundation and the backrest are constructed of textile seating and backing materials.",
+      "stated": false
+     },
+     {
+      "fact": "Item 2 is designed for portable storage",
+      "quote": "The seat will collapse and is designed for storage and transport in a carrying bag.",
+      "stated": false
+     },
+     {
+      "fact": "Item 1 is sold as a single retail unit with integrated storage compartment and umbrella",
+      "quote": "The pair of seats and the storage compartment components are adapted one-to-the-other and form a unitary whole; the seats and the storage compartment do not disengage and do not detach from one another. The product will be packaged in one box and will be offered for retail sale as a single unit.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_mjnecofm",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359804",
+   "code": "8428900390",
+   "answer": "8428900390",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8428900390",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a lifting machine not covered by the specific subheadings at 8428.10 through 8428.70; it therefore falls under the residual 8428.90.03.90.",
+    "facts": [
+     {
+      "fact": "equipment used to lift individuals from the floor to a sitting or standing position",
+      "quote": "equipment used to lift individuals from the floor to a sitting or standing position",
+      "stated": true
+     },
+     {
+      "fact": "main components include a vertical post, a mounting ramp seat, an actuator assembly, a battery unit, a wired remote, rise-assist handles, and dual safety belts",
+      "quote": "Its main components include a vertical post, a mounting ramp seat, an actuator assembly, a battery unit, a wired remote, rise-assist handles, and dual safety belts.",
+      "stated": true
+     },
+     {
+      "fact": "mounting ramp seat lowers to the ground and serves either as a seat or a standing platform capable of lifting individuals weighing up to 300 pounds to a height of 30 inches",
+      "quote": "The mounting ramp seat lowers to the ground and serves either as a seat or a standing platform capable of lifting individuals weighing up to 300 pounds to a height of 30 inches.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_j5tueh5i",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359807",
+   "code": "8471410150",
+   "answer": "8471500150",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8471410150",
+    "fits": true,
+    "line": "",
+    "reason": "The gaming PCs are automatic data processing machines (8471). They are not portable (excludes 8471.30), not mere processing units (excludes 8471.50), not input/output units (excludes 8471.60), not storage units (excludes 8471.70), and not other units (excludes 8471.80). They comprise in the same housing at least a CPU and an input and output unit (8471.41.01) and are not CRT (excludes 8471.41.01.10), so they fall under 8471.41.01.50.",
+    "facts": [
+     {
+      "fact": "Each device is designed as a traditional desktop personal computer (PC).",
+      "quote": "each designed as a traditional desktop personal computer (PC)",
+      "stated": true
+     },
+     {
+      "fact": "Each incorporates a motherboard with CPU, memory/storage, advanced GPUs, cooling apparatus and various other incidental components.",
+      "quote": "incorporate a motherboard with CPU, memory/storage, advanced GPUs, cooling apparatus and various other incidental components",
+      "stated": true
+     },
+     {
+      "fact": "The devices can function as traditional PCs and perform general purpose computing functions.",
+      "quote": "The gaming PCs can function as traditional PCs and perform general purpose computing functions.",
+      "stated": true
+     },
+     {
+      "fact": "The finished board is installed within the chassis with the power supply and various cables.",
+      "quote": "The finished board is then installed within the chassis with the power supply, which both originate from China, along with various cables.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_klqi0d0e",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359849",
+   "code": "3105100000",
+   "answer": "3105100000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "3105100000",
+    "fits": true,
+    "line": "",
+    "reason": "Biofran is a mineral foliar fertilizer containing nitrogen, phosphorus, and potassium, imported in one-liter plastic containers (gross weight not exceeding 10 kg). Heading 3105.10.00.00 covers goods of Chapter 31 in packages of a gross weight not exceeding 10 kg, which takes precedence over the bulk NPK subheading 3105.20.00.00.",
+    "facts": [
+     {
+      "fact": "Biofran is a mineral foliar fertilizer formulated to provide nitrogen, phosphorus, and potassium for plant nutrition.",
+      "quote": "Biofran is a mineral foliar fertilizer, formulated to provide nitrogen, phosphorus, and potassium for plant nutrition.",
+      "stated": true
+     },
+     {
+      "fact": "The product is imported in one-liter plastic containers.",
+      "quote": "The provided photo of the packaging indicates that Biofran will be imported in one-liter plastic containers.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_d6rur2rh",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359855",
+   "code": "3105100000",
+   "answer": "3105100000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The product is imported in one-liter plastic containers, i.e., packages of a gross weight not exceeding 10 kg.?",
+   "critique": {
+    "code": "3105100000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a fertilizer containing nitrogen, phosphorus, and potassium, imported in one-liter plastic containers (packages of a gross weight not exceeding 10 kg). Heading 3105.10.00.00 covers goods of Chapter 31 in such packages, which takes precedence over the bulk NPK subheading 3105.20.00.00.",
+    "facts": [
+     {
+      "fact": "The product is a mineral foliar fertilizer formulated to provide nitrogen, phosphorus, and potassium for plant nutrition.",
+      "quote": "Aminomax is a mineral foliar fertilizer formulated to provide nitrogen, phosphorus, and potassium for plant nutrition.",
+      "stated": true
+     },
+     {
+      "fact": "The product is imported in one-liter plastic containers, i.e., packages of a gross weight not exceeding 10 kg.",
+      "quote": "The provided photo of the packaging indicates that Aminomax will be imported in one-liter plastic containers.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_s8hg5iys",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359864",
+   "code": "3502110000",
+   "answer": "3502110000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "3502110000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is spray-dried egg white protein powder (albumin) with protein content >80%, making it 3502.11.00.00 Dried egg albumin. No other substances are added.",
+    "facts": [
+     {
+      "fact": "product is spray-dried egg white protein powder",
+      "quote": "a spray-dried, enzymatically hydrolyzed egg white protein powder",
+      "stated": true
+     },
+     {
+      "fact": "derived from egg white protein and/or egg white powder",
+      "quote": "derived from egg white protein and/or egg white powder",
+      "stated": true
+     },
+     {
+      "fact": "protein content of greater than 80%",
+      "quote": "this product has a protein content of greater than 80%",
+      "stated": true
+     },
+     {
+      "fact": "no other substances are added to the finished product",
+      "quote": "There is no indication that any other substances are added to the finished egg white protein powder",
+      "stated": true
+     },
+     {
+      "fact": "commercially known as egg albumen",
+      "quote": "This product is commercially known as egg albumen",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_erncp4tz",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359912",
+   "code": "3004909228",
+   "answer": "3004909236",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3004909228",
+    "fits": false,
+    "line": "3004.90.92.28",
+    "reason": "The proposed 10-digit line 3004.90.92.28 is specifically for Tolmetin sodium dihydrate. The product contains Diclofenac Sodium as the active ingredient, which is a different NSAID.",
+    "facts": [
+     {
+      "fact": "Product contains Diclofenac Sodium as the active ingredient",
+      "quote": "Diclofenac Sodium Gel 1% in dosage form... Diclofenac Sodium Gel 1%, imported in 100 grams, is a topical nonsteroidal anti-inflammatory drug (NSAID).",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_dqkxjaep",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359913",
+   "code": "3004909221",
+   "answer": "3004909225",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3004909221",
+    "fits": false,
+    "line": "3004.90.92.21",
+    "reason": "The proposed 10-digit line 3004.90.92.21 requires the product to contain diltiazem or its salts. The importer's description states the product contains Olmesartan Medoxomil, which is an angiotensin II receptor blocker (ARB), not diltiazem.",
+    "facts": [
+     {
+      "fact": "Product contains Olmesartan Medoxomil as the active ingredient",
+      "quote": "Olmesartan Medoxomil Tablets in dosage form... Olmesartan Medoxomil, imported in 5 mg, 20 mg, and 40 mg tablets, is an angiotensin II receptor blocker (ARB).",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_xesujlac",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359915",
+   "code": "3004909235",
+   "answer": "3004909245",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3004909235",
+    "fits": false,
+    "line": "3004.90.92.35",
+    "reason": "The proposed 10-digit line 3004.90.92.35 specifically requires the product to contain tramadol. The product contains olanzapine, which is an atypical antipsychotic, not tramadol.",
+    "facts": [
+     {
+      "fact": "Product contains olanzapine as the active ingredient",
+      "quote": "Olanzapine Orally Disintegrating Tablets (ODT) in dosage form... Olanzapine ODT, imported in 5 mg, 10 mg, 15 mg and 20 mg, is in a class of medications called atypical antipsychotics.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_5i9874sx",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N359976",
+   "error": "NightshiftError: no valid JSON from nvidia/nemotron-3-ultra-550b-a55b: {\"fits\": true, \"line\": \"\", \"reason\": \"The product is a digital media receiver designed to transmit digital audio and video content via the Internet to a television, connecting via HDMI. It does not co"
+  },
+  {
+   "ruling_number": "N360050",
+   "code": "6306229030",
+   "answer": "6306229030",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "6306229030",
+    "fits": true,
+    "line": "",
+    "reason": "Product is a 3-person portable pop-up tent with fiberglass frame, polyester fabric roof/walls, and polyethylene floor. It is a tent of synthetic fibers (polyester), not a backpacking tent or screen house, so it falls under 6306.22.90.30.",
+    "facts": [
+     {
+      "fact": "tent (including temporary canopies and similar articles)",
+      "quote": "3-person portable pop-up tent designed to provide temporary shelter at the beach",
+      "stated": true
+     },
+     {
+      "fact": "of synthetic fibers (100 percent polyester woven dyed fabric)",
+      "quote": "walls and roof are constructed of 100 percent polyester woven dyed fabric",
+      "stated": true
+     },
+     {
+      "fact": "not a backpacking tent",
+      "quote": "3-person portable pop-up tent designed to provide temporary shelter at the beach",
+      "stated": true
+     },
+     {
+      "fact": "not a screen house",
+      "quote": "open half-bell-shaped tent consists of a roof, three walls, and a floor with a pop-up frame composed of fiberglass",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_wg6t42wd",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360179",
+   "code": "9008504000",
+   "answer": "9008501000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9008504000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a compact plastic projector light that projects images from interchangeable plastic disks onto paper, making it an image projector. It is not a slide projector (which uses mounted transparencies), not a microform reader, and not a photographic enlarger/reducer.",
+    "facts": [
+     {
+      "fact": "compact plastic projector light",
+      "quote": "compact plastic projector light",
+      "stated": true
+     },
+     {
+      "fact": "projects images of Disney characters onto paper",
+      "quote": "project images of Disney characters onto paper",
+      "stated": true
+     },
+     {
+      "fact": "uses interchangeable plastic disks",
+      "quote": "two interchangeable plastic disks",
+      "stated": true
+     },
+     {
+      "fact": "not a slide projector",
+      "quote": "inserts and rotates the disks to project images",
+      "stated": true
+     },
+     {
+      "fact": "not a microfilm/microfiche reader",
+      "quote": "tracing projector (item ), which is a projecting art set designed for children aged 3 and older",
+      "stated": true
+     },
+     {
+      "fact": "not a photographic enlarger or reducer",
+      "quote": "tracing projector (item ), which is a projecting art set designed for children aged 3 and older",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_6h4i4ox5",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360189",
+   "code": "3923210085",
+   "answer": "3923210030",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "3923210085",
+    "fits": false,
+    "line": "3923.21.00.85",
+    "reason": "The product does not meet the statistical breakout requirements for 3923.21.00.85. It is not described as a retail carrier bag with handles (including drawstrings), and its width of 5 inches is shorter than the 6-inch minimum specified for this breakout.",
+    "facts": [
+     {
+      "fact": "bag constructed from multi-layered laminate sheet of OPP, metallized PET, and LDPE with polyethylene comprising 80 percent by weight",
+      "quote": "The bag is constructed from a multi-layered laminate sheet of oriented polypropylene (OPP), metallized polyethylene terephthalate (PET), and low-density polyethylene (LDPE). The polyethylene comprises 80 percent by weight of the bag.",
+      "stated": true
+     },
+     {
+      "fact": "dimensions of 6.5 x 5 x 2 inches (height x width x depth)",
+      "quote": "The bag, with dimensions of 6.5 x 5 x 2 inches (height x width x depth)",
+      "stated": true
+     },
+     {
+      "fact": "integral extruded closure at the top",
+      "quote": "has an integral extruded closure at the top",
+      "stated": true
+     },
+     {
+      "fact": "intended for supplementary packaging",
+      "quote": "and is intended for supplementary packaging.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_5he1kzo9",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360406",
+   "code": "8708998180",
+   "answer": "8481809045",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the water temperature control assembly a part or accessory of a motor vehicle classified under headings 8701 to 8705? If so, identify the vehicle type and its heading.",
+   "critique": {
+    "code": "8708998180",
+    "fits": false,
+    "line": "8708",
+    "reason": "The product is described as a water temperature control assembly for an engine cooling system, but the importer does not state that this assembly is a part or accessory of a motor vehicle classified under headings 8701 to 8705. Heading 8708 covers only parts and accessories of such motor vehicles. Without confirmation that the assembly is for use in a vehicle of headings 8701-8705, classification under 8708 is not supported; the item could fall elsewhere (e.g., heading 8409 for engine parts).",
+    "facts": [
+     {
+      "fact": "Product is a water temperature control assembly for engine cooling",
+      "quote": "The item at issue is a water temperature control assembly... As coolant temperature changes, the wax element of the valve expands or contracts, causing the valve to open. Coolant then flows through the passages to the heater and the radiator, which prevents the engine from overheating.",
+      "stated": false
+     },
+     {
+      "fact": "Assembly consists of thermostat valve (aluminum housing with piston, spring, frame, rubber component, seal cap, wax element), bypass nipple, temperature sensor, and structural junction with coolant bypass passages",
+      "quote": "The assembly consists of a thermostat valve (an aluminum housing that incorporates a piston, spring, frame, a rubber component, a seal cap, and a wax element), a bypass nipple, a temperature sensor and a structural junction that features coolant bypass passages.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_544fsvf9",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360414",
+   "code": "8537109160",
+   "answer": "8537109170",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8537109160",
+    "fits": false,
+    "line": "8537.10.91.60",
+    "reason": "The product is an aluminum cabinet designed to house and protect electrical components that are added after importation. Although it contains a bus bar, terminal block, and grounding cables in its imported condition, it is not described as a programmable controller (a device that executes stored programs to control machines/processes), nor as a switchgear assembly, numerical control, or panel/distribution board. At the 8537.10.91 subheading level, it therefore falls under 'Other' (8537.10.91.70).",
+    "facts": [
+     {
+      "fact": "aluminum cabinet designed to house and protect electrical components that are added after importation",
+      "quote": "aluminum cabinet designed to house and protect electrical components that are added after importation such as power distribution equipment, fiber optic equipment, and other electrical equipment",
+      "stated": true
+     },
+     {
+      "fact": "contains uninsulated bus bar, terminal block, and copper grounding cables in imported condition",
+      "quote": "in its imported condition the cabinet contains a number of electrical components including an uninsulated bus bar, a terminal block, and copper grounding cables",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_u48usd0v",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360468",
+   "code": "9506991500",
+   "answer": "9506696020",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "9506991500",
+    "fits": false,
+    "line": "9506.99.15.00",
+    "reason": "The product is a baseball training ball, but the proposed line covers baseball articles and equipment except balls. The product is a ball, so it falls under the alternative 'Balls, other than golf balls and table-tennis balls' at Level 1.",
+    "facts": [
+     {
+      "fact": "The product is a ball",
+      "quote": "The product under consideration is the PlyoCare\u00ae Baseball Training Balls.",
+      "stated": true
+     },
+     {
+      "fact": "The product is used for baseball training",
+      "quote": "manufactured and sold exclusively as a baseball training implement for use in structured pitching and hitting skill-development programs",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_56dcvb1n",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360602",
+   "code": "8481309000",
+   "answer": "8481309000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8481309000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a coolant check valve that operates by responding to pressure differentials to maintain one-way flow and prevent reverse flow of coolant, which is the essential function of a check (nonreturn) valve. It is primarily constructed of a polypropylene composite reinforced with glass fibers, so it is not of copper, iron, or steel, placing it in the residual 'Other' subheading.",
+    "facts": [
+     {
+      "fact": "The item is a coolant check valve that operates by responding to pressure differentials in the cooling circuit, causing the piston to move up and down to maintain a one-way flow of the coolant and to prevent a reverse flow of this fluid.",
+      "quote": "It operates by responding to pressure differentials in the cooling circuit, causing the piston to move up and down to maintain a one-way flow of the coolant and to prevent a reverse flow of this fluid.",
+      "stated": true
+     },
+     {
+      "fact": "The check valve is primarily constructed of a polypropylene composite reinforced with glass fibers.",
+      "quote": "The check valve, which is primarily constructed of a polypropylene composite reinforced with glass fibers, is used in hybrid or electric motor vehicles.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_de0eynib",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360635",
+   "code": "8543400040",
+   "answer": "8543400040",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8543400040",
+    "fits": true,
+    "line": "",
+    "reason": "The device is a personal electric vaporizing device (electronic cigarette or similar) imported without any substance containing nicotine, so it falls under the residual 'Other' subheading.",
+    "facts": [
+     {
+      "fact": "The device is a precision sealed-dose inhalation delivery system with a lithium-ion battery, ceramic heating element, microprocessor control circuit, mouthpiece, and LED indicator.",
+      "quote": "The subject device is comprised of a lithium-ion battery, ceramic heating element, and a microprocessor control circuit within an enclosure. The device further incorporates a mouthpiece for inhalation and an LED status indicator on the outside of the enclosure.",
+      "stated": true
+     },
+     {
+      "fact": "The liquid-filled ampoule is not imported with the device.",
+      "quote": "After importation, a glass ampoule filled with a botanical or other liquid extract is added to the device.",
+      "stated": true
+     },
+     {
+      "fact": "The device is meant for reuse.",
+      "quote": "We note that the device is meant for reuse and the liquid-filled ampoule is not imported with the device.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_i35dmlcc",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360638",
+   "code": "9503000073",
+   "answer": "3926909989",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "9503000073",
+    "fits": false,
+    "line": "9503.00.00",
+    "reason": "Product is a decorative craft activity kit for making a trinket box, not a tricycle, scooter, pedal car, doll's carriage, doll, toy, reduced-scale model, or puzzle as listed in the heading.",
+    "facts": [
+     {
+      "fact": "product is a decorative craft activity kit called Decoden Magic - Classic 4: Trinket Box Creator",
+      "quote": "The product under consideration is described as the \u201cDecoden Magic - Classic 4: Trinket Box Creator.\u201d",
+      "stated": true
+     },
+     {
+      "fact": "kit contains a clear plastic box, plastic charms, plastic beads, plastic gems, adhesive tubes, plastic piping nozzles, a plastic pick-up tool, a sticker sheet, and a printed paper instruction sheet",
+      "quote": "This kit contains the following items: a clear plastic box, plastic charms, plastic beads, plastic gems, two 15-milliter tubes of adhesive, a 50-milliliter tube of adhesive, three plastic piping nozzles, a plastic pick-up tool, a sticker sheet, and a printed paper instruction sheet.",
+      "stated": true
+     },
+     {
+      "fact": "designed to allow the user to decorate the plastic heart trinket box using adhesive and decorative plastic embellishments",
+      "quote": "It is designed to allow the user to decorate the plastic heart trinket box using the adhesive and decorative plastic embellishments.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_oskolqq8",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360742",
+   "code": "6104432010",
+   "answer": "6104432010",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm does not contain 23% or more wool or fine animal hair?",
+   "critique": {
+    "code": "6104432010",
+    "fits": true,
+    "line": "",
+    "reason": "Product is a knitted women's dress of synthetic fibers (95% polyester/5% spandex), not containing 23%+ wool/fine animal hair, so it follows the path: 6104 \u2192 Dresses \u2192 6104.43 (synthetic fibers) \u2192 6104.43.20 (Other) \u2192 6104.43.20.10 (Women's).",
+    "facts": [
+     {
+      "fact": "knitted or crocheted garment",
+      "quote": "constructed from 95 percent polyester and 5 percent spandex knit fabric",
+      "stated": true
+     },
+     {
+      "fact": "women's dress",
+      "quote": "women's dresses",
+      "stated": true
+     },
+     {
+      "fact": "of synthetic fibers (polyester/spandex)",
+      "quote": "95 percent polyester and 5 percent spandex",
+      "stated": true
+     },
+     {
+      "fact": "does not contain 23% or more wool or fine animal hair",
+      "quote": "95 percent polyester and 5 percent spandex",
+      "stated": false
+     },
+     {
+      "fact": "women's (not girls')",
+      "quote": "women's dresses",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_y2i0gvys",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360804",
+   "code": "8518302000",
+   "answer": "8518302000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "8518302000",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a headphone assembly consisting of two ear cup speakers with microphones, a cable harness, and a wired control box module, imported as a complete retrofit kit to form a noise-cancelling aviation headset. This constitutes headphones combined with a microphone, which falls under heading 8518.30. It is not a line telephone handset (8518.30.10), so it is classified under the residual subheading 8518.30.20.00.",
+    "facts": [
+     {
+      "fact": "The assembly consists of two ear cup speakers with microphones, electric cable harness, and a wired control box module",
+      "quote": "This assembly consists of two ear cup speakers with microphones, electric cable harness, and a wired control box module.",
+      "stated": true
+     },
+     {
+      "fact": "All components are imported simultaneously in the same package and are intended to be installed together within an aviation helmet",
+      "quote": "All components are imported simultaneously in the same package and are intended to be installed together within an aviation helmet.",
+      "stated": true
+     },
+     {
+      "fact": "All of the items electrically connect to one another forming a functional aviation telecommunication headset",
+      "quote": "All of the items electrically connect to one another forming a functional aviation telecommunication headset.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_r094m1lr",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N360900",
+   "code": "9405994090",
+   "answer": "9405994090",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The lampshade consists of a steel wire frame covered by pleated silk with visible slub texture.?",
+   "critique": {
+    "code": "9405994090",
+    "fits": true,
+    "line": "",
+    "reason": "The product is a lampshade, which is a part of a luminaire/lighting fitting (heading 9405). It consists of a steel wire frame covered by pleated silk, so it is not of glass (excludes 9405.91), not of plastics (excludes 9405.92), not of brass (excludes 9405.99.20), and not a lamppost or base for a lamppost of cast iron or aluminum (excludes 9405.99.40.10 and .20). It falls under the residual subheading 9405.99.40.90.",
+    "facts": [
+     {
+      "fact": "The merchandise is a lampshade.",
+      "quote": "The merchandise is identified as \u201cPleated Silk Lampshade\u201d.",
+      "stated": true
+     },
+     {
+      "fact": "The lampshade consists of a steel wire frame covered by pleated silk with visible slub texture.",
+      "quote": "It consists of a steel wire frame covered by pleated silk with visible slub texture.",
+      "stated": false
+     },
+     {
+      "fact": "The lampshade is not made of glass.",
+      "quote": "It consists of a steel wire frame covered by pleated silk with visible slub texture.",
+      "stated": false
+     },
+     {
+      "fact": "The lampshade is not made of plastics.",
+      "quote": "It consists of a steel wire frame covered by pleated silk with visible slub texture.",
+      "stated": false
+     },
+     {
+      "fact": "The lampshade is not made of brass.",
+      "quote": "It consists of a steel wire frame covered by pleated silk with visible slub texture.",
+      "stated": false
+     },
+     {
+      "fact": "The lampshade is not a lamppost or base for a lamppost of cast iron or aluminum.",
+      "quote": "It consists of a steel wire frame covered by pleated silk with visible slub texture.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_lvqb1ur9",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361111",
+   "code": "6116106500",
+   "answer": "6116106500",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "What is the total weight of the glove, and what is the weight of the attached polyester fabric with drawstring and hook/clasp?",
+   "critique": {
+    "code": "6116106500",
+    "fits": false,
+    "line": "6116.10.55",
+    "reason": "Cannot determine whether the product contains 50% or more by weight of cotton, man-made fibers, or other textile fibers (which would place it under 6116.10.55) because the weight of the attached polyester fabric with drawstring and hook/clasp was not provided.",
+    "facts": [
+     {
+      "fact": "glove constructed of 95% nylon, 5% polyurethane with a polyurethane dip coating on the outer surface",
+      "quote": "Style Temres 05/282-05 is a string knit extended glove constructed of 95% nylon, 5% polyurethane with a polyurethane dip coating on the outer surface.",
+      "stated": false
+     },
+     {
+      "fact": "attached polyester fabric with drawstring and hook and clasp",
+      "quote": "Attached to the end of the glove is a polyester fabric with a drawstring and a hook and clasp.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_avtkxucw",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361157",
+   "code": "8537109170",
+   "answer": "8479899599",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8537109170",
+    "fits": false,
+    "line": "8537",
+    "reason": "The products are complete electro-mechanical vessel stabilization and steering systems comprising hydrodynamic fins, actuators with motors/gearboxes, inertial platforms, electronic control/power panels, touchscreen monitors, linear actuators, control switchboards, junction boxes, and wheelhouse control stations. They are not \"boards, panels, consoles, desks, cabinets and other bases, equipped with two or more apparatus of heading 8535 or 8536, for electric control or the distribution of electricity\" as required by heading 8537. The ECU/EPU panels and switchboards are sub-assemblies within these larger systems, but the imported goods are the complete systems themselves.",
+    "facts": [
+     {
+      "fact": "complete electro-mechanical automatic systems for vessel stabilization and steering comprising hydrodynamic fins, actuators with motors/gearboxes, inertial platform, electronic control/power panels, touchscreen monitor, linear actuators, control switchboard, junction box, wheelhouse control station",
+      "quote": "These complete,electro-mechanical automatic systems employ motors, electronics, and other apparatus to stabilize or steerwater yachts. The HS and LR fin stabilizer systems consist of (1) hydrodynamic fins to stabilize a vessel; (2) an actuator that rotates the fins; (3) an inertial platform to feed a yacht's movement data into an Electronic Control Unit panel; (4) Electronic Power Unit panels which contain servos to feed the electric motors; (5) Electronic Control Unit panel containing the CPU which reads all data and commands the actuators' movement; and (6) a touchscreen control monitor... The DIRECTA steering system consists of (1) two electric linear actuators... (2) two electric motors; (3) control switchboard; (4) junction box; (5) Wheelhouse Control Station",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_aghwct98",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361192",
+   "error": "NightshiftError: no valid JSON from nvidia/nemotron-3-ultra-550b-a55b: {\n  \"fits\": true,\n  \"line\": \"\",\n  \"reason\": \"Both HSRF and VSRF are metal furniture of base metal (steel), not for office use, and are unassembled racks for storage. At the 9403.20.00 level, 'Other' ("
+  },
+  {
+   "ruling_number": "N361194",
+   "code": "4010110000",
+   "answer": "4010125000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "4010110000",
+    "fits": false,
+    "line": "4010.11.00.00",
+    "reason": "The product is reinforced with textile materials (polyester and nylon), not metal. The proposed line covers belts reinforced only with metal, which does not match the product description.",
+    "facts": [
+     {
+      "fact": "reinforcement layers of 1-8 plies of polyester and nylon textile materials",
+      "quote": "reinforcement layers of 1-8 plies of polyester and nylon textile materials",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_2ve70khp",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361275",
+   "code": "7307199060",
+   "answer": "7307193060",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "What is the connection/end type of the EZ2200 2-inch Lift Out Coupling assembly (e.g., threaded, grooved, flanged, push-on, etc.)?",
+   "critique": {
+    "code": "7307199060",
+    "fits": false,
+    "line": "7307.19.90.60",
+    "reason": "The product is a ductile fitting from Canada identified as Part Number EZ2200, a 2-inch Lift Out Coupling assembly used in sewage and wastewater pump installations. To classify at the 7307.19.90.60 (Threaded) subheading, the fitting must be threaded. The provided facts do not state the connection type (threaded, grooved, flanged, etc.). Since the alternative 7307.19.90.40 covers grooved-end fittings including grooved couplings, and 7307.19.90.80 covers other types, the connection type is a necessary distinguishing fact.",
+    "facts": [
+     {
+      "fact": "The product is a ductile fitting from Canada identified as Part Number EZ2200, a 2-inch Lift Out Coupling assembly used in sewage and wastewater pump installations.",
+      "quote": "The merchandise is identified as Part Number EZ2200, a 2-inch Lift Out Coupling assembly used in sewage and wastewater pump installations.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_j1qdpvsf",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361290",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is an adult costume (festive/entertainment article), not Christmas-specific, not magic tricks/joke articles, not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "costume from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     },
+     {
+      "fact": "flimsy robe stitched together with a single line of long, loose straightstitching",
+      "quote": "The dress is stitched together with a single row of long, loose straightstitching.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_x1fqsr3j",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361291",
+   "code": "8716390090",
+   "answer": "8716310000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "8716390090",
+    "fits": false,
+    "line": "8716.31.00.00",
+    "reason": "The product is a trailer with a tank body designed to transport propane, a liquid/gas commodity. At Level 2, the alternative 8716.31.00.00 specifically covers 'Tanker trailers and tanker semi-trailers,' which matches the product description. The proposed line 8716.39.00 ('Other') applies only to goods not covered by 8716.31.00.00. Since the product is a tanker trailer, it falls under 8716.31.00.00, not 8716.39.00.",
+    "facts": [
+     {
+      "fact": "The item is a propane tanker trailer with a tank body that allows end-users to pump propane fluid through a secured coupling into the tank.",
+      "quote": "a propane tanker trailer, schematic drawing LL74001050001, that allows end-users to pump propane fluid through a secured coupling into the tank",
+      "stated": true
+     },
+     {
+      "fact": "The tank compresses the contents, allowing extraction from a dedicated service valve.",
+      "quote": "compresses the contents, allowing for the contents to be extracted from a dedicated service valve when desired",
+      "stated": true
+     },
+     {
+      "fact": "When shipped, the tanker trailer consists of the tank body, wheels, suite of valves, A-frame tow bar assembly, and ball trailer coupler.",
+      "quote": "these tanker trailers consist of the tank body, the wheels, a suite of valves, an A-frame tow bar assembly, and a ball trailer coupler",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_aen1q2ns",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361312",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is an adult costume (festive/entertainment article), not Christmas-specific, not magic tricks/joke articles, not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "costume from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     },
+     {
+      "fact": "armholes are raw and unfinished",
+      "quote": "The armholes are raw and unfinished.",
+      "stated": true
+     },
+     {
+      "fact": "vest has five non-functional buttons stitched down the front",
+      "quote": "The vest has five non-functional buttons stitched down the front.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_ttor44mh",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361321",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm sleeves and hem bottom have raw, unfinished edges?",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is an adult costume (festive/entertainment article), not Christmas-specific, not magic tricks/joke articles, not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "costume from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     },
+     {
+      "fact": "sleeves and hem bottom have raw, unfinished edges",
+      "quote": "The sleeves and hem bottom have raw, unfinished edges.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_rcynlps4",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361386",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is an adult costume (festive/entertainment article), not Christmas-specific, not magic tricks/joke articles, not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "costume from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     },
+     {
+      "fact": "flimsy robe stitched together with a single line of long, loose straightstitching",
+      "quote": "The flimsy robe is stitched together with a single line of long, loose straightstitching.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_b88ixfhe",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361392",
+   "code": "9505906000",
+   "answer": "9505906000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm sleeves and hem bottom have raw, unfinished edges?",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is an adult costume (festive/entertainment article), not Christmas-specific, not magic tricks/joke articles, not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "costume from China and Vietnam",
+      "quote": "costume from China and Vietnam",
+      "stated": true
+     },
+     {
+      "fact": "sleeves and hem bottom have raw, unfinished edges",
+      "quote": "The long sleeves and hem bottom are raw and unfinished.",
+      "stated": false
+     },
+     {
+      "fact": "waist has narrow exposed elastic stitched directly to the dress with a single line of long, loose straight stitching",
+      "quote": "The waist has narrow, exposed elastic stitched directly to the dress with a single line of long, loose straight stitching.",
+      "stated": false
+     },
+     {
+      "fact": "robe is stitched together with a single line of long, loose straight stitching",
+      "quote": "The robe is stitched together with a single line of long, loose straight stitching.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_rnko0l3k",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361415",
+   "code": "9505906000",
+   "answer": "6307909891",
+   "decision": "CLASSIFIED",
+   "reason": "LIVING_PRECEDENT",
+   "question": "",
+   "critique": {
+    "code": "9505906000",
+    "fits": true,
+    "line": "",
+    "reason": "Product is a festive/entertainment article (Valentine's plush decoration), not Christmas-specific, not a magic trick/joke article, not confetti/party favors/noisemakers.",
+    "facts": [
+     {
+      "fact": "textile plush home decorations for the Valentine season",
+      "quote": "textile plush home decorations for the Valentine season",
+      "stated": true
+     },
+     {
+      "fact": "heart-shaped decoration composed of 100 percent polyester knitted dyed pile fabric stuffed with 100 percent polypropylene filling",
+      "quote": "Each heart-shaped decoration is composed of 100 percent polyester knitted dyed pile fabric stuffed with 100percent polypropylene filling.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_otbvcnpl",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361425",
+   "code": "8526925000",
+   "answer": "8526925000",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the GripVR controller used exclusively with a standalone VR headset (not connected to a video game console or PC), or is it used with a video game console (e.g., PlayStation, Xbox) or a PC running video games?",
+   "critique": {
+    "code": "8526925000",
+    "fits": false,
+    "line": "8526.92.50.00",
+    "reason": "The product is a hand-held controller used with a SteamVR headset for virtual reality applications, which are video games. The importer's description does not state that the controller is *not* for video game consoles, and the described use (SteamVR, applications viewed on headset, joystick, trigger, AB/XY buttons) is characteristic of video game console controllers. Therefore, the specific provision for 'Radio remote control apparatus for video game consoles' (8526.92.10.00) appears to apply rather than the residual 'Other' (8526.92.50.00).",
+    "facts": [
+     {
+      "fact": "The product is a wireless remote controller used to remotely control applications viewed on a SteamVR headset through radio frequency (RF).",
+      "quote": "The wireless remotecontroller is used to remotely control some applications that are viewed on the SteamVR headset through radio frequency (RF).",
+      "stated": false
+     },
+     {
+      "fact": "The controller is equipped with 6 buttons, including AB / XY, trigger, grip, system, joystick press + 1 joystick, and a thumb rest.",
+      "quote": "the GripVR controller is equipped with 6 buttons, including AB / XY, trigger, grip, system, joystick press + 1 joystick, and a thumb rest.",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_ai9k87lj",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361449",
+   "code": "6114303070",
+   "answer": "6114301020",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Please provide a detailed description of the garment: what type of upper-body garment it is (e.g., blouse, jacket, vest, bodysuit, etc.), whether it has sleeves, its closure method, whether it has a lower-body portion or crotch closure, and its fiber composition with percentages.",
+   "critique": {
+    "code": "6114303070",
+    "fits": false,
+    "line": "6114.30.30",
+    "reason": "Product facts are insufficient to confirm the garment falls under 6114.30.30 'Other' rather than the alternatives 6114.30.10 'Tops' or 6114.30.20 'Bodysuits and bodyshirts'. The importer only states it is a 'women's upper body garment' and that its 'paramount function is not support', but does not describe the garment type (e.g., blouse, jacket, vest, bodysuit), construction (sleeves, closures, lower body attachment), or fiber composition.",
+    "facts": [
+     {
+      "fact": "Garment is a women's upper body garment",
+      "quote": "women's upper body garment from Indonesia",
+      "stated": true
+     },
+     {
+      "fact": "Paramount function is not support",
+      "quote": "paramount function of the item is not support",
+      "stated": true
+     }
+    ],
+    "receipt_id": "rcpt_req_a4g1ez3k",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361569",
+   "code": "9403896015",
+   "answer": "9403896015",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "",
+   "critique": {
+    "code": "9403896015",
+    "fits": false,
+    "line": "9403.89.60.15",
+    "reason": "The furniture has powder-coated aluminum metal frames, making it metal furniture. Metal furniture is classified under 9403.10.00 or 9403.20.00 at LEVEL 1, not under 9403.89 (furniture of other materials).",
+    "facts": [
+     {
+      "fact": "The patio table is constructed of a powder-coated aluminum metal frame",
+      "quote": "The patio table is constructed of a powder-coated aluminum metal frame",
+      "stated": false
+     },
+     {
+      "fact": "The accent side table is constructed of a powder-coated aluminum metal frame",
+      "quote": "The accent side table is constructed of a powder-coated aluminum metal frame",
+      "stated": false
+     },
+     {
+      "fact": "The sofa and the pair of swivel armchair seat foundations, backrests, armrests and the swivel bases are constructed of powder-coated aluminum metal frames",
+      "quote": "The sofa and the pair of swivel armchair seat foundations, backrests, armrests and the swivel bases are constructed of powder-coated aluminum metal frames",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_lk4li2o6",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361571",
+   "code": "8486900000",
+   "answer": "8486900000",
+   "decision": "REVIEW",
+   "reason": "FACT_NOT_STATED",
+   "question": "Can you confirm The DGLM is installed within the wafer stage region of an EUV lithography system as a specialized membrane assembly positioned directly above the semiconductor wafer during lithographic processing.?",
+   "critique": {
+    "code": "8486900000",
+    "fits": true,
+    "line": "",
+    "reason": "The DGLM is a component installed within the wafer stage region of an EUV lithography machine, which is a machine used solely or principally for the manufacture of semiconductor devices (8486.20). As a replacement/upgrade part for that machine, it is classifiable as a part under 8486.90.",
+    "facts": [
+     {
+      "fact": "The DGLM is installed within the wafer stage region of an EUV lithography system as a specialized membrane assembly positioned directly above the semiconductor wafer during lithographic processing.",
+      "quote": "The DGLM is installed within the wafer stage region as a specialized membrane assembly positioned directly above the semiconductor wafer during lithographic processing.",
+      "stated": false
+     },
+     {
+      "fact": "EUV lithography machines are machines and apparatus of a kind used solely or principally for the manufacture of semiconductor devices or electronic integrated circuits.",
+      "quote": "EUV light reflects off the lithography machine's reticle, then six mirrors, and then passes through the DGLM membrane before exposing the semiconductor pattern on the wafer.",
+      "stated": false
+     },
+     {
+      "fact": "The DGLM will be shipped as a replacement or upgrade for the EUV system's existing contamination protection methods.",
+      "quote": "The DGLM will be shipped as a replacement or upgrade for the EUV system's existing contamination protection methods.",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_d8zaqkcm",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  },
+  {
+   "ruling_number": "N361651",
+   "code": "8708998180",
+   "answer": "8409915085",
+   "decision": "REVIEW",
+   "reason": "SCHEDULE_TEXT_DISAGREES",
+   "question": "Is the spark-ignition internal combustion piston engine (of which this timing chain tensioning assembly is a part) used in a motor vehicle classified under headings 8701 to 8705? If so, identify the vehicle type and its heading.",
+   "critique": {
+    "code": "8708998180",
+    "fits": false,
+    "line": "8708",
+    "reason": "The product is described as a part of a spark-ignition internal combustion piston engine, but the importer does not state that this engine is installed in, or that the assembly is a part or accessory of, a motor vehicle classified under headings 8701 to 8705. Heading 8708 covers only parts and accessories of such motor vehicles. Without confirmation that the engine (and therefore the tensioning assembly) is for a vehicle of headings 8701-8705, classification under 8708 is not supported; the item could fall elsewhere (e.g., heading 8409 for engine parts).",
+    "facts": [
+     {
+      "fact": "Product is a timing chain tensioning assembly for a spark-ignition internal combustion piston engine",
+      "quote": "timing chain tensioning assembly from South Korea. It is a part of a spark-ignition internal combustion piston engine designed to maintain optimal tension in the timing chain.",
+      "stated": false
+     },
+     {
+      "fact": "Installed on the non-driven side of the timing chain system to maintain tension and prevent slack",
+      "quote": "The timing chain tensioning assembly is installed on the non-driven side and functions to maintain proper tension of the timing chain and prevent slack, thereby enabling accurate synchronization between the crankshaft and the camshaft.",
+      "stated": false
+     },
+     {
+      "fact": "Contains a cam mechanism that limits plunger retraction and engages progressively as the plunger advances",
+      "quote": "The cam mechanism inside the subject item maintains the position of the plunger (piston) and limits its reverse movement (retraction). After the plunger advances under the combined action of spring force and hydraulic pressure, any reverse force caused by changes in chain tension or external loads is limited by the cam profile, thereby preventing plunger retraction. Furthermore, as the plunger advances, the cam mechanism engages progressively",
+      "stated": false
+     }
+    ],
+    "receipt_id": "rcpt_req_x4d8ajtw",
+    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
+   }
+  }
+ ]
+}

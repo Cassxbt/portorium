@@ -67,16 +67,10 @@ above it. Under each level you also get the alternatives: the other lines at tha
 covers only goods that none of its alternatives at that level cover.
 Decide whether the product falls within every level of the proposed path rather than within an alternative.
 Judge only from the product facts and the schedule text given. If placing the product needs a fact that is not
-stated, and an alternative would apply depending on it, the product does not fit: ask for that fact. Never infer
-a fact from what such a product usually is: material, fibre content, percentages, power, size, weight, use and
-how it is made count only when the importer's words state them.
-List every fact that places the product on the proposed line rather than an alternative, at any level, each with
-the importer's exact words that state it, copied from PRODUCT or an IMPORTER ANSWERED line. Code checks every
-quote against those words; a fit with an unquoted fact is sent back as a question.
+stated, and an alternative would apply depending on it, the product does not fit: ask for that fact.
 Reply with only a JSON object:
 {"fits": true or false, "line": "<the first level that does not fit, or empty>", "reason": "<short>",
-"question": "<when a missing fact decides it, the one question to the importer; otherwise empty>",
-"facts": [{"fact": "<a fact the line depends on>", "quote": "<the importer's exact words stating it>"}]}"""
+"question": "<when a missing fact decides it, the one question to the importer; otherwise empty>"}"""
 
 
 @dataclass
@@ -235,24 +229,18 @@ class PrecedentGate:
             trace.event("critique", f"{code} for {product}", ("fits" if fits else f"does not fit at {data.get('line') or '?'}")
                         + f": {data.get('reason') or ''}", target_agent="Gate", model=answer.routed_model or self.model,
                         status="success" if fits else "needs_revision", receipt_id=answer.receipt.get("receipt_id"))
-        facts = [f for f in data["facts"] if isinstance(f, dict)] if isinstance(data.get("facts"), list) else []
-        stated = _plain(" ".join([product] + [_said(q, a) for q, a in answers] + [_said(q, a) for q, a, _ in remembered]))
-        unquoted = [f for f in facts if not _quoted(f, stated)]
         critique = {"code": code, "fits": fits, "line": str(data.get("line") or ""), "reason": str(data.get("reason") or ""),
-                    "facts": [{"fact": str(f.get("fact") or ""), "quote": str(f.get("quote") or ""),
-                               "stated": f not in unquoted} for f in facts],
                     "receipt_id": answer.receipt.get("receipt_id"), "routed_model": answer.routed_model}
         receipts = verdict.receipts + [{"role": "Critic", "routed_model": answer.routed_model,
                                         "receipt_id": answer.receipt.get("receipt_id"), "from_cache": answer.receipt.get("from_cache")}]
-        if fits and (unquoted or not facts):
-            # The model said it fits; code checks it said so on the importer's words, not on what such products usually are.
-            missing = str((unquoted or [{}])[0].get("fact") or "the facts that place it on this line")
+        admitted = _assumed(critique["reason"]) if fits else ""
+        if admitted:
+            # The Critic said it fits but wrote that it had to assume a fact: the importer is asked instead.
             with trace.role("Gate"):
-                trace.event("check_quotes", f"{len(facts)} fact(s) quoted for {code}",
-                            f"not in the importer's words: {missing}", target_agent="Importer", status="needs_review",
-                            rule="FACT_NOT_STATED")
+                trace.event("decide", f"{code}: the Critic's fit rests on a fact the description does not state",
+                            "REVIEW FACT_NOT_STATED", target_agent="Importer", status="needs_review", rule="FACT_NOT_STATED")
             return Verdict(REVIEW, "FACT_NOT_STATED", None, verdict.precedents,
-                           str(data.get("question") or "") or f"Can you confirm {missing}?", receipts, verdict.dq,
+                           f"The description does not settle this; can you state it? {admitted}", receipts, verdict.dq,
                            verdict.remembered, critique, verdict.proposal)
         if fits:
             verdict.critique, verdict.receipts = critique, receipts
@@ -411,26 +399,16 @@ class PrecedentGate:
         return verdict(CLASSIFIED, "BROKER_MEMORY" if all(j.kind == MEMORY for j in living) else "LIVING_PRECEDENT", proposal.code)
 
 
-def _plain(text: str) -> str:
-    """Words for quote matching: case, punctuation and spacing do not count; digits and % do."""
-    return " ".join(re.sub(r"[^\w%]+", " ", text.lower()).split())
+# The Critic's own words when it fills a gap: "presumed cotton", "does not specify the fibre", "10% implied".
+# Legal phrases such as "not specified or included elsewhere" or "not specifically provided for" are not admissions.
+ASSUMED = re.compile(r"\b(assum(e|es|ed|ing|ption)|presum(e|es|ed|ably|ption)|implied|inferr?(ed|ing)?|(does|do|did) not "
+                     r"(state|specify|say|mention|give|indicate)|(is|are|was|were) not (stated|specified|given|mentioned|indicated)"
+                     r"(?! (or included )?elsewhere)(?! for))\b", re.I)
 
 
-AFFIRMATIVE = {"yes", "y", "yes it is", "yes it does", "correct", "that is correct", "true", "yep"}
-
-
-def _said(question: str, answer: str) -> str:
-    """What the importer stated: their answer, and the question too when the answer is a plain yes to it."""
-    return f"{question} {answer}" if _plain(answer) in AFFIRMATIVE else answer
-
-
-def _quoted(fact: dict, stated: str) -> bool:
-    """A fact counts only if its quote is the importer's own words, as whole words, carrying every number the fact uses."""
-    quote = fact.get("quote")
-    if not isinstance(quote, str) or len(_plain(quote)) < 3 or f" {_plain(quote)} " not in f" {stated} ":
-        return False
-    words = _plain(quote).split()
-    return all(token in words for token in _plain(str(fact.get("fact") or "")).split() if any(ch.isdigit() for ch in token))
+def _assumed(reason: str) -> str:
+    """The sentence in which the Critic admits an assumption, or empty."""
+    return next((s.strip() for s in re.split(r"(?<=[.!?])\s+", reason) if ASSUMED.search(s)), "")
 
 
 def _broker_names(precedents: list[Precedent]) -> dict[str, str]:

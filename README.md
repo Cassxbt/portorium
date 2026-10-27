@@ -5,7 +5,7 @@
 &nbsp;
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-17160f.svg)](LICENSE)
-![Tests](https://img.shields.io/badge/tests-62%20passing-1b6b47)
+![Tests](https://img.shields.io/badge/tests-92%20passing-1b6b47)
 ![Zetaris](https://img.shields.io/badge/data%20layer-Zetaris-27406b)
 ![Meterless](https://img.shields.io/badge/Meterless-Nightshift%20%2B%20H--MEM-8f5409)
 ![NVIDIA](https://img.shields.io/badge/NVIDIA-Nemotron%203%20Ultra%20%C2%B7%203.5%20Embed%2C%20Rerank-76b900)
@@ -65,6 +65,13 @@ git clone https://github.com/Cassxbt/portorium && cd portorium
 python3 run.py                     # builds .venv, installs, opens the site and console at http://127.0.0.1:8781
 ```
 
+Or in Docker, and through the API with any file in `input_examples/`:
+
+```bash
+docker build -t portorium . && docker run --rm -p 8000:8000 portorium      # sample mode, http://localhost:8000
+curl -X POST http://localhost:8000/run -H "Content-Type: application/json" -d @input_examples/dead-code.json
+```
+
 Or straight from the command line:
 
 ```bash
@@ -109,7 +116,7 @@ Needs Python 3.12; with [uv](https://docs.astral.sh/uv/) installed, `run.py` fet
 | Nemotron 3.5 Lightning asked for a code | 300 | 14 | 4.7% | 2.8%–7.7% | 70.7% |
 | Keyword match | 300 | 1 | 0.3% | 0.1%–1.9% | 26.0% |
 
-**What a CLASSIFIED verdict guarantees, and what it does not.** None of the 114 accepted codes is missing from Rev 21, and each is cited by a standing ruling judged the same or a similar article. That is the guarantee. It is not a guarantee of the right code: **40 of the 114 differ from CBP's**. Reading them, the usual cause is the Critic taking a decisive fact the description never states, such as a motor's wattage or a material's share by weight. So a verdict is a candidate for a licensed broker to sign off. Since the run, the Critic must quote the importer's own words for every fact it relies on, and code checks the quotes (below).
+**What a CLASSIFIED verdict guarantees, and what it does not.** None of the 114 accepted codes is missing from Rev 21, and each is cited by a standing ruling judged the same or a similar article. That is the guarantee. It is not a guarantee of the right code: **40 of the 114 differ from CBP's**. Reading all 40, most are judgement calls about which heading or principle applies, where CBP read the schedule differently: structural steel against parts of a robot cell (7308 / 8479), aluminium pill cases as other articles against household articles (7616 / 7615), a hair-clip craft kit as a toy against a hair clip (9503 / 9615). At least three rest on a fact the description never states: a fan motor's wattage (N362253), a sole's share by weight (N361396), a steering motor's power (N362523). So a verdict is a candidate for a licensed broker to sign off. For the second kind the gate now sends back any fit in which the Critic writes that it assumed a fact (below); a stricter Critic that must quote the importer for every fact was tested and not shipped.
 
 **What the Critic buys.** Without it the gate answers 185 products, 95 right and 90 wrong. The Critic sends 71 of them to review: **50 wrong and 21 right**.
 
@@ -142,12 +149,14 @@ An independent adversarial review on 27 October found places where the gate fail
 | A ruling supports the proposal only if the Adjudicator matched this product to that code (a ruling on several articles no longer lends any of its codes) | `NO_PRECEDENT_FOR_PROPOSAL` |
 | No Zetaris row for a precedent in this request, a schedule path that does not end at the code, or a model call without a receipt naming its routed model: never classified | `EVIDENCE_MISSING` |
 | A newer USITC release than the loaded snapshot (asked through Zetaris, hourly): classification withheld until the new revision is loaded | `SCHEDULE_OUTDATED` |
-| The Critic lists each fact the line depends on with the importer's exact words; code checks every quote against the product and the importer's answers, and a fit on an unquoted fact becomes a question (gate prompt hash now `9d350e4680c4407e`; the frozen run used `8a55fa8ad0c4f2fa`) | `FACT_NOT_STATED` |
+| A fit in which the Critic writes that it assumed or inferred a fact ("presumed cotton", "does not specify the fibre", "implied") goes back to the importer as a question; the Critic's prompt is unchanged | `FACT_NOT_STATED` |
 | An importer's answer is reused only for the same product, not a similar one; an answer also shapes the next search | memory, retrieval |
 | Memory writes locked per importer and replaced atomically; the ledger keeps every role's receipt | memory, ledger |
-| Hosted sample: writes go only to `visitor-` namespaces (not authenticated); live: sign-off and wipe need `BROKER_TOKEN`; trace ids carry 64 random bits | access |
+| Importer names must be plain identifiers; the console gives each browser a random namespace (not authenticated); live, sign-off and wipe need `BROKER_TOKEN`; trace ids carry 64 random bits | access |
 
-On the frozen run's recorded Zetaris answers, these rules would have sent **1** of the 114 accepted items to review, and it was a wrong one (`N364930`); every other accepted item had its Zetaris rows, a complete schedule path and every receipt. This replay cannot apply `FACT_NOT_STATED`, which needs new Critic calls. `python scripts/posttest_rules.py data/eval/results/test_20261026T184956.json` reproduces this from the local recordings of the run (`data/recordings/`, 124 MB, not committed).
+On the frozen run's recorded Zetaris answers and stored Critic reasons, these rules would have sent **2** of the 114 accepted items to review, both wrong: `N364930`, cited by no ruling matched to its code, and `N361396`, where the Critic wrote that a sole's share by weight was implied. Every other accepted item had its Zetaris rows, a complete schedule path and every receipt. The assumption rule was found while reading test errors, so it was also checked on dev: it sends none of the 60 codes the Critic accepted there to review. `python scripts/posttest_rules.py data/eval/results/test_20261026T184956.json` reproduces this from the local recordings of the run (`data/recordings/`, 124 MB, not committed).
+
+**Tested, not shipped: a Critic that quotes the importer.** After reading the 40 wrong accepts, we asked the Critic to list each fact the line depends on with the importer's exact words, and had code check every quote. On the dev set's 103 items that reach the Critic, two versions of that prompt kept 38 and 31 items (73.7% and 77.4% exact; left out: 5 and 4 replies cut off at the token limit, and one Zetaris disconnect), against 60 for the shipped Critic (73.3%, from its own dev run). Asking for the facts made the model reject more, and precision did not clearly rise, so the shipped Critic is the one the frozen test measured (gate prompt hash `8a55fa8ad0c4f2fa`); the narrower assumption rule above reads what that Critic already writes. The runs are `data/eval/results/critic_dev_20261027T184213.json` and `critic_dev_20261027T185423.json`, from `scripts/critic_rerun.py`.
 
 ## Architecture
 
@@ -165,7 +174,7 @@ flowchart LR
   X --> G
   G -- cited, standing, living --> C[Critic<br/>Zetaris schedule text + Ultra]
   C -- fits --> OK[CLASSIFIED]
-  C -- does not fit, or a fact is unquoted --> RV[REVIEW, with a question when a fact is missing]
+  C -- does not fit --> RV[REVIEW, with a question when a fact is missing]
   G -- split / conflict / no precedent --> RV
   G -- nothing alive --> RF[REFUSE]
   RV -- importer answers --> R
@@ -203,7 +212,7 @@ Every verdict is one decision and one rule name, checked in this order. Anything
 | CLASSIFIED | `LIVING_PRECEDENT` / `BROKER_MEMORY` | a standing ruling judged the same or a similar article (or a broker's sign-off) cites the code, the Adjudicator matched it to this product, and it is living: the Critic reads it next |
 | REVIEW | `EVIDENCE_MISSING` | Zetaris's schedule path does not end at the code |
 | REVIEW | `SCHEDULE_TEXT_DISAGREES` | the Critic finds the product outside the code's Rev 21 text |
-| REVIEW | `FACT_NOT_STATED` | the Critic says it fits, but a fact it relies on is not in the importer's words |
+| REVIEW | `FACT_NOT_STATED` | the Critic says it fits but writes that it assumed a fact the description does not state |
 | REVIEW | `EVIDENCE_MISSING` | a model call has no receipt naming its routed model |
 | REVIEW | `SCHEDULE_OUTDATED` | USITC publishes a newer schedule than the one loaded |
 
@@ -236,7 +245,7 @@ A CLASSIFIED verdict is a candidate for a broker's sign-off, not a filing. `SCHE
 | Schedule revisions | One revision loaded at a time (Rev 21, still USITC's current release on 27 October). A newer release withholds classification; loading it is a manual step. |
 | Precedent sources | US CBP rulings only. Court decisions and other authorities' rulings are not consulted. |
 | Correctness | **Measured, not guaranteed.** 64.9% of accepted codes match CBP exactly; 40 of 114 do not. |
-| Access | Hosted sample: per-visitor memory. Live: a shared `BROKER_TOKEN` for sign-off and wipe; no per-user accounts. |
+| Access | Hosted sample: a random namespace per browser, not authenticated. Live: a shared `BROKER_TOKEN` for sign-off and wipe; no per-user accounts. |
 | Users | **Not yet tested with a broker or importer.** No pilot. |
 | Legal effect | **Advisory.** A licensed broker decides; no broker queue yet (not built, never faked). |
 
@@ -261,7 +270,7 @@ Data sources and how to regenerate them: [`data/README.md`](data/README.md).
 
 ## Tests and layout
 
-`python3 run.py test` runs 62 tests: the gate's rules, the Critic and its schedule text, trace roles and concurrency, recorder replay under parallel load, search replay, evaluation leakage and resume, Zetaris session renewal, and the official H-MEM conformance vectors with a mutation test.
+`python3 run.py test` runs 92 tests: the gate's rules, the Critic and its schedule text, trace roles and concurrency, recorder replay under parallel load, search replay, evaluation leakage and resume, Zetaris session renewal, the fail-closed evidence rules, memory scoping and locking, access checks, a replay of every recorded demo, and the official H-MEM conformance vectors with a mutation test.
 
 ```
 portorium/      gate.py (roles + rules), liveness.py, index.py, nightshift.py, nvidia.py, zetaris.py,

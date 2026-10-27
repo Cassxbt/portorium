@@ -23,7 +23,7 @@ class FakeNightshift(Nightshift):
         self.reply = reply or CRITIC_SAYS_FITS
         self.prompts = []
 
-    def chat_json(self, messages, required, model):
+    def chat_json(self, messages, required, model, max_tokens=1024):
         self.prompts.append(messages)
         return self.reply, Answer(json.dumps(self.reply), self.receipt)
 
@@ -112,69 +112,6 @@ def test_an_importer_answer_also_shapes_which_rulings_are_retrieved():
     assert asked == ["Men's knitted polo shirt", "Men's knitted polo shirt. What is the fibre? 100% polyester"]
 
 
-def test_a_fit_resting_on_a_fact_the_importer_never_stated_becomes_a_question(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    reply = {"fits": True, "line": "", "reason": "cotton polo", "question": "",
-             "facts": [{"fact": "the shirt is cotton", "quote": "100% cotton"}]}
-    v = critique(PATH, reply=reply, product="Men's knitted polo shirt with short sleeves")[1]
-    assert (v.decision, v.reason, v.code) == (REVIEW, "FACT_NOT_STATED", None)
-    assert "cotton" in v.question
-
-
-def test_a_fact_quoted_from_the_importer_answer_supports_the_fit(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    reply = {"fits": True, "line": "", "reason": "cotton polo", "question": "",
-             "facts": [{"fact": "the shirt is cotton", "quote": "100% combed cotton"}]}
-    v = critique(PATH, reply=reply, product="Men's knitted polo shirt", answers=[("What is the fibre?", "100% cotton jersey knit")])[1]
-    assert v.decision == REVIEW and v.reason == "FACT_NOT_STATED"
-    reply["facts"][0]["quote"] = "100% Cotton,  jersey"
-    assert critique(PATH, reply=reply, product="Men's knitted polo shirt",
-                    answers=[("What is the fibre?", "100% cotton jersey knit")])[1].decision == CLASSIFIED
-
-
-def test_a_fit_with_no_stated_facts_is_not_accepted(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    reply = {"fits": True, "line": "", "reason": "fits", "question": "", "facts": []}
-    assert critique(PATH, reply=reply)[1].reason == "FACT_NOT_STATED"
-
-
-def quoted(fact, quote, product, answers=()):
-    reply = {"fits": True, "line": "", "reason": "r", "question": "", "facts": [{"fact": fact, "quote": quote}]}
-    return reply, product, answers
-
-
-def test_a_quote_must_match_whole_words(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    for fact, quote, product in (("garment for men", "men", "Women's V-neck pullover"),
-                                 ("silk", "silk", "silkscreened cotton T-shirt"),
-                                 ("100% cotton", "a", "a knitted shirt")):
-        reply, product, answers = quoted(fact, quote, product)
-        assert critique(PATH, reply=reply, product=product)[1].reason == "FACT_NOT_STATED", quote
-
-
-def test_a_quote_must_carry_the_numbers_its_fact_depends_on(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    reply, product, _ = quoted("motor output over 735 W", "electric motor", "fan with an electric motor")
-    assert critique(PATH, reply=reply, product=product)[1].reason == "FACT_NOT_STATED"
-    reply, product, _ = quoted("motor output 900 W", "900 W electric motor", "fan with a 900 W electric motor")
-    assert critique(PATH, reply=reply, product=product)[1].decision == CLASSIFIED
-
-
-def test_a_quote_that_is_not_text_is_not_a_quote(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    reply = {"fits": True, "line": "", "reason": "r", "question": "", "facts": [{"fact": "cotton", "quote": ["cotton"]}]}
-    assert critique(PATH, reply=reply, product="cotton shirt")[1].reason == "FACT_NOT_STATED"
-    reply["facts"] = 5
-    assert critique(PATH, reply=reply, product="cotton shirt")[1].reason == "FACT_NOT_STATED"
-
-
-def test_a_yes_confirms_the_question_it_answers(monkeypatch):
-    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
-    reply, product, _ = quoted("100% cotton", "100% cotton", "knitted polo shirt")
-    assert critique(PATH, reply=reply, product=product, answers=[("Is it 100% cotton?", "Yes")])[1].decision == CLASSIFIED
-    assert critique(PATH, reply=reply, product=product, answers=[("Is it 100% cotton?", "No")])[1].reason == "FACT_NOT_STATED"
-
-
 def test_a_ledger_row_with_a_missing_receipt_has_no_receipt_column():
     from portorium.audit import receipt_columns
     models, ids = receipt_columns([{"role": "Adjudicator", "routed_model": "m", "receipt_id": "r1"},
@@ -192,3 +129,19 @@ def test_an_empty_release_answer_is_not_a_current_schedule():
         def run_dq(self, rule, table):
             return {"total_record": "0", "valid_record": "0", "invalid_record": "0"}
     assert ReleaseCheck(Z())() is False
+
+def test_a_fit_the_critic_says_it_had_to_assume_becomes_a_question(monkeypatch):
+    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
+    reply = {"fits": True, "line": "", "question": "", "reason": "Polo shirts are shirts of heading 6105. The product description "
+             "does not specify the fiber composition, but it is presumed the shirt is of cotton."}
+    v = critique(PATH, reply=reply, product="Men's knitted polo shirt")[1]
+    assert (v.decision, v.reason, v.code) == (REVIEW, "FACT_NOT_STATED", None)
+    assert "fiber composition" in v.question
+
+
+def test_legal_phrases_about_other_headings_are_not_assumptions(monkeypatch):
+    monkeypatch.setattr("portorium.gate.schedule_text", lambda zetaris, code: PATH)
+    for reason in ("Made-up textile articles not specified or included elsewhere; it is not a cleaning cloth.",
+                   "Parts of loudspeakers are not specified or included elsewhere in this chapter; other articles not specifically provided for."):
+        reply = {"fits": True, "line": "", "question": "", "reason": reason}
+        assert critique(PATH, reply=reply)[1].decision == CLASSIFIED, reason

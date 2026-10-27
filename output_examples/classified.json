@@ -19,7 +19,7 @@
     ],
     "match": "full",
     "code": "8518220000",
-    "fact": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights; no FM/AM radio, no USB/SD media playback, no microphone.",
+    "fact": "Bluetooth party speaker with two drivers in one enclosure, LED lights, rechargeable battery, Bluetooth-only, no radio/SD/USB playback",
     "status": "living",
     "failed_rule": null,
     "pre_hs2022": false,
@@ -36,7 +36,7 @@
     ],
     "match": "partial",
     "code": "8518210000",
-    "fact": "Single driver (3 W) vs. two drivers; includes microphone and hands-free calling; classified under 8518.21.",
+    "fact": "Single driver (vs two), includes microphone and phone-call features",
     "status": "living",
     "failed_rule": null,
     "pre_hs2022": true,
@@ -53,7 +53,7 @@
     ],
     "match": "partial",
     "code": "8518220000",
-    "fact": "PA-system features (mixer, EQ, mic inputs, wireless mic option, wheels/handle) not present on the product.",
+    "fact": "PA-system speaker with mixer, EQ, mic/line inputs, optional wireless mic modules",
     "status": "living",
     "failed_rule": null,
     "pre_hs2022": false,
@@ -70,7 +70,7 @@
     ],
     "match": "none",
     "code": null,
-    "fact": "Includes FM tuner, USB port, SD card slot, wireless microphones \u2014 classified as radiobroadcast receiver (8527).",
+    "fact": "Includes FM tuner, USB/SD playback, wireless microphones, remote \u2014 combination radio/sound-reproducing apparatus",
     "status": null,
     "failed_rule": null,
     "pre_hs2022": true,
@@ -87,7 +87,7 @@
     ],
     "match": "none",
     "code": null,
-    "fact": "Includes FM tuner, DVD/CD player, SD/USB playback \u2014 classified as radiobroadcast receiver (8527).",
+    "fact": "Large PA speaker with FM tuner, DVD/CD player, SD/USB playback \u2014 radiobroadcast receiver with sound reproducing",
     "status": null,
     "failed_rule": null,
     "pre_hs2022": true,
@@ -104,7 +104,7 @@
     ],
     "match": "partial",
     "code": "8518210000",
-    "fact": "Single 2-inch driver, LED flashlight, USB/AAA power, 3.5 mm input \u2014 classified under 8518.21.",
+    "fact": "LED flashlight speaker, single small driver, line-in only, no Bluetooth",
     "status": "living",
     "failed_rule": null,
     "pre_hs2022": true,
@@ -118,20 +118,20 @@
    {
     "role": "Adjudicator",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_v5q2ja24",
-    "from_cache": false
+    "receipt_id": "rcpt_req_xqoerfav",
+    "from_cache": true
    },
    {
     "role": "Proposer",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_oxuhgzt6",
-    "from_cache": false
+    "receipt_id": "rcpt_req_rp7vk3j5",
+    "from_cache": true
    },
    {
     "role": "Critic",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_7w56bi59",
-    "from_cache": false
+    "receipt_id": "rcpt_req_bxecx141",
+    "from_cache": true
    }
   ],
   "dq": {
@@ -157,23 +157,23 @@
    "code": "8518220000",
    "fits": true,
    "line": "",
-   "reason": "The product is a loudspeaker (portable Bluetooth party speaker) mounted in an enclosure containing two drivers, which constitutes multiple loudspeakers in the same enclosure, falling under 8518.22.00.00.",
-   "receipt_id": "rcpt_req_7w56bi59",
+   "reason": "The product is a portable Bluetooth party speaker containing two drivers in a single enclosure, which constitutes multiple loudspeakers mounted in the same enclosure. It falls under heading 8518 as a loudspeaker, and specifically under subheading 8518.22.00.00. The presence of a rechargeable battery, Bluetooth connectivity, and LED lights does not change its essential character as a loudspeaker.",
+   "receipt_id": "rcpt_req_bxecx141",
    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
   },
   "proposal": {
    "code": "8518220000",
    "confidence": 95.0,
    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "receipt_id": "rcpt_req_oxuhgzt6",
+   "receipt_id": "rcpt_req_rp7vk3j5",
    "status": "living",
    "successors": []
   }
  },
  "trace": [
   {
-   "timestamp": "2026-10-26T22:54:08.529Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:54.250Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Retriever",
    "action": "embed",
@@ -189,8 +189,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:10.580Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:56.348Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Retriever",
    "action": "rerank",
@@ -206,13 +206,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:10.596Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:56.358Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Retriever",
    "action": "retrieve",
    "input_summary": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
-   "output_summary": "6 rulings issued before 2026-10-26, 6 with product facts: N326117, N313554, N340388, N310003, N312832, N174463",
+   "output_summary": "6 rulings issued before 2026-10-27, 6 with product facts: N326117, N313554, N340388, N310003, N312832, N174463",
    "target_agent": "Adjudicator",
    "model": null,
    "confidence": null,
@@ -220,8 +220,8 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:54:10.601Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:56.360Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Memory",
    "action": "hmem.query",
@@ -238,8 +238,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:10.603Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:56.360Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Memory",
    "action": "hmem.query",
@@ -256,8 +256,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:10.603Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:56.360Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Memory",
    "action": "recall",
@@ -270,8 +270,8 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:54:11.729Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:57.387Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Auditor",
    "action": "sql",
@@ -287,8 +287,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:11.730Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:57.388Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Auditor",
    "action": "check_liveness",
@@ -301,8 +301,45 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:54:15.643Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:57.631Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
+   "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
+   "agent_name": "Adjudicator",
+   "action": "chat",
+   "input_summary": "PRODUCT: Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights PRECEDENT N326117 (2022-05-20): The tariff classification of a Bluetooth Party Speaker from China. CODES: 8518.22.0000. FACTS: The item concerned is referred to as the Vivitar Bluetooth Party Speaker, item # 401368. It measures 12\" wide, 5\" tall and 4\" thick. Its case is made from plastic\u2026",
+   "output_summary": "{ \"precedents\": [ { \"ruling\": \"N326117\", \"match\": \"full\", \"code\": \"8518.22.0000\", \"fact\": \"Bluetooth party speaker with two drivers in one enclosure, LED lights, rechargeable battery, Bluetooth-only, no radio/SD/USB playback\" }, { \"ruling\": \"N313554\", \"match\": \"partial\", \"code\": \"none\", \"fact\": \"Single driver (vs two), includes microphone and phone-call features\" }, { \"ruling\": \"N340388\", \"match\"\u2026",
+   "target_agent": null,
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "receipt_id": "rcpt_req_xqoerfav",
+    "cache": "exact",
+    "source": "live"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:05:57.642Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
+   "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
+   "agent_name": "Adjudicator",
+   "action": "judge",
+   "input_summary": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights vs 6 precedents, 0 importer answer(s)",
+   "output_summary": "N326117 full 8518220000; N313554 partial 8518210000; N340388 partial 8518220000; N310003 none -; N312832 none -; N174463 partial 8518210000",
+   "target_agent": "Gate",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "receipt_id": "rcpt_req_xqoerfav"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:05:59.122Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Proposer",
    "action": "chat",
@@ -315,14 +352,14 @@
    "status": "success",
    "detail": {
     "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_oxuhgzt6",
-    "cache": "miss",
+    "receipt_id": "rcpt_req_rp7vk3j5",
+    "cache": "exact",
     "source": "live"
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:15.646Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:59.122Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Proposer",
    "action": "propose",
@@ -334,49 +371,12 @@
    "retry_count": 0,
    "status": "success",
    "detail": {
-    "receipt_id": "rcpt_req_oxuhgzt6"
+    "receipt_id": "rcpt_req_rp7vk3j5"
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:17.504Z",
-   "run_id": "20261026T225407-198bd6",
-   "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
-   "agent_name": "Adjudicator",
-   "action": "chat",
-   "input_summary": "PRODUCT: Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights PRECEDENT N326117 (2022-05-20): The tariff classification of a Bluetooth Party Speaker from China. CODES: 8518.22.0000. FACTS: The item concerned is referred to as the Vivitar Bluetooth Party Speaker, item # 401368. It measures 12\" wide, 5\" tall and 4\" thick. Its case is made from plastic\u2026",
-   "output_summary": "{ \"precedents\": [ { \"ruling\": \"N326117\", \"match\": \"full\", \"code\": \"8518.22.0000\", \"fact\": \"Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights; no FM/AM radio, no USB/SD media playback, no microphone.\" }, { \"ruling\": \"N313554\", \"match\": \"partial\", \"code\": \"none\", \"fact\": \"Single driver (3 W) vs. two drivers; includes microphone and hands-free calli\u2026",
-   "target_agent": null,
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "confidence": null,
-   "retry_count": 0,
-   "status": "success",
-   "detail": {
-    "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_v5q2ja24",
-    "cache": "miss",
-    "source": "live"
-   }
-  },
-  {
-   "timestamp": "2026-10-26T22:54:17.507Z",
-   "run_id": "20261026T225407-198bd6",
-   "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
-   "agent_name": "Adjudicator",
-   "action": "judge",
-   "input_summary": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights vs 6 precedents, 0 importer answer(s)",
-   "output_summary": "N326117 full 8518220000; N313554 partial 8518210000; N340388 partial 8518220000; N310003 none -; N312832 none -; N174463 partial 8518210000",
-   "target_agent": "Gate",
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "confidence": null,
-   "retry_count": 0,
-   "status": "success",
-   "detail": {
-    "receipt_id": "rcpt_req_v5q2ja24"
-   }
-  },
-  {
-   "timestamp": "2026-10-26T22:54:17.509Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:05:59.123Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Gate",
    "action": "decide",
@@ -392,8 +392,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:18.794Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:06:00.273Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Auditor",
    "action": "sql",
@@ -409,8 +409,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:18.795Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:06:00.275Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Auditor",
    "action": "schedule_text",
@@ -426,13 +426,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:32.604Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:06:00.824Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Critic",
    "action": "chat",
    "input_summary": "PRODUCT: Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights PROPOSED: 8518.22.00.00 LEVEL 0: 8518 Microphones and stands therefor; loudspeakers, whether or not mounted in their enclosures; headphones and earphones, whether or not combined with a microphone, and sets consisting of a microphone and one or more loudspeakers; audio-frequency electric \u2026",
-   "output_summary": "{ \"fits\": true, \"line\": \"\", \"reason\": \"The product is a loudspeaker (portable Bluetooth party speaker) mounted in an enclosure containing two drivers, which constitutes multiple loudspeakers in the same enclosure, falling under 8518.22.00.00.\", \"question\": \"\" }",
+   "output_summary": "{\"fits\": true, \"line\": \"\", \"reason\": \"The product is a portable Bluetooth party speaker containing two drivers in a single enclosure, which constitutes multiple loudspeakers mounted in the same enclosure. It falls under heading 8518 as a loudspeaker, and specifically under subheading 8518.22.00.00. The presence of a rechargeable battery, Bluetooth connectivity, and LED lights does not change its \u2026",
    "target_agent": null,
    "model": "nvidia/nemotron-3-ultra-550b-a55b",
    "confidence": null,
@@ -440,35 +440,52 @@
    "status": "success",
    "detail": {
     "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_7w56bi59",
-    "cache": "miss",
+    "receipt_id": "rcpt_req_bxecx141",
+    "cache": "exact",
     "source": "live"
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:32.607Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:06:00.824Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Critic",
    "action": "critique",
    "input_summary": "8518220000 for Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
-   "output_summary": "fits: The product is a loudspeaker (portable Bluetooth party speaker) mounted in an enclosure containing two drivers, which constitutes multiple loudspeakers in the same enclosure, falling under 8518.22.00.00.",
+   "output_summary": "fits: The product is a portable Bluetooth party speaker containing two drivers in a single enclosure, which constitutes multiple loudspeakers mounted in the same enclosure. It falls under heading 8518 as a loudspeaker, and specifically under subheading 8518.22.00.00. The presence of a rechargeable battery, Bluetooth connectivity, and LED lights does not change its essential character as a loudspe\u2026",
    "target_agent": "Gate",
    "model": "nvidia/nemotron-3-ultra-550b-a55b",
    "confidence": null,
    "retry_count": 0,
    "status": "success",
    "detail": {
-    "receipt_id": "rcpt_req_7w56bi59"
+    "receipt_id": "rcpt_req_bxecx141"
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:33.114Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:06:01.674Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
+   "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
+   "agent_name": "portorium",
+   "action": "sql",
+   "input_summary": "RUN DQ release_is_snapshot TABLE lightning.metastore.portorium.portorium.hts_release",
+   "output_summary": "1 row(s): {'name': 'release_is_snapshot', 'table': 'hts_release', 'type': 'Custom Data Quality', 'total_record': '1', 'valid_record': '1', 'invalid_record': '0'}",
+   "target_agent": null,
+   "model": null,
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "source": "live"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:01.971Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Ledger",
    "action": "sql",
-   "input_summary": "INSERT INTO portorium_files.verdict_log VALUES ('25f1234f-f1cb-4b13-858c-77c71a204a07', '2026-10-26T22:54:32+00:00', 'demo', 'Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights', 'CLASSIFIED', 'LIVING_PRECEDENT', '8518220000', '2026HTSRev21', 'nvidia/nemotron-3-ultra-550b-a55b', 'rcpt_req_v5q2ja24')",
+   "input_summary": "INSERT INTO portorium_files.verdict_log VALUES ('e0314f39-ee9b-402d-8609-0113c63be8cb', '2026-10-27T19:06:01+00:00', 'demo', 'Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights', 'CLASSIFIED', 'LIVING_PRECEDENT', '8518220000', '2026HTSRev21', 'nemotron-3-ultra-550b-a55b', 'A:rcpt_req_xqoerfav;P:rcpt_req_rp7vk3j5;C:rcpt_req_bxecx141')",
    "output_summary": "0 row(s)",
    "target_agent": null,
    "model": null,
@@ -480,13 +497,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:33.114Z",
-   "run_id": "20261026T225407-198bd6",
+   "timestamp": "2026-10-27T19:06:01.972Z",
+   "run_id": "20261027T190553-4dbbad47979b485f",
    "subject": "Portable Bluetooth party speaker with two drivers in one enclosure, rechargeable battery, LED lights",
    "agent_name": "Ledger",
    "action": "record",
    "input_summary": "CLASSIFIED LIVING_PRECEDENT 8518220000",
-   "output_summary": "verdict 25f1234f-f1cb-4b13-858c-77c71a204a07 written to Zetaris audit.verdict_log, where classified_code_living re-screens it",
+   "output_summary": "verdict e0314f39-ee9b-402d-8609-0113c63be8cb written to Zetaris audit.verdict_log, where classified_code_living re-screens it",
    "target_agent": null,
    "model": null,
    "confidence": null,

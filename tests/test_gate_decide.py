@@ -70,7 +70,7 @@ class FakeNightshift:
     def __init__(self, rows):
         self.rows = rows
 
-    def chat_json(self, messages, required, model):
+    def chat_json(self, messages, required, model, max_tokens=1024):
         return {"precedents": self.rows, "question": ""}, Answer(json.dumps(self.rows), {"routed_model": model})
 
 

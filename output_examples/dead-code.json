@@ -19,7 +19,7 @@
     ],
     "match": "full",
     "code": "6110202075",
-    "fact": "Women's V-neck pullover, 100% cotton jersey knit, long sleeves, hemmed bottom",
+    "fact": "women's V-neck pullover, 100% cotton jersey knit, long sleeves, hemmed bottom",
     "status": "split",
     "failed_rule": "code_in_schedule",
     "pre_hs2022": true,
@@ -52,7 +52,7 @@
     ],
     "match": "partial",
     "code": "6110202075",
-    "fact": "Round neck and breast pocket differ from V-neck, no pocket",
+    "fact": "women's pullover, 100% cotton jersey knit, but round neck and breast pocket instead of V-neck",
     "status": "split",
     "failed_rule": "code_in_schedule",
     "pre_hs2022": true,
@@ -85,7 +85,7 @@
     ],
     "match": "partial",
     "code": "6110202065",
-    "fact": "Men's garment, crew/rib neck, fabric weight 171.5 g/m\u00b2",
+    "fact": "men's V-neck upper body garment, 100% cotton jersey knit, long sleeves, hemmed bottom; different gender",
     "status": "revoked",
     "failed_rule": "ruling_revoked",
     "pre_hs2022": true,
@@ -102,7 +102,7 @@
     ],
     "match": "partial",
     "code": "6109100070",
-    "fact": "Round close-fitting neckline, narrow sleeves classified as T-shirt (heading 6109)",
+    "fact": "women's T-shirt style pullover, jersey knit, round close-fitting neckline, long sleeves; different neckline and classified as T-shirt (heading 6109)",
     "status": "living",
     "failed_rule": null,
     "pre_hs2022": true,
@@ -119,7 +119,7 @@
     ],
     "match": "partial",
     "code": "6110202065",
-    "fact": "Men's garment, crew/rib neck, fabric weight 170.2 g/m\u00b2",
+    "fact": "men's upper body garment, 100% cotton jersey knit, crew neckline, long sleeves, hemmed bottom; different gender and neckline",
     "status": "revoked",
     "failed_rule": "ruling_revoked",
     "pre_hs2022": true,
@@ -136,7 +136,7 @@
     ],
     "match": "partial",
     "code": "6110303055",
-    "fact": "Sleeveless, 100% nylon mesh fabric",
+    "fact": "women's sleeveless pullover, 100% nylon mesh fabric; different fiber, sleeveless, round neck",
     "status": "split",
     "failed_rule": "code_in_schedule",
     "pre_hs2022": true,
@@ -165,14 +165,14 @@
    {
     "role": "Adjudicator",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_aich2pz3",
-    "from_cache": false
+    "receipt_id": "rcpt_req_paex3zc2",
+    "from_cache": true
    },
    {
     "role": "Proposer",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_8e15xevo",
-    "from_cache": false
+    "receipt_id": "rcpt_req_0n6dcv4d",
+    "from_cache": true
    }
   ],
   "dq": {
@@ -199,7 +199,7 @@
    "code": "6110202075",
    "confidence": 95.0,
    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "receipt_id": "rcpt_req_8e15xevo",
+   "receipt_id": "rcpt_req_0n6dcv4d",
    "status": "split",
    "successors": [
     "6110202005",
@@ -222,8 +222,8 @@
  },
  "trace": [
   {
-   "timestamp": "2026-10-26T22:54:33.842Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:03.652Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Retriever",
    "action": "embed",
@@ -239,8 +239,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:35.554Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:04.847Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Retriever",
    "action": "rerank",
@@ -256,13 +256,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:35.559Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:04.851Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Retriever",
    "action": "retrieve",
    "input_summary": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
-   "output_summary": "6 rulings issued before 2026-10-26, 6 with product facts: 951485, 951484, 952370, 952530, 952371, d83103",
+   "output_summary": "6 rulings issued before 2026-10-27, 6 with product facts: 951485, 951484, 952370, 952530, 952371, d83103",
    "target_agent": "Adjudicator",
    "model": null,
    "confidence": null,
@@ -270,8 +270,8 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:54:35.560Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:04.852Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Memory",
    "action": "hmem.query",
@@ -288,8 +288,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:35.561Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:04.853Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Memory",
    "action": "hmem.query",
@@ -306,8 +306,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:35.561Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:04.853Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Memory",
    "action": "recall",
@@ -320,8 +320,8 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:54:36.350Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:05.957Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Auditor",
    "action": "sql",
@@ -337,8 +337,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:36.351Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:05.958Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Auditor",
    "action": "check_liveness",
@@ -351,50 +351,13 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:54:39.558Z",
-   "run_id": "20261026T225433-cba5b1",
-   "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
-   "agent_name": "Proposer",
-   "action": "chat",
-   "input_summary": "PRODUCT: Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom PRIOR RULINGS: 951485: Classification of a women's knit pullover; Heading 6110. CODES: 6110202075. FACTS: A sample was submitted for examination. FACTS: The size medium sample garment is referred to as Style C40507B. The upper body garment is constructed of 100 percent cotton jersey knit fabric. Style C4\u2026",
-   "output_summary": "{\"code\": \"6110202075\", \"confidence\": 95}",
-   "target_agent": null,
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "confidence": null,
-   "retry_count": 0,
-   "status": "success",
-   "detail": {
-    "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_8e15xevo",
-    "cache": "miss",
-    "source": "live"
-   }
-  },
-  {
-   "timestamp": "2026-10-26T22:54:39.558Z",
-   "run_id": "20261026T225433-cba5b1",
-   "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
-   "agent_name": "Proposer",
-   "action": "propose",
-   "input_summary": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom from 6 precedents",
-   "output_summary": "6110202075 at confidence 95",
-   "target_agent": "Gate",
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "confidence": null,
-   "retry_count": 0,
-   "status": "success",
-   "detail": {
-    "receipt_id": "rcpt_req_8e15xevo"
-   }
-  },
-  {
-   "timestamp": "2026-10-26T22:54:42.548Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:06.058Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Adjudicator",
    "action": "chat",
    "input_summary": "PRODUCT: Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom PRECEDENT 951485 (1992-08-11): Classification of a women's knit pullover; Heading 6110. CODES: 6110.20.2075. FACTS: A sample was submitted for examination. FACTS: The size medium sample garment is referred to as Style C40507B. The upper body garment is constructed of 100 percent cotton jersey knit fabric\u2026",
-   "output_summary": "{ \"precedents\": [ { \"ruling\": \"951485\", \"match\": \"full\", \"code\": \"6110.20.2075\", \"fact\": \"Women's V-neck pullover, 100% cotton jersey knit, long sleeves, hemmed bottom\" }, { \"ruling\": \"951484\", \"match\": \"partial\", \"code\": \"6110.20.2075\", \"fact\": \"Round neck and breast pocket differ from V-neck, no pocket\" }, { \"ruling\": \"952370\", \"match\": \"partial\", \"code\": \"6110.20.2065\", \"fact\": \"Men's garment,\u2026",
+   "output_summary": "{ \"precedents\": [ { \"ruling\": \"951485\", \"match\": \"full\", \"code\": \"6110.20.2075\", \"fact\": \"women's V-neck pullover, 100% cotton jersey knit, long sleeves, hemmed bottom\" }, { \"ruling\": \"951484\", \"match\": \"partial\", \"code\": \"6110.20.2075\", \"fact\": \"women's pullover, 100% cotton jersey knit, but round neck and breast pocket instead of V-neck\" }, { \"ruling\": \"952370\", \"match\": \"partial\", \"code\": \"611\u2026",
    "target_agent": null,
    "model": "nvidia/nemotron-3-ultra-550b-a55b",
    "confidence": null,
@@ -402,14 +365,14 @@
    "status": "success",
    "detail": {
     "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_aich2pz3",
-    "cache": "miss",
+    "receipt_id": "rcpt_req_paex3zc2",
+    "cache": "exact",
     "source": "live"
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:42.571Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:06.085Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Adjudicator",
    "action": "judge",
@@ -421,12 +384,49 @@
    "retry_count": 0,
    "status": "success",
    "detail": {
-    "receipt_id": "rcpt_req_aich2pz3"
+    "receipt_id": "rcpt_req_paex3zc2"
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:42.579Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:07.689Z",
+   "run_id": "20261027T190601-1048878169240cfc",
+   "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
+   "agent_name": "Proposer",
+   "action": "chat",
+   "input_summary": "PRODUCT: Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom PRIOR RULINGS: 951485: Classification of a women's knit pullover; Heading 6110. CODES: 6110202075. FACTS: A sample was submitted for examination. FACTS: The size medium sample garment is referred to as Style C40507B. The upper body garment is constructed of 100 percent cotton jersey knit fabric. Style C4\u2026",
+   "output_summary": "{ \"code\": \"6110202075\", \"confidence\": 95 }",
+   "target_agent": null,
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "receipt_id": "rcpt_req_0n6dcv4d",
+    "cache": "exact",
+    "source": "live"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:07.689Z",
+   "run_id": "20261027T190601-1048878169240cfc",
+   "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
+   "agent_name": "Proposer",
+   "action": "propose",
+   "input_summary": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom from 6 precedents",
+   "output_summary": "6110202075 at confidence 95",
+   "target_agent": "Gate",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "receipt_id": "rcpt_req_0n6dcv4d"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:07.698Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Gate",
    "action": "decide",
@@ -442,12 +442,12 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:43.078Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:08.158Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Ledger",
    "action": "sql",
-   "input_summary": "INSERT INTO portorium_files.verdict_log VALUES ('b9b27917-5a32-49c4-afec-10ca55bab4c0', '2026-10-26T22:54:42+00:00', 'demo', 'Women''s V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom', 'REVIEW', 'SPLIT_SUCCESSORS', '', '2026HTSRev21', 'nvidia/nemotron-3-ultra-550b-a55b', 'rcpt_req_aich2pz3')",
+   "input_summary": "INSERT INTO portorium_files.verdict_log VALUES ('b1a9368b-7996-4737-96fb-62c5d21eeba7', '2026-10-27T19:06:07+00:00', 'demo', 'Women''s V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom', 'REVIEW', 'SPLIT_SUCCESSORS', '', '2026HTSRev21', 'nemotron-3-ultra-550b-a55b', 'A:rcpt_req_paex3zc2;P:rcpt_req_0n6dcv4d')",
    "output_summary": "0 row(s)",
    "target_agent": null,
    "model": null,
@@ -459,13 +459,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:54:43.078Z",
-   "run_id": "20261026T225433-cba5b1",
+   "timestamp": "2026-10-27T19:06:08.158Z",
+   "run_id": "20261027T190601-1048878169240cfc",
    "subject": "Women's V-neck pullover, 100% cotton jersey knit fabric, long sleeves, hemmed bottom",
    "agent_name": "Ledger",
    "action": "record",
    "input_summary": "REVIEW SPLIT_SUCCESSORS",
-   "output_summary": "verdict b9b27917-5a32-49c4-afec-10ca55bab4c0 written to Zetaris audit.verdict_log, where classified_code_living re-screens it",
+   "output_summary": "verdict b1a9368b-7996-4737-96fb-62c5d21eeba7 written to Zetaris audit.verdict_log, where classified_code_living re-screens it",
    "target_agent": null,
    "model": null,
    "confidence": null,

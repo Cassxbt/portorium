@@ -5,7 +5,7 @@
   "importer": "demo",
   "answers": [
    [
-    "What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)?",
+    "The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00).",
     "100% cotton jersey knit"
    ]
   ]
@@ -16,52 +16,49 @@
   "code": "6105100010",
   "precedents": [
    {
-    "ruling_number": "954436",
-    "ruling_date": "1993-10-14",
-    "subject": "NYRL 881550; Country of origin determination of men's short sleeved polo shirts; substantial transformation; 19 CFR 12.130(e)(1)(iv); fabric is woven in China; fabric is cut by an electric cutting machine and assembled into polo shirts in Mexico; HRL 952046",
+    "ruling_number": "087754",
+    "ruling_date": "1990-11-13",
+    "subject": "Classification of cotton knit shirt, garment sized \"one size fits all\" classified as unisex garment; 6109.10.0070, HTSUSA",
     "codes": [
-     "6105100010",
-     "6110202065"
-    ],
-    "match": "partial",
-    "code": "6105100010",
-    "fact": "2-button placket vs 3-button placket",
-    "status": "living",
-    "failed_rule": null,
-    "pre_hs2022": true,
-    "kind": "ruling",
-    "unresolved": false,
-    "successors": []
-   },
-   {
-    "ruling_number": "a87279",
-    "ruling_date": "1996-10-04",
-    "subject": "The tariff classification of a man's knit shirt from Hong Kong.",
-    "codes": [
-     "6105202010"
-    ],
-    "match": "partial",
-    "code": "6105202010",
-    "fact": "Different fiber composition (54% cotton/36% polyester/10% nylon); zippered closure vs 3-button placket; complex multi-fabric construction",
-    "status": "living",
-    "failed_rule": null,
-    "pre_hs2022": true,
-    "kind": "ruling",
-    "unresolved": false,
-    "successors": []
-   },
-   {
-    "ruling_number": "K84469",
-    "ruling_date": "2004-04-22",
-    "subject": "The tariff classification of a men\u2019s knit shirt and a woven jacket from China, Taiwan and Vietnam.",
-    "codes": [
-     "6105202010",
-     "6201933000",
-     "6201933511"
+     "6109100070"
     ],
     "match": "none",
     "code": null,
-    "fact": "Bonded fabric with waterproof membrane; different garment type",
+    "fact": "pullover shirt without placket; classified as T-shirt (6109)",
+    "status": null,
+    "failed_rule": null,
+    "pre_hs2022": true,
+    "kind": "ruling",
+    "unresolved": false,
+    "successors": []
+   },
+   {
+    "ruling_number": "952371",
+    "ruling_date": "1992-09-22",
+    "subject": "Classification of a man's all-white 100% knit cotton upper body garment; T-shirt of heading 6109, HTSUSA v. pullover pullover of heading 6110, HTSUSA; EN to heading 6109; Textile Category Guidelines, CIE, 36/79 and CIE 6/87; HRL 084849 (2/23/90); United States v. C.J. Tower & Sons of Buffalo, N.Y., 48 CCPA 87, C.A.D. 770 (1961); EN not applicable where they disregard a garment's common and commercial identity; T-shirts do not have long sleeves; heading 6110, HTSUSA.",
+    "codes": [
+     "6110202065"
+    ],
+    "match": "none",
+    "code": null,
+    "fact": "long-sleeve crew-neck pullover; classified as pullover of heading 6110",
+    "status": null,
+    "failed_rule": null,
+    "pre_hs2022": true,
+    "kind": "ruling",
+    "unresolved": false,
+    "successors": []
+   },
+   {
+    "ruling_number": "952370",
+    "ruling_date": "1992-09-22",
+    "subject": "Classification of a man's all-white 100% knit cotton V-neck upper body garment; T-shirt of heading 6109, HTSUSA v. pullover of heading 6110, HTSUSA; EN to heading 6109; Textile Category Guidelines, CIE, 36/79 and CIE 6/87; HRL 084849 (2/23/90); United States v. C.J. Tower & Sons of Buffalo, N.Y., 48 CCPA 87, C.A.D. 770 (1961); EN not applicable where they disregard a garment's common and commercial identity; T-shirts do not have long sleeves; heading 6110, HTSUSA.",
+    "codes": [
+     "6110202065"
+    ],
+    "match": "none",
+    "code": null,
+    "fact": "long-sleeve V-neck pullover; classified as pullover of heading 6110",
     "status": null,
     "failed_rule": null,
     "pre_hs2022": true,
@@ -79,7 +76,7 @@
     ],
     "match": "none",
     "code": null,
-    "fact": "T-shirts (pullover, crew neck); no placket",
+    "fact": "pullover T-shirts (crew neck, no placket); classified under 6109",
     "status": null,
     "failed_rule": null,
     "pre_hs2022": true,
@@ -88,16 +85,17 @@
     "successors": []
    },
    {
-    "ruling_number": "N301271",
-    "ruling_date": "2018-11-08",
-    "subject": "The tariff classification of a men\u2019s knitted pullover",
+    "ruling_number": "954436",
+    "ruling_date": "1993-10-14",
+    "subject": "NYRL 881550; Country of origin determination of men's short sleeved polo shirts; substantial transformation; 19 CFR 12.130(e)(1)(iv); fabric is woven in China; fabric is cut by an electric cutting machine and assembled into polo shirts in Mexico; HRL 952046",
     "codes": [
-     "6113009084"
+     "6105100010",
+     "6110202065"
     ],
-    "match": "none",
-    "code": null,
-    "fact": "Laminated fabric with plastic film; zippered pullover; different construction",
-    "status": null,
+    "match": "full",
+    "code": "6105100010",
+    "fact": "men's knitted polo shirt, 100% cotton jersey knit, short sleeves, rib knit collar, partial front opening with button placket, hemmed bottom with side slits",
+    "status": "living",
     "failed_rule": null,
     "pre_hs2022": true,
     "kind": "ruling",
@@ -105,15 +103,15 @@
     "successors": []
    },
    {
-    "ruling_number": "080047",
-    "ruling_date": "1988-08-26",
-    "subject": "Classification of a men's shirt which has epaulets and certain other features",
+    "ruling_number": "950855",
+    "ruling_date": "1992-04-10",
+    "subject": "Internal Advice Request 43/91; classification of upper bodygarments; heading 6110, HTSUSA; openwork mesh knit fabric is notcrocheted and not commonly used for T-shirts; C.I.E. 1998/64;T-shirts are lightweight jersey or interlock fabric garmentswithout conspicious features; EN to heading 61.09 and 61.10.",
     "codes": [
-     "6205300070"
+     "6110202065"
     ],
     "match": "none",
     "code": null,
-    "fact": "Woven shirt (6205); different chapter",
+    "fact": "openwork mesh knit pullover with round neck and short sleeves, no placket; classified under 6110",
     "status": null,
     "failed_rule": null,
     "pre_hs2022": true,
@@ -127,19 +125,19 @@
    {
     "role": "Adjudicator",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_k408rrqv",
+    "receipt_id": "rcpt_req_i0tqdcqh",
     "from_cache": false
    },
    {
     "role": "Proposer",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_uvozmdju",
+    "receipt_id": "rcpt_req_blwjg1cn",
     "from_cache": false
    },
    {
     "role": "Critic",
     "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_66e04y1v",
+    "receipt_id": "rcpt_req_jj0ps3vx",
     "from_cache": false
    }
   ],
@@ -166,27 +164,27 @@
    "code": "6105100010",
    "fits": true,
    "line": "",
-   "reason": "The product is a men's knitted polo shirt, which is a shirt under heading 6105. The importer confirmed the fiber composition is 100% cotton jersey knit, so it falls under subheading 6105.10.00 (Of cotton). The statistical suffix .10 for Men's (338) applies as the product is for men.",
-   "receipt_id": "rcpt_req_66e04y1v",
+   "reason": "The product is a men's knitted polo shirt with short sleeves and a three-button placket. Polo shirts are classified as shirts under heading 6105. The importer has confirmed the fiber composition is 100% cotton jersey knit, which matches subheading 6105.10.00 (Of cotton). The product is for men, so the statistical suffix .10 (Men's) applies rather than the alternative for boys'.",
+   "receipt_id": "rcpt_req_jj0ps3vx",
    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b"
   },
   "proposal": {
    "code": "6105100010",
    "confidence": 95.0,
    "routed_model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "receipt_id": "rcpt_req_uvozmdju",
+   "receipt_id": "rcpt_req_blwjg1cn",
    "status": "living",
    "successors": []
   }
  },
  "trace": [
   {
-   "timestamp": "2026-10-26T22:55:08.537Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:20.977Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Importer",
    "action": "answer",
-   "input_summary": "What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)?",
+   "input_summary": "The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00).",
    "output_summary": "100% cotton jersey knit",
    "target_agent": "Adjudicator",
    "model": null,
@@ -195,12 +193,12 @@
    "status": "feedback"
   },
   {
-   "timestamp": "2026-10-26T22:55:08.539Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:20.981Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Importer",
    "action": "hmem.add",
-   "input_summary": "Importer answered for Men's knitted polo shirt with short sleeves and a three-button placket: What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)? -> 100% cotton jersey knit",
+   "input_summary": "Importer answered for Men's knitted polo shirt with short sleeves and a three-button placket: The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). -> 100% cotton jersey knit",
    "output_summary": "stored mem-1 (long_term, factual, user_answer)",
    "target_agent": null,
    "model": null,
@@ -212,13 +210,47 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:08.542Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:23.704Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
+   "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
+   "agent_name": "Retriever",
+   "action": "embed",
+   "input_summary": "1 query text(s): Men's knitted polo shirt with short sleeves and a three-button placket. The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). 100% cotton jersey knit",
+   "output_summary": "1 vectors of 2048 dims",
+   "target_agent": null,
+   "model": "nvidia/nemotron-3.5-embed-1b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "source": "live"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:26.191Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
+   "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
+   "agent_name": "Retriever",
+   "action": "rerank",
+   "input_summary": "Men's knitted polo shirt with short sleeves and a three-button placket. The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). 100% cotton jersey knit vs 20 passages",
+   "output_summary": "20 relevance scores, top logit -2.82",
+   "target_agent": null,
+   "model": "nvidia/nemotron-3.5-rerank-8b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "source": "live"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:26.195Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Retriever",
    "action": "retrieve",
    "input_summary": "Men's knitted polo shirt with short sleeves and a three-button placket",
-   "output_summary": "6 rulings issued before 2026-10-26, 6 with product facts: 954436, a87279, K84469, 966686, N301271, 080047",
+   "output_summary": "6 rulings issued before 2026-10-27, 6 with product facts: 087754, 952371, 952370, 966686, 954436, 950855",
    "target_agent": "Adjudicator",
    "model": null,
    "confidence": null,
@@ -226,8 +258,8 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:55:08.543Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:26.195Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Memory",
    "action": "hmem.query",
@@ -244,13 +276,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:08.544Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:26.196Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Memory",
    "action": "hmem.query",
    "input_summary": "Men's knitted polo shirt with short sleeves and a three-button placket",
-   "output_summary": "1 remembered answer(s): mem-1 What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)? -> 100% cotton jersey knit",
+   "output_summary": "1 remembered answer(s): mem-1 The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). -> 100% cotton jersey knit",
    "target_agent": null,
    "model": null,
    "confidence": null,
@@ -262,8 +294,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:08.544Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:26.196Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Memory",
    "action": "recall",
@@ -276,13 +308,13 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:55:09.358Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:28.789Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Auditor",
    "action": "sql",
    "input_summary": "SELECT r.ruling_number, r.ruling_date, r.revoked, c.hts10, CASE WHEN h.hts10 IS NOT NULL THEN 'living' WHEN substr(c.hts10, 1, 8) IN (SELECT substr(code, 1, 8) FROM lightning.metastore.portorium.portorium.hts_code) THEN 'split' ELSE 'removed' END AS status FROM lightning.metastore.portorium.portorium.ruling r JOIN lightning.metastore.portorium.portorium.ruling_code c ON c.ruling_number = r.ruling\u2026",
-   "output_summary": "10 row(s)",
+   "output_summary": "8 row(s)",
    "target_agent": null,
    "model": null,
    "confidence": null,
@@ -293,13 +325,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:09.358Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:28.789Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Auditor",
    "action": "check_liveness",
-   "input_summary": "954436, K84469, a87279, 080047, 966686, N301271",
-   "output_summary": "954436 6105100010 living, 6110202065 split; K84469 6201933000 removed, 6105202010 living, 6201933511 removed; a87279 6105202010 living; 080047 6205300070 removed; 966686 6109100004 living, 6109100012 living; N301271 6113009084 living",
+   "input_summary": "087754, 966686, 954436, 950855, 952370, 952371",
+   "output_summary": "087754 6109100070 living; 966686 6109100004 living, 6109100012 living; 954436 6105100010 living, 6110202065 split; 950855 6110202065 split; 952370 REVOKED 6110202065 split; 952371 REVOKED 6110202065 split",
    "target_agent": "Adjudicator",
    "model": null,
    "confidence": null,
@@ -307,65 +339,28 @@
    "status": "success"
   },
   {
-   "timestamp": "2026-10-26T22:55:21.221Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:37.512Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
-   "agent_name": "Adjudicator",
+   "agent_name": "Proposer",
    "action": "chat",
-   "input_summary": "PRODUCT: Men's knitted polo shirt with short sleeves and a three-button placket IMPORTER ANSWERED: What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)? -> 100% cotton jersey knit PRECEDENT 954436 (1993-10-14): NYRL 881550; Country of origin determination of men's short sleeved polo shirts; substantial transformation; 19 CFR 12.130(e)(1)(iv)\u2026",
-   "output_summary": "{ \"precedents\": [ { \"ruling\": \"954436\", \"match\": \"partial\", \"code\": \"6105.10.0010\", \"fact\": \"2-button placket vs 3-button placket\" }, { \"ruling\": \"a87279\", \"match\": \"partial\", \"code\": \"6105.20.2010\", \"fact\": \"Different fiber composition (54% cotton/36% polyester/10% nylon); zippered closure vs 3-button placket; complex multi-fabric construction\" }, { \"ruling\": \"K84469\", \"match\": \"none\", \"code\": \"\u2026",
+   "input_summary": "PRODUCT: Men's knitted polo shirt with short sleeves and a three-button placket IMPORTER ANSWERED: The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). -> 100% cotton jersey knit PRIOR RULINGS: 087754: Classification of cotton knit shirt, garment sized \"one size fits all\u2026",
+   "output_summary": "{\"code\": \"6105100010\", \"confidence\": 95}",
    "target_agent": null,
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "confidence": null,
-   "retry_count": 1,
-   "status": "success",
-   "detail": {
-    "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_k408rrqv",
-    "cache": "miss",
-    "source": "live"
-   }
-  },
-  {
-   "timestamp": "2026-10-26T22:55:21.223Z",
-   "run_id": "20261026T225508-efb770",
-   "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
-   "agent_name": "Adjudicator",
-   "action": "judge",
-   "input_summary": "Men's knitted polo shirt with short sleeves and a three-button placket vs 6 precedents, 1 importer answer(s)",
-   "output_summary": "954436 partial 6105100010; a87279 partial 6105202010; K84469 none -; 966686 none -; N301271 none -; 080047 none -",
-   "target_agent": "Gate",
    "model": "nvidia/nemotron-3-ultra-550b-a55b",
    "confidence": null,
    "retry_count": 0,
    "status": "success",
    "detail": {
-    "receipt_id": "rcpt_req_k408rrqv"
-   }
-  },
-  {
-   "timestamp": "2026-10-26T22:55:30.828Z",
-   "run_id": "20261026T225508-efb770",
-   "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
-   "agent_name": "Proposer",
-   "action": "chat",
-   "input_summary": "PRODUCT: Men's knitted polo shirt with short sleeves and a three-button placket IMPORTER ANSWERED: What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)? -> 100% cotton jersey knit PRIOR RULINGS: 954436: NYRL 881550; Country of origin determination of men's short sleeved polo shirts; substantial transformation; 19 CFR 12.130(e)(1)(iv); fabric\u2026",
-   "output_summary": "{\"code\": \"6105100010\", \"confidence\": 95}",
-   "target_agent": null,
-   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-   "confidence": null,
-   "retry_count": 2,
-   "status": "success",
-   "detail": {
     "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_uvozmdju",
+    "receipt_id": "rcpt_req_blwjg1cn",
     "cache": "miss",
     "source": "live"
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:30.830Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:37.514Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Proposer",
    "action": "propose",
@@ -377,16 +372,53 @@
    "retry_count": 0,
    "status": "success",
    "detail": {
-    "receipt_id": "rcpt_req_uvozmdju"
+    "receipt_id": "rcpt_req_blwjg1cn"
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:30.831Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:43.087Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
+   "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
+   "agent_name": "Adjudicator",
+   "action": "chat",
+   "input_summary": "PRODUCT: Men's knitted polo shirt with short sleeves and a three-button placket IMPORTER ANSWERED: The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). -> 100% cotton jersey knit PRECEDENT 087754 (1990-11-13): Classification of cotton knit shirt, garment sized \"one size \u2026",
+   "output_summary": "{ \"precedents\": [ { \"ruling\": \"087754\", \"match\": \"none\", \"code\": \"none\", \"fact\": \"pullover shirt without placket; classified as T-shirt (6109)\" }, { \"ruling\": \"952371\", \"match\": \"none\", \"code\": \"none\", \"fact\": \"long-sleeve crew-neck pullover; classified as pullover of heading 6110\" }, { \"ruling\": \"952370\", \"match\": \"none\", \"code\": \"none\", \"fact\": \"long-sleeve V-neck pullover; classified as pullov\u2026",
+   "target_agent": null,
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
+    "receipt_id": "rcpt_req_i0tqdcqh",
+    "cache": "miss",
+    "source": "live"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:43.090Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
+   "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
+   "agent_name": "Adjudicator",
+   "action": "judge",
+   "input_summary": "Men's knitted polo shirt with short sleeves and a three-button placket vs 6 precedents, 1 importer answer(s)",
+   "output_summary": "087754 none -; 952371 none -; 952370 none -; 966686 none -; 954436 full 6105100010; 950855 none -",
+   "target_agent": "Gate",
+   "model": "nvidia/nemotron-3-ultra-550b-a55b",
+   "confidence": null,
+   "retry_count": 0,
+   "status": "success",
+   "detail": {
+    "receipt_id": "rcpt_req_i0tqdcqh"
+   }
+  },
+  {
+   "timestamp": "2026-10-27T19:06:43.093Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Gate",
    "action": "decide",
-   "input_summary": "proposed 6105100010; 954436 partial 6105100010 living; a87279 partial 6105202010 living; K84469 none -; 966686 none -; N301271 none -; 080047 none -",
+   "input_summary": "proposed 6105100010; 087754 none -; 952371 none -; 952370 none -; 966686 none -; 954436 full 6105100010 living; 950855 none -",
    "output_summary": "CLASSIFIED LIVING_PRECEDENT 6105100010",
    "target_agent": "Critic",
    "model": null,
@@ -398,8 +430,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:32.008Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:47.370Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Auditor",
    "action": "sql",
@@ -415,8 +447,8 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:32.008Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:47.372Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Auditor",
    "action": "schedule_text",
@@ -432,13 +464,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:40.615Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:53.207Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Critic",
    "action": "chat",
-   "input_summary": "PRODUCT: Men's knitted polo shirt with short sleeves and a three-button placket IMPORTER ANSWERED: What is the fiber composition of the shirt (e.g., 100% cotton, cotton/polyester blend, 100% polyester, etc.)? -> 100% cotton jersey knit PROPOSED: 6105.10.00.10 LEVEL 0: 6105 Men's or boys' shirts, knitted or crocheted: LEVEL 1: 6105.10.00 Of cotton alternative: 6105.20 Of man-made fibers: alternati\u2026",
-   "output_summary": "{ \"fits\": true, \"line\": \"\", \"reason\": \"The product is a men's knitted polo shirt, which is a shirt under heading 6105. The importer confirmed the fiber composition is 100% cotton jersey knit, so it falls under subheading 6105.10.00 (Of cotton). The statistical suffix .10 for Men's (338) applies as the product is for men.\", \"question\": \"\" }",
+   "input_summary": "PRODUCT: Men's knitted polo shirt with short sleeves and a three-button placket IMPORTER ANSWERED: The description does not settle this; can you state it? The product description does not specify the fiber composition, but the proposed classification assumes cotton (6105.10.00). -> 100% cotton jersey knit PROPOSED: 6105.10.00.10 LEVEL 0: 6105 Men's or boys' shirts, knitted or crocheted: LEVEL 1: \u2026",
+   "output_summary": "{ \"fits\": true, \"line\": \"\", \"reason\": \"The product is a men's knitted polo shirt with short sleeves and a three-button placket. Polo shirts are classified as shirts under heading 6105. The importer has confirmed the fiber composition is 100% cotton jersey knit, which matches subheading 6105.10.00 (Of cotton). The product is for men, so the statistical suffix .10 (Men's) applies rather than the al\u2026",
    "target_agent": null,
    "model": "nvidia/nemotron-3-ultra-550b-a55b",
    "confidence": null,
@@ -446,35 +478,35 @@
    "status": "success",
    "detail": {
     "requested_model": "nvidia/nemotron-3-ultra-550b-a55b",
-    "receipt_id": "rcpt_req_66e04y1v",
+    "receipt_id": "rcpt_req_jj0ps3vx",
     "cache": "miss",
     "source": "live"
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:40.616Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:53.210Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Critic",
    "action": "critique",
    "input_summary": "6105100010 for Men's knitted polo shirt with short sleeves and a three-button placket",
-   "output_summary": "fits: The product is a men's knitted polo shirt, which is a shirt under heading 6105. The importer confirmed the fiber composition is 100% cotton jersey knit, so it falls under subheading 6105.10.00 (Of cotton). The statistical suffix .10 for Men's (338) applies as the product is for men.",
+   "output_summary": "fits: The product is a men's knitted polo shirt with short sleeves and a three-button placket. Polo shirts are classified as shirts under heading 6105. The importer has confirmed the fiber composition is 100% cotton jersey knit, which matches subheading 6105.10.00 (Of cotton). The product is for men, so the statistical suffix .10 (Men's) applies rather than the alternative for boys'.",
    "target_agent": "Gate",
    "model": "nvidia/nemotron-3-ultra-550b-a55b",
    "confidence": null,
    "retry_count": 0,
    "status": "success",
    "detail": {
-    "receipt_id": "rcpt_req_66e04y1v"
+    "receipt_id": "rcpt_req_jj0ps3vx"
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:41.097Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:54.086Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Ledger",
    "action": "sql",
-   "input_summary": "INSERT INTO portorium_files.verdict_log VALUES ('da3b2223-3a42-40fe-96a9-e1cb3c275992', '2026-10-26T22:55:40+00:00', 'demo', 'Men''s knitted polo shirt with short sleeves and a three-button placket', 'CLASSIFIED', 'LIVING_PRECEDENT', '6105100010', '2026HTSRev21', 'nvidia/nemotron-3-ultra-550b-a55b', 'rcpt_req_k408rrqv')",
+   "input_summary": "INSERT INTO portorium_files.verdict_log VALUES ('cd9e0917-932d-4beb-a32c-13b9628ddc13', '2026-10-27T19:06:53+00:00', 'demo', 'Men''s knitted polo shirt with short sleeves and a three-button placket', 'CLASSIFIED', 'LIVING_PRECEDENT', '6105100010', '2026HTSRev21', 'nemotron-3-ultra-550b-a55b', 'A:rcpt_req_i0tqdcqh;P:rcpt_req_blwjg1cn;C:rcpt_req_jj0ps3vx')",
    "output_summary": "0 row(s)",
    "target_agent": null,
    "model": null,
@@ -486,13 +518,13 @@
    }
   },
   {
-   "timestamp": "2026-10-26T22:55:41.098Z",
-   "run_id": "20261026T225508-efb770",
+   "timestamp": "2026-10-27T19:06:54.086Z",
+   "run_id": "20261027T190620-f51b94615c3bcae3",
    "subject": "Men's knitted polo shirt with short sleeves and a three-button placket",
    "agent_name": "Ledger",
    "action": "record",
    "input_summary": "CLASSIFIED LIVING_PRECEDENT 6105100010",
-   "output_summary": "verdict da3b2223-3a42-40fe-96a9-e1cb3c275992 written to Zetaris audit.verdict_log, where classified_code_living re-screens it",
+   "output_summary": "verdict cd9e0917-932d-4beb-a32c-13b9628ddc13 written to Zetaris audit.verdict_log, where classified_code_living re-screens it",
    "target_agent": null,
    "model": null,
    "confidence": null,

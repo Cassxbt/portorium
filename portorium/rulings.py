@@ -44,7 +44,8 @@ def scrub(facts: str) -> str:
 
 
 def save_facts(ruling_number: str, text: str) -> str:
-    facts = scrub(extract_facts(text))
+    # CBP text carries \r\n; a prompt built now must equal one built later from the file, which reads back as \n.
+    facts = scrub(extract_facts(text)).replace("\r\n", "\n").replace("\r", "\n")
     FACTS.mkdir(parents=True, exist_ok=True)
     (FACTS / f"{ruling_number}.txt").write_text(facts, encoding="utf-8")
     return facts

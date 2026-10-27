@@ -28,7 +28,7 @@ class FakeNightshift:
     def __init__(self, fits=True):
         self.fits = fits
 
-    def chat_json(self, messages, required, model):
+    def chat_json(self, messages, required, model, max_tokens=1024):
         if "code" in required:
             return {"code": "6110.20.2079", "confidence": 90}, Answer("{}", {"routed_model": model, "receipt_id": "rcpt_3"})
         if "fits" in required:
@@ -111,7 +111,7 @@ def test_the_critic_reads_answers_remembered_from_an_earlier_request(tmp_path):
     seen = []
 
     class Recording(FakeNightshift):
-        def chat_json(self, messages, required, model):
+        def chat_json(self, messages, required, model, max_tokens=1024):
             if "fits" in required:
                 seen.append(messages[-1]["content"])
             return super().chat_json(messages, required, model)

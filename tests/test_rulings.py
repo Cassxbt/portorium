@@ -9,3 +9,12 @@ def test_scrub_removes_personal_details_and_keeps_the_product():
     assert "knitted cardigan" in out and "five buttons" in out
     for leak in ("Acker", "Wang", "@", "555", "11514"):
         assert leak not in out
+
+
+def test_facts_read_back_exactly_as_first_extracted(tmp_path, monkeypatch):
+    from portorium import rulings
+    monkeypatch.setattr(rulings, "FACTS", tmp_path)
+    monkeypatch.setattr(rulings, "FULLTEXT", tmp_path / "none")
+    first = rulings.save_facts("N1", "Dear Sir:\r\nThe merchandise is a shirt.\r\nIt is knitted.\rThe applicable subheading is 6105.")
+    assert "\r" not in first
+    assert rulings.stored_facts("N1") == first

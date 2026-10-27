@@ -75,13 +75,11 @@ def _memory(importer: str) -> BrokerMemory:
 
 
 def may_write(importer: str, broker: bool, token: str, live: bool, expected: str) -> None:
-    """Who may change an importer's memory. The hosted sample is public, so a visitor writes only their own
-    visitor namespace; live, an importer's answers are theirs to give, but a sign-off or a wipe is a broker's act
-    and needs the BROKER_TOKEN the operator set."""
+    """Who may change an importer's memory. An importer's answers are theirs to give; live, a sign-off or a wipe is
+    a broker's act and needs the BROKER_TOKEN the operator set. The hosted sample has no accounts: the console gives
+    each browser its own random namespace, and anyone may write a namespace whose name they know."""
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", importer):
         raise HTTPException(400, "importer must be letters, digits, '-' or '_'")
-    if not live and not importer.startswith("visitor-"):
-        raise HTTPException(403, "the hosted sample keeps each visitor's memory apart: use your visitor-… namespace")
     if live and broker and not (expected and secrets.compare_digest(token, expected)):
         raise HTTPException(403, "broker sign-off and wipe need the BROKER_TOKEN set for this deployment")
 
@@ -111,6 +109,7 @@ class ForgetRequest(BaseModel):
     broker_token: str = ""
 
 
+@app.post("/run")
 @app.post("/api/classify")
 def classify(req: ClassifyRequest) -> dict:
     gate, zetaris = _services()

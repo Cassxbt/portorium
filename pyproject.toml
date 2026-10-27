@@ -16,8 +16,8 @@ testpaths = ["tests"]
 requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["portorium"]
+[tool.setuptools.packages.find]
+include = ["portorium*"]
 
 [project.scripts]
 portorium = "portorium.cli:main"
