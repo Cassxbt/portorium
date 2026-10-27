@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Portorium · No code without a living precedent</title>
-<meta name="description" content="A customs tariff classification agent that answers only when a prior US Customs ruling describes the same article and its code still exists in today's schedule.">
+<meta name="description" content="A customs tariff classification agent that answers only when a prior US Customs ruling describes the same or a similar article and its code still exists in today's schedule.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4f0e6'/%3E%3Ctext x='16' y='25' font-family='Georgia' font-size='26' text-anchor='middle' fill='%2317160f'%3EP%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -98,10 +98,10 @@
         <div>
           <div class="label">The failure</div>
           <h2 style="margin-top:18px">Tariff codes die. Models keep using them.</h2>
-          <p class="lead" style="margin-top:22px">The 2026 US tariff schedule is already on its 21st revision. Codes are split, renumbered and deleted, and old rulings are revoked. A code recalled by a model, or copied from a past ruling, can name a line that no longer exists.</p>
+          <p class="lead" style="margin-top:22px">The 2026 US tariff schedule is already on its 21st revision. Codes are split, renumbered and deleted, and old rulings are revoked. A code copied from a past ruling can name a line that no longer exists, and a code recalled by a model may not be in today's schedule at all.</p>
         </div>
         <div class="reveal">
-          <div class="label">Dead codes · Nemotron Ultra asked directly</div>
+          <div class="label">Not in today's schedule · Nemotron Ultra asked directly</div>
           <div class="bigstat" id="staleBig" style="margin-top:22px">–</div>
           <div class="stat-note" id="staleNote">Share of answers that name a code not in HTS 2026 Rev 21.</div>
           <div class="ladder" id="ladder"></div>
@@ -120,7 +120,7 @@
         <a href="/how#adjudicator"><span class="n">05</span><h3>Proposer</h3><p>Picks one code, only from the codes those rulings cite, with a confidence.</p><span class="by">Nemotron 3 Ultra via Nightshift</span></a>
         <a href="/how#gate"><span class="n">06</span><h3>Gate</h3><p>Lets the code through only if a standing ruling cites it and it is alive in Rev 21.</p><span class="by">Deterministic rules</span></a>
         <a href="/how#critic"><span class="n">07</span><h3>Critic</h3><p>Reads the code's current wording, every level, and checks the product fits it.</p><span class="by">Zetaris text · Nemotron 3 Ultra</span></a>
-        <a href="/how#importer"><span class="n">08</span><h3>Importer · Broker</h3><p>Answers the one question, then the loop runs again; or a broker signs off.</p><span class="by">Human in the loop</span></a>
+        <a href="/how#importer"><span class="n">08</span><h3>Importer · Broker</h3><p>Answers the gate's question, then the loop runs again; or a broker signs off.</p><span class="by">Human in the loop</span></a>
       </div>
     </section>
 
@@ -134,7 +134,7 @@
     <section class="band">
       <div class="label">Built on</div>
       <div class="sponsors reveal">
-        <div><h3>Zetaris</h3><p>Holds the schedule and the rulings as one virtual layer. Its data-quality rules decide whether a precedent is alive, it returns each code's current wording for the Critic, and every verdict is written back and re-screened.</p></div>
+        <div><h3>Zetaris</h3><p>Holds the schedule and the rulings as one virtual layer. Its data-quality rules decide whether a precedent is alive, it returns each code's current wording for the Critic, and every verdict is written back for its rules to re-check.</p></div>
         <div><h3>Meterless</h3><p>Nightshift routes every reasoning call and returns a receipt naming the model that ran. H-MEM keeps broker sign-offs and importer answers, with a deletion ledger.</p></div>
         <div><h3>NVIDIA Nemotron</h3><p>Embed and Rerank find the precedents. Nemotron 3 Ultra compares them, proposes a code and checks it against the schedule's wording. Lightning serves as an evaluation baseline.</p></div>
       </div>
@@ -199,9 +199,9 @@ async function numbers() {
     $("proofLabel").textContent = e.split === "test" ? `Frozen test set · ${e.items} CBP rulings issued after the Nemotron post-training cutoff (May 2026)`
       : `Dev set · ${e.items} CBP rulings issued after the Nemotron pre-training cutoff (September 2025)`;
     $("proof").innerHTML = `
-      <div><div class="v">${pct(g.stale_code_rate, 0)}</div><div class="ci">stale-code rate</div><p>Answers that name a code no longer in the schedule. Every code it gives is alive.</p></div>
+      <div><div class="v">${pct(g.stale_code_rate, 0)}</div><div class="ci">stale-code rate</div><p>Answers that name a code not in today's schedule. Every code it gives is alive.</p></div>
       <div><div class="v">${pct(g.acc10_covered, 0)}</div><div class="ci">95% CI ${pct(g.acc10_ci95[0], 0)}–${pct(g.acc10_ci95[1], 0)}</div><p>Exact 10-digit match with the CBP ruling, on the products it answers.</p></div>
-      <div><div class="v">${pct(g.coverage, 0)}</div><div class="ci">coverage</div><p>Products it classifies on its own. The rest go to one question or to a broker.</p></div>`;
+      <div><div class="v">${pct(g.coverage, 0)}</div><div class="ci">coverage</div><p>Products it classifies on its own. The rest go to review: some with one question for the importer, the rest to a broker.</p></div>`;
   } catch (err) {
     $("proof").innerHTML = `<div class="empty">${esc(err.message)}</div>`;
     $("staleNote").textContent = "The evaluation has not been run on this copy yet; see the Evidence page.";

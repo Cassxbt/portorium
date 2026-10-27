@@ -81,7 +81,7 @@
         <section class="station" id="memory">
           <div class="label">02 · Memory</div>
           <h2>Remember what a broker signed and what the importer said.</h2>
-          <p class="lead">Broker sign-offs and the importer's answers are long-term memories in Meterless H-MEM, with provenance. For a similar product they are recalled and judged alongside the rulings, never trusted blindly.</p>
+          <p class="lead">Broker sign-offs and the importer's answers are long-term memories in Meterless H-MEM, with provenance. A sign-off is recalled for a similar product and judged alongside the rulings, never trusted blindly; an importer's answer is reused only for the same product.</p>
           <div class="grid2">
             <div><h3>Why it matters</h3><p>A broker's correction should hold for the next shipment of the same article, and a question answered once should not be asked again.</p></div>
             <div><h3>What it cannot do</h3><p>Override a dead code or the model's judgement. A remembered decision whose code is no longer in the schedule is dropped before judging; one judged the same article but naming a different code from the proposal sends the case to review.</p></div>
@@ -116,13 +116,18 @@
           <table class="ledger rules" style="margin:10px 0 30px">
             <tr><th>#</th><th>When</th><th>Verdict</th></tr>
             <tr><td>1</td><td>No ruling was found at all</td><td class="out REFUSE">NO_PRECEDENT_FOUND</td></tr>
-            <tr><td>2</td><td>No retrieved ruling cites the proposed code</td><td class="out REVIEW">NO_PRECEDENT_FOR_PROPOSAL</td></tr>
-            <tr><td>3</td><td>The code was split in Rev 21</td><td class="out REVIEW">SPLIT_SUCCESSORS</td></tr>
-            <tr><td>4</td><td>The code is gone or its ruling revoked, but another living candidate exists</td><td class="out REVIEW">STALE_PROPOSAL</td></tr>
-            <tr><td>5</td><td>The code is gone or revoked, and nothing living remains</td><td class="out REFUSE">STALE_PRECEDENT</td></tr>
-            <tr><td>6</td><td>A broker's remembered decision says otherwise</td><td class="out REVIEW">MEMORY_CONFLICT</td></tr>
-            <tr><td>7</td><td>A standing ruling cites the code and it is living: the Critic reads it next</td><td class="out CLASSIFIED">LIVING_PRECEDENT</td></tr>
-            <tr><td>8</td><td>The Critic finds the product outside the code's Rev 21 text</td><td class="out REVIEW">SCHEDULE_TEXT_DISAGREES</td></tr>
+            <tr><td>2</td><td>No retrieved ruling, matched to this product, cites the proposed code</td><td class="out REVIEW">NO_PRECEDENT_FOR_PROPOSAL</td></tr>
+            <tr><td>3</td><td>No citing ruling is verified living, and Zetaris returned no evidence for one of them</td><td class="out REVIEW">EVIDENCE_MISSING</td></tr>
+            <tr><td>4</td><td>The code was split in Rev 21</td><td class="out REVIEW">SPLIT_SUCCESSORS</td></tr>
+            <tr><td>5</td><td>The code is gone or its ruling revoked, but another living candidate exists</td><td class="out REVIEW">STALE_PROPOSAL</td></tr>
+            <tr><td>6</td><td>The code is gone or revoked, and nothing living remains</td><td class="out REFUSE">STALE_PRECEDENT</td></tr>
+            <tr><td>7</td><td>A broker's remembered decision says otherwise</td><td class="out REVIEW">MEMORY_CONFLICT</td></tr>
+            <tr><td>8</td><td>A standing ruling cites the code and it is living: the Critic reads it next</td><td class="out CLASSIFIED">LIVING_PRECEDENT</td></tr>
+            <tr><td>9</td><td>Zetaris's schedule path does not end at the code</td><td class="out REVIEW">EVIDENCE_MISSING</td></tr>
+            <tr><td>10</td><td>The Critic finds the product outside the code's Rev 21 text</td><td class="out REVIEW">SCHEDULE_TEXT_DISAGREES</td></tr>
+            <tr><td>11</td><td>The Critic says it fits, but a fact it relies on is not in the importer's words</td><td class="out REVIEW">FACT_NOT_STATED</td></tr>
+            <tr><td>12</td><td>A model call has no receipt naming its routed model</td><td class="out REVIEW">EVIDENCE_MISSING</td></tr>
+            <tr><td>13</td><td>USITC publishes a newer schedule than the one loaded</td><td class="out REVIEW">SCHEDULE_OUTDATED</td></tr>
           </table>
           <div class="evidence sheet" data-role="Gate"></div>
         </section>
@@ -132,16 +137,16 @@
           <p class="lead">In HTS 2026 Rev 21, 3004.90.92.35 reads "Containing tramadol". A 2023 ruling had used it for olanzapine, which now has its own line. The code survived the revision; its meaning moved. So before a code is given, Zetaris returns its full Rev 21 text, every level from the heading down, with the alternatives at each level, and Nemotron Ultra checks the product against it.</p>
           <div class="grid2">
             <div><h3>What it catches</h3><p>Renumbered statistical lines; a single-loudspeaker line given to a two-speaker product; training balls given a line for baseball equipment "except balls". When a missing fact decides it, the Critic writes the question. It also misses some, and sometimes rejects a right code: the evaluation counts both.</p></div>
-            <div><h3>How it is built</h3><p>One Zetaris query walks the schedule's indentation: the last line at each level above the code, and every sibling at each level. No text is hard-coded.</p></div>
+            <div><h3>How it is built</h3><p>One Zetaris query walks the schedule's indentation: each level above the code, keeping an ancestor only if it comes after every ancestor above it, and every sibling at each level. No text is hard-coded.</p></div>
           </div>
           <div class="evidence sheet" data-role="Critic"></div>
         </section>
         <section class="station" id="importer">
           <div class="label">07 · Importer · Broker</div>
           <h2>One question, then the whole loop again.</h2>
-          <p class="lead">On review, the importer gets one question: the Adjudicator's, or the Critic's when the schedule's wording needs a fact the description does not state. The answer is stored in memory and the request runs again from the Retriever, with the answer in front of the Adjudicator. A licensed broker can sign off any code; the sign-off becomes memory for the next shipment.</p>
+          <p class="lead">When a missing fact decides it, the importer gets one question: the Adjudicator's, or the Critic's when the schedule's wording needs a fact the description does not state. The answer is stored in memory and the request runs again from the Retriever, with the answer in front of the Adjudicator. A licensed broker can sign off any code; the sign-off becomes memory for the next shipment.</p>
           <div class="grid2">
-            <div><h3>Ledger</h3><p>Every live verdict is written to a Zetaris audit table. A rule, <span class="mono">classified_code_living</span>, re-screens past verdicts when the schedule changes.</p></div>
+            <div><h3>Ledger</h3><p>Every live verdict is written to a Zetaris audit table. with every role's receipt. A rule, <span class="mono">classified_code_living</span>, re-checks past verdicts against the loaded schedule; a newer USITC release withholds new classifications until it is loaded.</p></div>
             <div><h3>Wipe</h3><p>Memory can be wiped per importer. H-MEM's ledger keeps a record of each deletion.</p></div>
           </div>
           <div class="evidence sheet" data-role="Importer"></div>

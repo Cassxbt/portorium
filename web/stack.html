@@ -48,15 +48,15 @@
       <div class="label">One request</div>
       <div class="flow">
         <div><span class="n">01</span><h3>Retriever</h3><span class="who nv">NVIDIA Nemotron</span><p>Embed 1B finds 20 rulings issued before the question date; Rerank 8B orders them; six go on.</p></div>
-        <div><span class="n">02</span><h3>Memory</h3><span class="who m">Meterless H-MEM</span><p>Recalls broker sign-offs and the importer's earlier answers for a similar product.</p></div>
+        <div><span class="n">02</span><h3>Memory</h3><span class="who m">Meterless H-MEM</span><p>Recalls a broker's sign-off for a similar product, and the importer's earlier answer for the same one.</p></div>
         <div><span class="n">03</span><h3>Auditor</h3><span class="who z">Zetaris</span><p>One query per request: is each ruling revoked, and is each code living, split or removed in Rev 21?</p></div>
         <div><span class="n">04</span><h3>Adjudicator · Proposer</h3><span class="who nv">Nemotron 3 Ultra</span> <span class="who m">via Nightshift</span><p>In parallel: same article or not for each precedent, and one proposed code from their codes.</p></div>
         <div><span class="n">05</span><h3>Gate</h3><span class="who code">Python rules</span><p>Ordered rules: a standing ruling must cite the code, and it must be alive.</p></div>
         <div><span class="n">06</span><h3>Critic</h3><span class="who z">Zetaris text</span> <span class="who nv">Ultra</span><p>The code's current wording, every level and its alternatives; does the product fit?</p></div>
-        <div><span class="n">07</span><h3>Ledger</h3><span class="who z">Zetaris</span><p>Writes the verdict to an audit table that data-quality rules re-screen when the schedule changes.</p></div>
+        <div><span class="n">07</span><h3>Ledger</h3><span class="who z">Zetaris</span><p>Writes the verdict and every receipt to an audit table that data-quality rules re-check against the loaded schedule.</p></div>
       </div>
       <div class="outcomes">
-        <div class="CLASSIFIED">CLASSIFIED<span>A living, same-article precedent, and no disagreement.</span></div>
+        <div class="CLASSIFIED">CLASSIFIED<span>A living precedent judged the same or a similar article, the Critic's fit on quoted facts, and no disagreement.</span></div>
         <div class="REVIEW">REVIEW<span>One question to the importer, then the whole loop again; or a broker decides.</span></div>
         <div class="REFUSE">REFUSE<span>Nothing alive to stand on.</span></div>
       </div>
@@ -88,7 +88,7 @@
           <p><code>code_in_schedule</code> fails a ruling code that is not a line of the current schedule; <code>parent_survives</code> fails one whose 8-digit parent is gone too, which separates a split from a removal. At start-up Portorium cross-checks its liveness sets against each rule's own invalid records and refuses to start if they differ.</p>
           <p id="dq">Across 75,870 ruling codes: 53,723 living, 7,938 split, 14,209 removed.</p>
           <h3>A code's current wording, read from the schedule's structure</h3>
-          <p>The schedule keeps its hierarchy as indentation. One Zetaris query over the loaded release walks it: for a 10-digit code, the last line at each level above it (heading, subheading, statistical groups) and every other line at each level. The Critic reads that, so "Other" means what the schedule says it means today.</p>
+          <p>The schedule keeps its hierarchy as indentation. One Zetaris query over the loaded release walks it: for a 10-digit code, each level above it, keeping an ancestor only if it comes after every ancestor above it (heading, subheading, statistical groups) and every other line at each level. The Critic reads that, so "Other" means what the schedule says it means today.</p>
           <h3>Every verdict goes back in</h3>
           <p>Live verdicts are inserted into <code>audit.verdict_log</code>. <code>classified_code_living</code> flags a classified verdict whose code has since left the schedule; <code>release_is_snapshot</code> flags when USITC publishes a release newer than the one loaded.</p>
         </div>
@@ -129,7 +129,7 @@
       <div class="label">What is different about this use</div>
       <div class="unique">
         <div><b>A model suggests; it never decides.</b><p>The Proposer may only pick a code a retrieved ruling cites. Zetaris and the Critic verify it; plain rules decide.</p></div>
-        <div><b>Zetaris decides what is alive.</b><p>Registered rules, not application code, say whether a precedent still stands, and the same rules re-screen past verdicts.</p></div>
+        <div><b>Zetaris decides what is alive.</b><p>Two registered rules define what is alive. Each request runs a query that mirrors them, the gate's view is checked against the rules' own invalid records at start-up, and the ledger's rules re-check past verdicts.</p></div>
         <div><b>Memory is judged, not trusted.</b><p>A broker's remembered decision is weighed by the model like any precedent, and dropped if its code has died.</p></div>
       </div>
     </section>

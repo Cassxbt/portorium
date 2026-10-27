@@ -72,6 +72,7 @@
           <div class="row">
             <input type="text" id="broker" value="broker-1" style="width:140px" aria-label="Broker">
             <input type="text" id="signcode" placeholder="10-digit code" style="width:190px" aria-label="Code to sign off">
+            <input type="password" id="brokertoken" class="hide" placeholder="Broker token" style="width:150px" aria-label="Broker token" autocomplete="off">
             <button class="btn ghost" id="sign">Sign off</button>
           </div>
         </div>
@@ -85,7 +86,7 @@
           <div id="trace" style="margin-top:10px"></div>
         </div>
         <div class="panels">
-          <div><div class="label">Schedule watch · Zetaris</div><p id="release">Re-check the live USITC release and every past verdict.</p><button class="btn ghost" id="rescreen">Check revision</button></div>
+          <div><div class="label">Schedule watch · Zetaris</div><p id="release">Check the live USITC release, and re-check past verdicts against the loaded schedule.</p><button class="btn ghost" id="rescreen">Check revision</button></div>
           <div><div class="label">Broker memory · Meterless H-MEM</div><p id="memory">Nothing recalled yet.</p><button class="btn ghost" id="wipe">Wipe memory</button></div>
         </div>
       </div>
@@ -111,10 +112,12 @@ async function status() {
     const s = await api("/api/status");
     const d = s.dq.code_in_schedule || {};
     // In sample mode each visitor gets their own memory, so one person's answers never change what the next one sees.
+    // Live, a sign-off or a wipe is a broker's act and needs the deployment's BROKER_TOKEN.
+    $("brokertoken").classList.toggle("hide", !s.live);
     if (!s.live && $("importer").value === "demo") {
       let id = null;
       try { id = localStorage.getItem("portorium-visitor"); } catch {}
-      if (!id) { id = "visitor-" + Math.random().toString(36).slice(2, 8); try { localStorage.setItem("portorium-visitor", id); } catch {} }
+      if (!id) { id = "visitor-" + Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => b.toString(16).padStart(2, "0")).join(""); try { localStorage.setItem("portorium-visitor", id); } catch {} }
       $("importer").value = id;
     }
     $("status").innerHTML = `<span>mode <b>${s.live ? "live" : "sample · recorded responses"}</b></span><span>precedents <b>${s.precedents.toLocaleString()}</b></span>` +
@@ -125,6 +128,7 @@ async function status() {
 function render(v) {
   $("verdict").innerHTML = `<span class="stamp ${v.decision}">${v.decision}</span>` +
     (v.code ? `<div class="big">${fmt(v.code)}</div>` : "") + `<div class="reason">${esc(v.reason)}</div>` +
+    (v.decision === "CLASSIFIED" ? `<div class="receipt">A candidate for a licensed broker to sign off, not a filing.</div>` : "") +
     (v.proposal && v.proposal.code ? `<div class="receipt">Proposed ${fmt(v.proposal.code)} at confidence ${esc(v.proposal.confidence)}` +
       (v.critique && v.critique.code ? ` · Critic: ${v.critique.fits ? "fits" : "does not fit"} its Rev 21 text${v.critique.reason ? ` (${esc(v.critique.reason)})` : ""}` : "") + `</div>` : "") +
     (v.receipts || []).map((r) => `<div class="receipt">${esc(r.role || "")} receipt ${esc(r.receipt_id)} · routed_model ${esc(r.routed_model)} · from_cache ${esc(r.from_cache)}</div>`).join("");
@@ -192,12 +196,12 @@ $("reply").onclick = () => {
 };
 $("sign").onclick = async () => {
   try {
-    const r = await api("/api/confirm", { product: $("product").value, code: $("signcode").value, broker: $("broker").value, importer: $("importer").value });
+    const r = await api("/api/confirm", { product: $("product").value, code: $("signcode").value, broker: $("broker").value, importer: $("importer").value, broker_token: $("brokertoken").value });
     $("memory").textContent = `${r.memory_id} stored: ${fmt(r.code)} signed off by ${$("broker").value}`;
   } catch (e) { $("err").textContent = e.message; }
 };
 $("wipe").onclick = async () => {
-  try { await api("/api/forget", { importer: $("importer").value }); $("memory").textContent = "Memory wiped. The H-MEM ledger keeps the deletions."; }
+  try { await api("/api/forget", { importer: $("importer").value, broker_token: $("brokertoken").value }); $("memory").textContent = "Memory wiped. The H-MEM ledger keeps the deletions."; }
   catch (e) { $("err").textContent = e.message; }
 };
 $("rescreen").onclick = async () => {
