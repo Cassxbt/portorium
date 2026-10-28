@@ -17,13 +17,15 @@ Portorium gives an import broker a candidate code under the US tariff schedule. 
 
 **[ Judge it in 90 seconds ↓ ](#judge-it-in-90-seconds)** · **[ Evidence ↓ ](#evidence)** · **[ How it decides ↓ ](#what-portorium-is)** · **[ Run it live ↓ ](#run-it-live)**
 
-<!-- LIVE_AND_VIDEO_LINKS -->
+**[▶ Demo video (3:36)](https://youtu.be/hHY98OtVIJQ)** · **[Live demo](https://portorium.fly.dev)** · **[Evidence](https://portorium.fly.dev/evidence)**
 
 </div>
 
 ## ▶ Demo
 
-<!-- DEMO_VIDEO -->
+[![Portorium demo video](https://img.youtube.com/vi/hHY98OtVIJQ/maxresdefault.jpg)](https://youtu.be/hHY98OtVIJQ)
+
+**[Watch the demo (3:36)](https://youtu.be/hHY98OtVIJQ).** Recorded on the live product: every verdict in it is a real request to Zetaris, Meterless Nightshift and NVIDIA. The hosted demo at [portorium.fly.dev](https://portorium.fly.dev) replays recorded responses (sample mode).
 
 A women's V-neck pullover. The closest CBP ruling is a 1992 exact match, and Nemotron 3 Ultra proposes its code with **confidence 95**. Zetaris answers that `6110.20.2075` is no longer in the schedule, so the gate stops it and lists the codes its line carries now. A polo shirt comes next: its code is alive, but the Critic reads the schedule's current wording and asks the one fact it needs, the fibre. The importer answers, the whole loop runs again, and the verdict is stamped CLASSIFIED with three Nightshift receipts. H-MEM keeps the answer for the next shipment.
 
